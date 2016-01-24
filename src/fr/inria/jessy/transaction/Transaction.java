@@ -1,9 +1,7 @@
 package fr.inria.jessy.transaction;
 
 import java.io.FileInputStream;
-import java.util.Collection;
-import java.util.List;
-import java.util.Properties;
+import java.util.*;
 import java.util.concurrent.Callable;
 
 import net.sourceforge.fractal.utils.PerformanceProbe.SimpleCounter;
@@ -280,5 +278,41 @@ public abstract class Transaction implements Callable<ExecutionHistory> {
 	public TransactionHandler getTransactionHandler(){
 		return transactionHandler;
 	}
-	
+
+	/**
+	 * Put extra information in this transaction.
+	 * <p>
+	 * Information is put in a key-value store. You can later get the information you put using
+	 * {@link Transaction#getExtra(String)}.
+	 *
+	 * @param extras A map containing a set of information.
+	 */
+	public void putAllExtras(Map<String, Object> extras) {
+		transactionHandler.putAllExtras(extras);
+	}
+
+	/**
+	 * Put one extra information in this transaction.
+	 * <p>
+	 * Information is put in a key-value store. You can later get the information you put using
+	 * {@link Transaction#getExtra(String)}.
+	 *
+	 * @param key   The key assigned to the extra.
+	 * @param value The value of the extra.
+	 */
+	public void putExtra(String key, Object value) {
+		transactionHandler.putExtra(key, value);
+	}
+
+	/**
+	 * Get extra information set for this transaction.
+	 * <p>
+	 * Extra information is put like in a key-value store. To retrieve an information you put before you need its key.
+	 *
+	 * @param key The key assigned to the extra.
+	 * @return The extra.
+	 */
+	public Object getExtra(String key) {
+		return transactionHandler.getExtra(key);
+	}
 }

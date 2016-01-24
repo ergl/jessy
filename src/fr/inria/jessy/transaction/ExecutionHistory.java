@@ -6,6 +6,8 @@ import java.io.ObjectOutput;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import java.util.HashMap;
+import java.util.Map;
 import net.sourceforge.fractal.Messageable;
 import fr.inria.jessy.ConstantPool;
 import fr.inria.jessy.consistency.Consistency;
@@ -15,7 +17,7 @@ import fr.inria.jessy.store.JessyEntity;
 
 /**
  * This class characterizes the whole state of a transaction execution. It
- * contains the read, write and create set of the transactions that are used
+ * contains the read, write and create set of the transaction that are used
  * during termination for certifying the transaction.
  * 
  * 
@@ -71,6 +73,8 @@ public class ExecutionHistory extends ExecutionHistoryMeasurements implements Me
 	private EntitySet createSet;
 	private EntitySet writeSet;
 	private EntitySet readSet;
+
+	private HashMap<String, Object> mExtras = new HashMap<>();
 
 	// for fractal
 	@Deprecated
@@ -262,6 +266,7 @@ public class ExecutionHistory extends ExecutionHistoryMeasurements implements Me
 			writeSet = (EntitySet) in.readObject();
 		}
 
+		mExtras = (HashMap<String, Object>) in.readObject();
 	}
 
 	public void writeExternal(ObjectOutput out) throws IOException {
@@ -294,6 +299,44 @@ public class ExecutionHistory extends ExecutionHistoryMeasurements implements Me
 			out.writeObject(writeSet);
 		}
 
+		out.writeObject(mExtras);
 	}
-	
+
+	/**
+	 * Put extra information in this execution history.
+	 * <p>
+	 * Information is put in a key-value store. You can later get the information you put using
+	 * {@link ExecutionHistory#getExtra(String)}.
+	 *
+	 * @param extras A map containing a set of information.
+	 */
+	public void putAllExtras(Map<String, Object> extras) {
+		for (String key : extras.keySet())
+			putExtra(key, extras.get(key));
+	}
+
+	/**
+	 * Put one extra information in this execution history.
+	 * <p>
+	 * Information is put in a key-value store. You can later get the information you put using
+	 * {@link ExecutionHistory#getExtra(String)}.
+	 *
+	 * @param key   The key assigned to the extra.
+	 * @param value The value of the extra.
+	 */
+	public void putExtra(String key, Object value) {
+		mExtras.put(key, value);
+	}
+
+	/**
+	 * Get extra information set for this execution history.
+	 * <p>
+	 * Extra information is put like in a key-value store. To retrieve an information you put before you need its key.
+	 *
+	 * @param key The key assigned to the extra.
+	 * @return The extra.
+	 */
+	public Object getExtra(String key) {
+		return mExtras.get(key);
+	}
 }

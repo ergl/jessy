@@ -150,8 +150,8 @@ public class ConstantPool {
 	 *  read/written previously by the same transaction. Of course in real system, they should be true.
 	 *  But, for the sake of performance we set them to false.  
 	 */
-	public static final boolean CHECK_IF_HAS_BEEN_READ=false;
-	public static final boolean CHECK_IF_HAS_BEEN_WRITTEN=false;
+	public static final boolean CHECK_IF_HAS_BEEN_READ=true;
+	public static final boolean CHECK_IF_HAS_BEEN_WRITTEN=true;
 	
 	/**
 	 * Lower bound of percentage of local transactions in the system.

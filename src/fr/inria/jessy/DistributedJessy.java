@@ -402,7 +402,9 @@ public class DistributedJessy extends Jessy {
 	public ExecutionHistory commitTransaction(
 			TransactionHandler transactionHandler) {
 		ExecutionHistory executionHistory = getExecutionHistory(transactionHandler);
-		
+		// All the extras are put into execution history just before certification.
+		executionHistory.putAllExtras(transactionHandler.getAllExtras());
+
 		try {
 			Future<TransactionState> stateFuture = distributedTermination
 					.terminateTransaction(executionHistory);

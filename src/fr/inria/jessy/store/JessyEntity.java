@@ -107,8 +107,9 @@ public abstract class JessyEntity implements Externalizable, Cloneable {
 		out.writeObject(localVector);
 		out.writeObject(temporaryObject);
 	}
-	
-	public JessyEntity clone() {		
+
+	@Override
+	public Object clone() {
 		JessyEntity je=null;
 		
 		try {

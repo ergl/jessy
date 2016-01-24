@@ -43,7 +43,7 @@ import fr.inria.jessy.transaction.termination.vote.Vote;
 import fr.inria.jessy.transaction.termination.vote.VotingQuorum;
 
 /**
- * This class is responsible for sending transactions to remote replicas,
+ * This class is responsible for sending transaction to remote replicas,
  * receiving the certification votes from remote replicas, deciding the outcome
  * of the transaction, and finally applying the transaction changes to the local
  * store.
@@ -68,15 +68,15 @@ public class DistributedTermination implements Learner, UnicastLearner {
 	protected Group group;
 
 	/**
-	 * VotingQuorums for processing transactions.
+	 * VotingQuorums for processing transaction.
 	 */
 	protected ConcurrentHashMap<TransactionHandler, VotingQuorum> votingQuorums;
 
 	/**
-	 * Atomically delivered but not processed transactions. This list is to ensure the certification safety and 
-	 * the safety of applying transactions to the data store.
+	 * Atomically delivered but not processed transaction. This list is to ensure the certification safety and
+	 * the safety of applying transaction to the data store.
 	 * Thus, two transaction from this list can be certified and perform voting phase, if they do not have any conflict with
-	 * all other concurrent transactions having been delivered before it as long as 
+	 * all other concurrent transaction having been delivered before it as long as
 	 * {@link Consistency#certificationCommute(ExecutionHistory, ExecutionHistory)} returns true.
 	 * Moreover, every transaction in this queue can execute without waiting as long as 
 	 * {@link Consistency#applyingTransactionCommute()} returns true.
@@ -85,7 +85,7 @@ public class DistributedTermination implements Learner, UnicastLearner {
 	private LinkedList<TerminateTransactionRequestMessage> atomicDeliveredMessages;
 	
 	/**
-	 * Terminated transactions
+	 * Terminated transaction
 	 */	
 	private ConcurrentLinkedHashMap<UUID, Object> terminated;
 	
@@ -340,7 +340,7 @@ public class DistributedTermination implements Learner, UnicastLearner {
 			}
 
 			/*
-			 * We have to garbage collect at the server ASAP, because concurrent transactions can only
+			 * We have to garbage collect at the server ASAP, because concurrent transaction can only
 			 * proceed after garbage collecting the current delivered transaction.
 			 */
 			garbageCollectJessyReplica(msg);
@@ -607,8 +607,8 @@ public class DistributedTermination implements Learner, UnicastLearner {
 				if (!jessy.getConsistency().applyingTransactionCommute() && voteSender.get() && voteReceiver.get())
 				{
 					/*
-					 * When applying transactions to the data-store does not commute, instead of waiting in this thread
-					 * until the condition holds, we add the transaction to a queue, return right away, and only ONE thread applies the transactions in FIFO order.
+					 * When applying transaction to the data-store does not commute, instead of waiting in this thread
+					 * until the condition holds, we add the transaction to a queue, return right away, and only ONE thread applies the transaction in FIFO order.
 					 * According to measurements, when update ratio is high, this solution improves the performance significantly.
 					 * 
 					 * Should be here in case this transaction modifying an object replicated here: NMSI-GMUVector, SI, PSI, US

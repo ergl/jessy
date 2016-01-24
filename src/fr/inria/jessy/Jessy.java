@@ -207,7 +207,7 @@ public abstract class Jessy {
 				throw new NullPointerException("Transaction has not been started");
 			}
 
-			if (ConstantPool.CHECK_IF_HAS_BEEN_READ)
+			if (ConstantPool.CHECK_IF_HAS_BEEN_WRITTEN)
 				entity = executionHistory.getWriteEntity(keyValue);
 
 			// we first check it this entity has been updated in this transaction
@@ -216,14 +216,13 @@ public abstract class Jessy {
 
 				// if the entity has not been updated, we check if it has been read
 				// in the same transaction before.
-				if (ConstantPool.CHECK_IF_HAS_BEEN_WRITTEN)
+				if (ConstantPool.CHECK_IF_HAS_BEEN_READ)
 					entity = executionHistory.getReadEntity(keyValue);
 
 				if (entity == null) {
 
 					short retryTimes = 0;
-					while (retryTimes < ConstantPool.JESSY_READ_RETRY_TIMES
-							&& entity == null) {
+					while (retryTimes < ConstantPool.JESSY_READ_RETRY_TIMES && entity == null) {
 
 						if (DebuggingFlag.JESSY)
 							logger.debug("Calling performRead Operation on " + keyValue);
