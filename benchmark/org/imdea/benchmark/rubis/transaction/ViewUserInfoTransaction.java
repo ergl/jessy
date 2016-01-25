@@ -21,7 +21,6 @@ public class ViewUserInfoTransaction extends AbsRUBiSTransaction {
     public ExecutionHistory execute() {
         try {
             UserEntity user = readEntity(users, mUserId);
-            System.out.println(user);
 
             if (user != null) {
                 IndexEntity commentsIndex = readIndexFor(comments.to_user_id, mUserId);
@@ -33,7 +32,8 @@ public class ViewUserInfoTransaction extends AbsRUBiSTransaction {
             }
 
             return commitTransaction();
-        } catch (Exception ignored) {
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
         return null;

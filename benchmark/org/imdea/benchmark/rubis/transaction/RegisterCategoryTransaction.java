@@ -28,8 +28,8 @@ public class RegisterCategoryTransaction extends AbsRUBiSTransaction {
             create(mCategory);
             createNeededIndexEntities();
             return commitTransaction();
-        } catch (Exception ignored) {
-            ignored.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
         return null;
