@@ -27,12 +27,12 @@ public class RUBiSClient {
     private Sequence mUsersSequence = new Sequence();
 
     public RUBiSClient() {
-    	try {
-    		mJessy = DistributedJessy.getInstance();
-    		mJessy.addEntity(AbsRUBiSEntity.class);
-    	} catch (Exception e) {
-    		e.printStackTrace();
-    	}
+        try {
+            mJessy = DistributedJessy.getInstance();
+            mJessy.addEntity(AbsRUBiSEntity.class);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public int aboutMe(long userId) {
@@ -145,7 +145,8 @@ public class RUBiSClient {
 
     public int storeBuyNow(long buyerId, long itemId, int qty) {
         try {
-            StoreBuyNowTransaction trans = new StoreBuyNowTransaction(mJessy, mBuyNowSequence.next(), buyerId, itemId, qty,
+            StoreBuyNowTransaction trans = new StoreBuyNowTransaction(mJessy, mBuyNowSequence.next(), buyerId,
+                    itemId, qty,
                     new Date());
             return executeTransaction(trans);
         } catch (Exception e) {

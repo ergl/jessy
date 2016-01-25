@@ -29,7 +29,7 @@ public class RegisterUserTransaction extends AbsRUBiSTransaction {
         // TODO: This sucks. For less spaghetti code index entities should be created on the fly, when needed, but the
         // TODO: actual code of Jessy doesn't allow this: reading a non-existent entity will increase the fail read
         // TODO: count (after retrying 10 times) and a lot of code should be changed in order to avoid this.
-    	long id = mUser.getId();
+        long id = mUser.getId();
         createIndexFor(bids.user_id, id);
         createIndexFor(buy_now.buyer_id, id);
         createIndexFor(comments.from_user_id, id);
@@ -43,16 +43,16 @@ public class RegisterUserTransaction extends AbsRUBiSTransaction {
     @Override
     public ExecutionHistory execute() {
         try {
-        	IndexEntity nickIndex = null;
-        	
+            IndexEntity nickIndex = null;
+
             // TODO: Same problem here, if the nickname does not exist (which is very likely in the benchmark) Jessy
             // TODO: will try to read the index 10 times.
-        	try {
-        		nickIndex = readIndexFor(users.nickname, mUser.getNickname());
-        	} catch (UnaccessibleIndexException ignored) {
-        		// TODO: In the actual implementation when the index does not exist (i.e. the nickname is not in the
-        		// TODO: database) an UnaccessibleIndexException is thrown. So nickIndex remains null.
-        	}
+            try {
+                nickIndex = readIndexFor(users.nickname, mUser.getNickname());
+            } catch (UnaccessibleIndexException ignored) {
+                // TODO: In the actual implementation when the index does not exist (i.e. the nickname is not in the
+                // TODO: database) an UnaccessibleIndexException is thrown. So nickIndex remains null.
+            }
 
             if (nickIndex == null || nickIndex.getPointers().size() == 0) {
                 create(mUser);
@@ -62,7 +62,7 @@ public class RegisterUserTransaction extends AbsRUBiSTransaction {
 
             return commitTransaction();
         } catch (Exception e) {
-        	e.printStackTrace();
+            e.printStackTrace();
         }
 
         return null;

@@ -29,7 +29,7 @@ public class RegisterRegionTransaction extends AbsRUBiSTransaction {
             createNeededIndexEntities();
             return commitTransaction();
         } catch (Exception ignored) {
-        	ignored.printStackTrace();
+            ignored.printStackTrace();
         }
 
         return null;

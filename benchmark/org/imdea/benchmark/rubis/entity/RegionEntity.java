@@ -47,7 +47,7 @@ public class RegionEntity extends AbsTableEntity implements Externalizable {
 
     private long mId;
     private String mName;
-    
+
     public RegionEntity() {
     }
 
@@ -56,7 +56,7 @@ public class RegionEntity extends AbsTableEntity implements Externalizable {
         mId = id;
         mName = name;
     }
-    
+
     @Override
     public Object clone() {
         RegionEntity entity = (RegionEntity) super.clone();

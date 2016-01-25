@@ -15,8 +15,8 @@ import java.util.List;
 
 @Entity
 public class IndexEntity extends AbsIndexEntity {
-	private static final long serialVersionUID = JESSY_MID;
-	
+    private static final long serialVersionUID = JESSY_MID;
+
     public static class Editor implements AbsRUBiSEntity.Editor {
         private String mId;
         private ArrayList<Long> mPointers = new ArrayList<>();
@@ -26,14 +26,14 @@ public class IndexEntity extends AbsIndexEntity {
             mPointers.addAll(source.getPointers());
         }
 
-        private IndexEntity done() {
-            mPointers.trimToSize();
-            return new IndexEntity(mId, mPointers);
-        }
-
         public Editor addPointer(long id) {
             mPointers.add(id);
             return this;
+        }
+
+        private IndexEntity done() {
+            mPointers.trimToSize();
+            return new IndexEntity(mId, mPointers);
         }
 
         public Editor setId(String id) {
@@ -79,8 +79,8 @@ public class IndexEntity extends AbsIndexEntity {
         return mPointers;
     }
 
-	@Override
-	@SuppressWarnings("unchecked")
+    @Override
+    @SuppressWarnings("unchecked")
     public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
         super.readExternal(in);
         mId = (String) in.readObject();

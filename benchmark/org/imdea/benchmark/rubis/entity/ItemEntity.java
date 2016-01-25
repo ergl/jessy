@@ -133,13 +133,13 @@ public class ItemEntity extends AbsTableEntity {
     private float mReservePrice;
     private long mSeller;
     private Date mStartDate;
-    
+
     public ItemEntity() {
     }
 
     public ItemEntity(long id, String name, String description, float initialPrice, int quantity, float reservePrice,
                       float buyNow, int nbOfBids, float maxBid, Date startDate, Date endDate, long seller, long
-                      category) {
+                              category) {
         super(items, id);
 
         mId = id;
@@ -156,24 +156,24 @@ public class ItemEntity extends AbsTableEntity {
         mSeller = seller;
         mCategory = category;
     }
-    
+
     @Override
     public Object clone() {
-    	ItemEntity entity = (ItemEntity) super.clone();
-    	entity.mId = mId;
-    	entity.mName = mName;
-    	entity.mDescription = mDescription;
-    	entity.mInitialPrice = mInitialPrice;
-    	entity.mQuantity = mQuantity;
-    	entity.mReservePrice = mReservePrice;
-    	entity.mBuyNow = mBuyNow;
-    	entity.mNbOfBids = mNbOfBids;
-    	entity.mMaxBid = mMaxBid;
-    	entity.mStartDate = (Date) mStartDate.clone();
-    	entity.mEndDate = (Date) mEndDate.clone();
-    	entity.mSeller = mSeller;
-    	entity.mCategory = mCategory;
-    	return entity;
+        ItemEntity entity = (ItemEntity) super.clone();
+        entity.mId = mId;
+        entity.mName = mName;
+        entity.mDescription = mDescription;
+        entity.mInitialPrice = mInitialPrice;
+        entity.mQuantity = mQuantity;
+        entity.mReservePrice = mReservePrice;
+        entity.mBuyNow = mBuyNow;
+        entity.mNbOfBids = mNbOfBids;
+        entity.mMaxBid = mMaxBid;
+        entity.mStartDate = (Date) mStartDate.clone();
+        entity.mEndDate = (Date) mEndDate.clone();
+        entity.mSeller = mSeller;
+        entity.mCategory = mCategory;
+        return entity;
     }
 
     public Editor edit() {

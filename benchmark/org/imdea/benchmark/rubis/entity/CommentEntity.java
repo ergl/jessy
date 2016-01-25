@@ -84,7 +84,7 @@ public class CommentEntity extends AbsTableEntity {
     private long mItemId;
     private int mRating;
     private long mToUserId;
-    
+
     public CommentEntity() {
     }
 
@@ -99,18 +99,18 @@ public class CommentEntity extends AbsTableEntity {
         mDate = date;
         mComment = comment;
     }
-    
+
     @Override
     public Object clone() {
-    	CommentEntity entity = (CommentEntity) super.clone();
-    	entity.mId = mId;
-    	entity.mFromUserId = mFromUserId;
-    	entity.mToUserId = mToUserId;
-    	entity.mItemId = mItemId;
-    	entity.mRating = mRating;
-    	entity.mDate = (Date) mDate.clone();
-    	entity.mComment = mComment;
-    	return entity;
+        CommentEntity entity = (CommentEntity) super.clone();
+        entity.mId = mId;
+        entity.mFromUserId = mFromUserId;
+        entity.mToUserId = mToUserId;
+        entity.mItemId = mItemId;
+        entity.mRating = mRating;
+        entity.mDate = (Date) mDate.clone();
+        entity.mComment = mComment;
+        return entity;
     }
 
     public Editor edit() {

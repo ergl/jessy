@@ -68,7 +68,7 @@ public class BuyNowEntity extends AbsTableEntity {
     private long mId;
     private long mItemId;
     private int mQty;
-    
+
     public BuyNowEntity() {
     }
 
@@ -81,16 +81,16 @@ public class BuyNowEntity extends AbsTableEntity {
         mQty = qty;
         mDate = date;
     }
-    
+
     @Override
     public Object clone() {
-    	BuyNowEntity entity = (BuyNowEntity) super.clone();
-    	entity.mId = mId;
-    	entity.mBuyerId = mBuyerId;
-    	entity.mItemId = mItemId;
-    	entity.mQty = mQty;
-    	entity.mDate = (Date) mDate.clone();
-    	return entity;
+        BuyNowEntity entity = (BuyNowEntity) super.clone();
+        entity.mId = mId;
+        entity.mBuyerId = mBuyerId;
+        entity.mItemId = mItemId;
+        entity.mQty = mQty;
+        entity.mDate = (Date) mDate.clone();
+        return entity;
     }
 
     public Editor edit() {

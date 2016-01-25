@@ -85,7 +85,7 @@ public class BidEntity extends AbsTableEntity implements Externalizable {
     private float mMaxBid;
     private int mQty;
     private long mUserId;
-    
+
     public BidEntity() {
     }
 
@@ -100,7 +100,7 @@ public class BidEntity extends AbsTableEntity implements Externalizable {
         mMaxBid = maxBid;
         mDate = date;
     }
-    
+
     @Override
     public Object clone() {
         BidEntity entity = (BidEntity) super.clone();

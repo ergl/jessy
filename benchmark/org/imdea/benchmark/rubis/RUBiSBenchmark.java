@@ -9,44 +9,44 @@ import java.util.concurrent.ThreadLocalRandom;
 import org.imdea.benchmark.rubis.util.TextUtils;
 
 public class RUBiSBenchmark {
+    private static final float BIDS_MAX_BID = 200.0f;
+    private static final float BIDS_MAX_MAX_BID = 200.0f;
+    private static final float BIDS_MIN_BID = 10.0f;
+    private static final float BIDS_MIN_MAX_BID = 50.0f;
+
+    private static final int CATEGORY_NAME_MAX_LENGTH = 16;
+    private static final int CATEGORY_NAME_MIN_LENGTH = 8;
+
+    private static final int COMMENT_COMMENT_MAX_LENGTH = 500;
+    private static final int COMMENT_COMMENT_MIN_LENGTH = 100;
+
     private static final int INITIAL_CATEGORIES = 200;
     private static final int INITIAL_REGIONS = 200;
     private static final int INITIAL_USERS = 100;
     private static final int INITIAL_ITEMS = INITIAL_USERS * 2;
 
-    private static final float BIDS_MIN_BID = 10.0f;
-    private static final float BIDS_MAX_BID = 200.0f;
-    private static final float BIDS_MIN_MAX_BID = 50.0f;
-    private static final float BIDS_MAX_MAX_BID = 200.0f;
-
-    private static final int CATEGORY_NAME_MIN_LENGTH = 8;
-    private static final int CATEGORY_NAME_MAX_LENGTH = 16;
-
-    private static final int COMMENT_COMMENT_MIN_LENGTH = 100;
-    private static final int COMMENT_COMMENT_MAX_LENGTH = 500;
-
-    private static final int ITEM_DESC_MIN_LENGTH = 100;
     private static final int ITEM_DESC_MAX_LENGTH = 500;
-    private static final int ITEM_NAME_MIN_LENGTH = 8;
-    private static final int ITEM_NAME_MAX_LENGTH = 24;
+    private static final int ITEM_DESC_MIN_LENGTH = 100;
     private static final float ITEM_MAX_BUY_NOW = 200.0f;
     private static final float ITEM_MAX_PRICE = 100.0f;
     private static final int ITEM_MAX_QUANTITY = 100;
     private static final float ITEM_MAX_RESERVE_PRICE = 100.0f;
+    private static final int ITEM_NAME_MAX_LENGTH = 24;
+    private static final int ITEM_NAME_MIN_LENGTH = 8;
 
-    private static final int REGION_NAME_MIN_LENGTH = 8;
     private static final int REGION_NAME_MAX_LENGTH = 16;
+    private static final int REGION_NAME_MIN_LENGTH = 8;
 
-    private static final int USER_EMAIL_MIN_LENGTH = 10;
     private static final int USER_EMAIL_MAX_LENGTH = 20;
-    private static final int USER_FIRSTNAME_MIN_LENGTH = 5;
+    private static final int USER_EMAIL_MIN_LENGTH = 10;
     private static final int USER_FIRSTNAME_MAX_LENGTH = 10;
-    private static final int USER_LASTNAME_MIN_LENGTH = 5;
+    private static final int USER_FIRSTNAME_MIN_LENGTH = 5;
     private static final int USER_LASTNAME_MAX_LENGTH = 10;
-    private static final int USER_NICKNAME_MIN_LENGTH = 8;
+    private static final int USER_LASTNAME_MIN_LENGTH = 5;
     private static final int USER_NICKNAME_MAX_LENGTH = 16;
-    private static final int USER_PASSWORD_MIN_LENGTH = 8;
+    private static final int USER_NICKNAME_MIN_LENGTH = 8;
     private static final int USER_PASSWORD_MAX_LENGTH = 16;
+    private static final int USER_PASSWORD_MIN_LENGTH = 8;
 
     private RUBiSClient mClient;
 
@@ -61,13 +61,13 @@ public class RUBiSBenchmark {
     private void init() {
         for (int i = 0; i < INITIAL_CATEGORIES; i++)
             registerRandomCategory();
-        
-		for (int i = 0; i < INITIAL_REGIONS; i++)
-			registerRandomRegion();
 
-		for (int i = 0; i < INITIAL_USERS; i++)
-			registerRandomUser();
-		
+        for (int i = 0; i < INITIAL_REGIONS; i++)
+            registerRandomRegion();
+
+        for (int i = 0; i < INITIAL_USERS; i++)
+            registerRandomUser();
+
         for (int i = 0; i < INITIAL_ITEMS; i++)
             registerRandomItem();
     }
@@ -90,6 +90,12 @@ public class RUBiSBenchmark {
         mClient.searchItemByRegion(regionId);
     }
 
+    private void issueRandomUserInfo() {
+        Random rand = new Random();
+        long userId = rand.nextLong() % INITIAL_USERS;
+        mClient.viewUserInfo(userId);
+    }
+
     private void issueRandomViewBidHistory() {
         Random rand = new Random();
         long itemId = rand.nextLong() % INITIAL_ITEMS;
@@ -100,12 +106,6 @@ public class RUBiSBenchmark {
         Random rand = new Random();
         long itemId = rand.nextLong() % INITIAL_ITEMS;
         mClient.viewItem(itemId);
-    }
-
-    private void issueRandomUserInfo() {
-        Random rand = new Random();
-        long userId = rand.nextLong() % INITIAL_USERS;
-        mClient.viewUserInfo(userId);
     }
 
     private void registerRandomBid() {

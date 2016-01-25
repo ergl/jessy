@@ -5,20 +5,6 @@ import fr.inria.jessy.transaction.Transaction;
 import org.imdea.benchmark.rubis.entity.AbsRUBiSEntity;
 
 public class Entities {
-    public static class LookupNameCreator<E extends AbsRUBiSEntity> {
-        private Class<E> mEntityClass;
-        private String mTableName;
-
-        LookupNameCreator(Class<E> clazz, String tableName) {
-            mEntityClass = clazz;
-            mTableName = tableName;
-        }
-
-        public EntityReader<E> withKey(long id) {
-            return new EntityReader<>(mEntityClass, "@" + mTableName + "~id#" + id);
-        }
-    }
-
     public static class EntityReader<E extends AbsRUBiSEntity> {
         private Class<E> mEntityClass;
         private String mId;
@@ -38,6 +24,20 @@ public class Entities {
             } catch (Exception e) {
                 throw new UnaccessibleEntityException();
             }
+        }
+    }
+
+    public static class LookupNameCreator<E extends AbsRUBiSEntity> {
+        private Class<E> mEntityClass;
+        private String mTableName;
+
+        LookupNameCreator(Class<E> clazz, String tableName) {
+            mEntityClass = clazz;
+            mTableName = tableName;
+        }
+
+        public EntityReader<E> withKey(long id) {
+            return new EntityReader<>(mEntityClass, "@" + mTableName + "~id#" + id);
         }
     }
 

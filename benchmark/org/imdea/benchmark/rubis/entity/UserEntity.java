@@ -109,7 +109,7 @@ public class UserEntity extends AbsTableEntity {
     private String mPassword;
     private int mRating;
     private long mRegion;
-    
+
     public UserEntity() {
     }
 
@@ -128,25 +128,29 @@ public class UserEntity extends AbsTableEntity {
         mCreationDate = creationDate;
         mRegion = region;
     }
-    
+
     @Override
     public Object clone() {
-    	UserEntity entity = (UserEntity) super.clone();
-    	entity.mId = mId;
-    	entity.mFirstname = mFirstname;
-    	entity.mLastname = mLastname;
-    	entity.mNickname = mNickname;
-    	entity.mPassword = mPassword;
-    	entity.mEmail = mEmail;
-    	entity.mRating = mRating;
-    	entity.mBalance = mBalance;
-    	entity.mCreationDate = (Date) mCreationDate.clone();
-    	entity.mRegion = mRegion;
-    	return entity;
+        UserEntity entity = (UserEntity) super.clone();
+        entity.mId = mId;
+        entity.mFirstname = mFirstname;
+        entity.mLastname = mLastname;
+        entity.mNickname = mNickname;
+        entity.mPassword = mPassword;
+        entity.mEmail = mEmail;
+        entity.mRating = mRating;
+        entity.mBalance = mBalance;
+        entity.mCreationDate = (Date) mCreationDate.clone();
+        entity.mRegion = mRegion;
+        return entity;
     }
 
     public Editor edit() {
         return new Editor(this);
+    }
+
+    public float getBalance() {
+        return mBalance;
     }
 
     public Date getCreationDate() {
@@ -183,10 +187,6 @@ public class UserEntity extends AbsTableEntity {
 
     public long getRegion() {
         return mRegion;
-    }
-
-    public float getBalance() {
-        return mBalance;
     }
 
     @Override

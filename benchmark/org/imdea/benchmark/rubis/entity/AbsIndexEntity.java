@@ -5,10 +5,10 @@ import java.io.ObjectInput;
 import java.io.ObjectOutput;
 
 public abstract class AbsIndexEntity extends AbsRUBiSEntity {
-	public AbsIndexEntity() {
-		super("");
-	}
-	
+    public AbsIndexEntity() {
+        super("");
+    }
+
     public AbsIndexEntity(String name) {
         super(name);
     }

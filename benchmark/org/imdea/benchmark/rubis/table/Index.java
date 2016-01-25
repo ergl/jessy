@@ -7,22 +7,6 @@ import java.util.ArrayList;
 import org.imdea.benchmark.rubis.entity.IndexEntity;
 
 public class Index {
-    public static class LookupNameCreator {
-        private Index mIndex;
-
-        LookupNameCreator(Index index) {
-            mIndex = index;
-        }
-
-        public IndexReader lookFor(long key) {
-            return lookFor(Long.toString(key));
-        }
-
-        public IndexReader lookFor(String value) {
-            return new IndexReader("@" + mIndex.mTable.getName() + "~" + mIndex.mAttr + "#" + value);
-        }
-    }
-
     public static class IndexReader {
         private String mIndexName;
 
@@ -48,6 +32,21 @@ public class Index {
         }
     }
 
+    public static class LookupNameCreator {
+        private Index mIndex;
+
+        LookupNameCreator(Index index) {
+            mIndex = index;
+        }
+
+        public IndexReader lookFor(long key) {
+            return lookFor(Long.toString(key));
+        }
+
+        public IndexReader lookFor(String value) {
+            return new IndexReader("@" + mIndex.mTable.getName() + "~" + mIndex.mAttr + "#" + value);
+        }
+    }
     private String mAttr;
     private AbsTable mTable;
 
