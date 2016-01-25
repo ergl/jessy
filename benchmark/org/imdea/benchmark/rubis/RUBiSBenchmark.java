@@ -74,44 +74,44 @@ public class RUBiSBenchmark {
 
     private void issueRandomAboutMe() {
         Random rand = new Random();
-        long userId = rand.nextLong() % INITIAL_USERS;
+        long userId = Math.abs(rand.nextLong()) % INITIAL_USERS;
         mClient.aboutMe(userId);
     }
 
     private void issueRandomSearchItemsByCategory() {
         Random rand = new Random();
-        long categoryId = rand.nextLong() % INITIAL_CATEGORIES;
+        long categoryId = Math.abs(rand.nextLong()) % INITIAL_CATEGORIES;
         mClient.searchItemByCategory(categoryId);
     }
 
     private void issueRandomSearchItemsByRegion() {
         Random rand = new Random();
-        long regionId = rand.nextLong() % INITIAL_REGIONS;
+        long regionId = Math.abs(rand.nextLong()) % INITIAL_REGIONS;
         mClient.searchItemByRegion(regionId);
     }
 
     private void issueRandomUserInfo() {
         Random rand = new Random();
-        long userId = rand.nextLong() % INITIAL_USERS;
+        long userId = Math.abs(rand.nextLong()) % INITIAL_USERS;
         mClient.viewUserInfo(userId);
     }
 
     private void issueRandomViewBidHistory() {
         Random rand = new Random();
-        long itemId = rand.nextLong() % INITIAL_ITEMS;
+        long itemId = Math.abs(rand.nextLong()) % INITIAL_ITEMS;
         mClient.viewBidHistory(itemId);
     }
 
     private void issueRandomViewItem() {
         Random rand = new Random();
-        long itemId = rand.nextLong() % INITIAL_ITEMS;
+        long itemId = Math.abs(rand.nextLong()) % INITIAL_ITEMS;
         mClient.viewItem(itemId);
     }
 
     private void registerRandomBid() {
         Random rand = new Random();
-        long userId = rand.nextLong() % INITIAL_USERS;
-        long itemId = rand.nextLong() % INITIAL_ITEMS;
+        long userId = Math.abs(rand.nextLong()) % INITIAL_USERS;
+        long itemId = Math.abs(rand.nextLong()) % INITIAL_ITEMS;
         int qty = 1;
         float bid = rand.nextFloat() * (BIDS_MAX_BID - BIDS_MIN_BID) + BIDS_MIN_BID;
         float maxBid = rand.nextFloat() * (BIDS_MAX_MAX_BID - BIDS_MAX_MAX_BID) + BIDS_MIN_MAX_BID;
@@ -120,8 +120,8 @@ public class RUBiSBenchmark {
 
     private void registerRandomBuyNow() {
         Random rand = new Random();
-        long buyerId = rand.nextLong() % INITIAL_USERS;
-        long itemId = rand.nextLong() % INITIAL_ITEMS;
+        long buyerId = Math.abs(rand.nextLong()) % INITIAL_USERS;
+        long itemId = Math.abs(rand.nextLong()) % INITIAL_ITEMS;
         int qty = 1;
         mClient.storeBuyNow(buyerId, itemId, qty);
     }
@@ -133,9 +133,9 @@ public class RUBiSBenchmark {
 
     private void registerRandomComment() {
         Random rand = new Random();
-        long fromUserId = rand.nextLong() % INITIAL_USERS;
-        long toUserId = rand.nextLong() % INITIAL_USERS;
-        long itemId = rand.nextLong() % INITIAL_ITEMS;
+        long fromUserId = Math.abs(rand.nextLong()) % INITIAL_USERS;
+        long toUserId = Math.abs(rand.nextLong()) % INITIAL_USERS;
+        long itemId = Math.abs(rand.nextLong()) % INITIAL_ITEMS;
         int rating = rand.nextInt(6);
         String comment = TextUtils.randomString(COMMENT_COMMENT_MIN_LENGTH, COMMENT_COMMENT_MAX_LENGTH);
         mClient.storeComment(fromUserId, toUserId, itemId, rating, comment);
@@ -177,8 +177,8 @@ public class RUBiSBenchmark {
         mClient.connect();
         init();
         workload(iters);
-        mClient.end();
-        System.out.println("Hello");
+        //mClient.end();
+        System.out.println("Helloz");
     }
 
     private void workload(final int iters) {
