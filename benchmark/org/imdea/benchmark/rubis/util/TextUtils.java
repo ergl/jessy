@@ -1,16 +1,17 @@
 package org.imdea.benchmark.rubis.util;
 
 import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class TextUtils {
     private static final String AVAILABLE_CHARS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
-    private static Random rand = new Random();
 
     public static String randomString(int length) {
         return randomString(length, length);
     }
 
     public static String randomString(int minLength, int maxLength) {
+        Random rand = ThreadLocalRandom.current();
         int length = rand.nextInt(maxLength - minLength + 1) + minLength;
         char[] charArray = new char[length];
 
