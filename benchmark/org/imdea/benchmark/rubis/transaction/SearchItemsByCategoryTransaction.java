@@ -26,7 +26,8 @@ public class SearchItemsByCategoryTransaction extends AbsRUBiSTransaction {
             }
 
             return commitTransaction();
-        } catch (Exception ignored) {
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
         return null;

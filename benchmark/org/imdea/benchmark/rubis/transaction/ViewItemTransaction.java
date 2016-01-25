@@ -12,7 +12,7 @@ public class ViewItemTransaction extends AbsRUBiSTransaction {
     private long mItemId;
 
     public ViewItemTransaction(Jessy jessy, long itemId) throws Exception {
-        super(jessy, 1, 0, 0);
+        super(jessy);
         mItemId = itemId;
     }
 
@@ -27,6 +27,7 @@ public class ViewItemTransaction extends AbsRUBiSTransaction {
 
             return commitTransaction();
         } catch (Exception e) {
+            e.printStackTrace();
         }
 
         return null;

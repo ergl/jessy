@@ -11,7 +11,7 @@ public class RegisterCategoryTransaction extends AbsRUBiSTransaction {
     private CategoryEntity mCategory;
 
     public RegisterCategoryTransaction(Jessy jessy, long id, String name) throws Exception {
-        super(jessy, 0, 0, 2);
+        super(jessy);
         mCategory = new CategoryEntity(id, name);
     }
 

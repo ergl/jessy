@@ -33,7 +33,8 @@ public class StoreBidTransaction extends AbsRUBiSTransaction {
             updateIndexes();
 
             return commitTransaction();
-        } catch (Exception ignored) {
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
         return null;

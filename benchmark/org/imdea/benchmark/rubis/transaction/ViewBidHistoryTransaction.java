@@ -33,7 +33,8 @@ public class ViewBidHistoryTransaction extends AbsRUBiSTransaction {
             }
 
             return commitTransaction();
-        } catch (Exception ignored) {
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
         return null;
