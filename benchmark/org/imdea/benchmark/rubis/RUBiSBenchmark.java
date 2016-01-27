@@ -232,7 +232,7 @@ public class RUBiSBenchmark {
                                 mAborted++;
 
                             if ((mCommitted + mAborted) % 10 == 0)
-                                System.out.println(mCommitted + "/" + mAborted + "]");
+                                System.out.println("[" + mCommitted + "/" + mAborted + "]");
                         }
                     }
                 }
