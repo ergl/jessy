@@ -2,9 +2,7 @@ package org.imdea.benchmark.rubis;
 
 import java.util.Date;
 import java.util.Random;
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.*;
 
 import org.imdea.benchmark.rubis.util.TextUtils;
 
@@ -181,13 +179,13 @@ public class RUBiSBenchmark {
         mClient.connect();
         init();
         workload(iters);
-        //mClient.end();
+        mClient.end();
     }
 
     private void workload(final int iters) {
         int physicalThreads = Runtime.getRuntime().availableProcessors() + 1;
-        int virtualThreads = 2;
-        Executor executor = Executors.newFixedThreadPool(physicalThreads);
+        int virtualThreads = 4;
+        ExecutorService executor = Executors.newFixedThreadPool(physicalThreads);
 
         for (int i = 0; i < virtualThreads; i++) {
             executor.execute(new Runnable() {
@@ -239,6 +237,14 @@ public class RUBiSBenchmark {
                     }
                 }
             });
+        }
+
+        executor.shutdown();
+
+        try {
+            executor.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
     }
 }
