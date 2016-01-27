@@ -1,5 +1,7 @@
 package fr.inria.jessy.consistency;
 
+import static fr.inria.jessy.transaction.ExecutionHistory.TransactionType.READONLY_TRANSACTION;
+
 import fr.inria.jessy.communication.JessyGroupManager;
 import fr.inria.jessy.store.DataStore;
 import fr.inria.jessy.transaction.ExecutionHistory;
@@ -86,24 +88,24 @@ public abstract class SPSI extends Consistency {
             // TODO: Thinking about it, probably it is not the case, i.e. blind writes.
 
             // The two transaction's write sets should be disjoint.
-//            if (CollectionUtils.isIntersectingWith(h1.getWriteSet().getKeys(), h2.getWriteSet().getKeys()))
-//                return false;
-//
-//            // Check h1's read set against h2's write set.
-//            if (CollectionUtils.isIntersectingWith(h1.getReadSet().getKeys(), h2.getWriteSet().getKeys()))
-//                return false;
-//
-//            // Then, do the opposite: check h2's read set against h1's write set.
-//            if (CollectionUtils.isIntersectingWith(h2.getReadSet().getKeys(), h1.getWriteSet().getKeys()))
-//                return false;
-//
-//            return true;
+            if (CollectionUtils.isIntersectingWith(h1.getWriteSet().getKeys(), h2.getWriteSet().getKeys()))
+                return false;
+
+            // Check h1's read set against h2's write set.
+            if (CollectionUtils.isIntersectingWith(h1.getReadSet().getKeys(), h2.getWriteSet().getKeys()))
+                return false;
+
+            // Then, do the opposite: check h2's read set against h1's write set.
+            if (CollectionUtils.isIntersectingWith(h2.getReadSet().getKeys(), h1.getWriteSet().getKeys()))
+                return false;
+
+            return true;
 
             // TODO: The stuff above works (I hope) if the group is composed by only one replica. A thing like this,
             // TODO: if (manager.getMyGroup().size() > 1) return false;
             // TODO: may be more efficient. This may be what the first TODO comment was about.
             // Always return false to guarantee a global order within replicas on certification.
-            return false;
+            //return false;
         } else {
             // If a transaction is not marked as serializable (and then it executes under PSI), it commutes with
             // another transaction only if the two write sets are disjoint.
@@ -135,19 +137,20 @@ public abstract class SPSI extends Consistency {
         // TODO: Also,
         // TODO: if (manager.getMyGroup().size() > 1) return false;
 
-        // The two write sets should be disjoint.
-        if (CollectionUtils.isIntersectingWith(k1.writeKeys, k2.writeKeys))
-            return false;
-
-        // Check k1's read set against k2's write set.
-        if (CollectionUtils.isIntersectingWith(k1.readKeys, k2.writeKeys))
-            return false;
-
-        // Then, do the opposite: check k2's read set against k1's write set.
-        if (CollectionUtils.isIntersectingWith(k2.readKeys, k1.writeKeys))
-            return false;
-
-        return true;
+//        // The two write sets should be disjoint.
+//        if (CollectionUtils.isIntersectingWith(k1.writeKeys, k2.writeKeys))
+//            return false;
+//
+//        // Check k1's read set against k2's write set.
+//        if (CollectionUtils.isIntersectingWith(k1.readKeys, k2.writeKeys))
+//            return false;
+//
+//        // Then, do the opposite: check k2's read set against k1's write set.
+//        if (CollectionUtils.isIntersectingWith(k2.readKeys, k1.writeKeys))
+//            return false;
+//
+//        return true;
+        return false;
     }
 
     /**
@@ -174,16 +177,29 @@ public abstract class SPSI extends Consistency {
             // If a transaction is marked as serializable, its concerning keys set is the union of keys of read set,
             // write set, and create set.
 
-            if (target != ConcernedKeysTarget.RECEIVE_VOTES)
-                concerningKeys.addAll(h.getReadSet().getKeys());
+            if (target != ConcernedKeysTarget.RECEIVE_VOTES) {
+                if (h.getReadSet() != null)
+                    concerningKeys.addAll(h.getReadSet().getKeys());
+            }
 
-            concerningKeys.addAll(h.getWriteSet().getKeys());
-            concerningKeys.addAll(h.getCreateSet().getKeys());
+            if (h.getWriteSet() != null)
+                concerningKeys.addAll(h.getWriteSet().getKeys());
+
+            if (h.getCreateSet() != null)
+                concerningKeys.addAll(h.getCreateSet().getKeys());
+
+            Set<String> destGroups = manager.getPartitioner().resolveNames(concerningKeys);
+
+            if (destGroups.size() == 1 && h.getTransactionType() == READONLY_TRANSACTION)
+                concerningKeys.clear();
         } else {
             // If a transaction is not marked as serializable (and then it executes under PSI), its concerning keys
             // set is the union of write and create sets only.
-            concerningKeys.addAll(h.getWriteSet().getKeys());
-            concerningKeys.addAll(h.getCreateSet().getKeys());
+            if (h.getWriteSet() != null)
+                concerningKeys.addAll(h.getWriteSet().getKeys());
+
+            if (h.getCreateSet() != null)
+                concerningKeys.addAll(h.getCreateSet().getKeys());
         }
 
         return concerningKeys;
@@ -196,8 +212,6 @@ public abstract class SPSI extends Consistency {
      * @return true if the transaction's level is SER.
      */
     public boolean isMarkedSerializable(ExecutionHistory history) {
-        // TODO: Extend Transaction and ExecutionHistory classes in order to mark a transaction as SER or PSI.
-        // TODO: Remember to serialize the extras in ExecutionHistory!
         Integer level = (Integer) history.getExtra(LEVEL);
         return level != null && level.equals(SER);
     }

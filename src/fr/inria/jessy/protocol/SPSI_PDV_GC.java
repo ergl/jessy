@@ -1,12 +1,12 @@
 package fr.inria.jessy.protocol;
 
+import static fr.inria.jessy.ConstantPool.*;
 import static fr.inria.jessy.transaction.ExecutionHistory.TransactionType;
 import static fr.inria.jessy.transaction.ExecutionHistory.TransactionType.BLIND_WRITE;
 import static fr.inria.jessy.vector.Vector.CompatibleResult;
 
 import com.googlecode.concurrentlinkedhashmap.ConcurrentLinkedHashMap;
 
-import fr.inria.jessy.ConstantPool;
 import fr.inria.jessy.communication.JessyGroupManager;
 import fr.inria.jessy.communication.message.TerminateTransactionRequestMessage;
 import fr.inria.jessy.consistency.SPSI;
@@ -32,8 +32,7 @@ public class SPSI_PDV_GC extends SPSI {
     static {
         votePiggybackRequired = true;
         receivedVectors = new ConcurrentHashMap<>();
-        // TODO: I think this should be here, but NMSI_PDV_GC doesn't have it
-        // TODO: ConstantPool.PROTOCOL_ATOMIC_COMMIT = ConstantPool.ATOMIC_COMMIT_TYPE.ATOMIC_MULTICAST;
+        PROTOCOL_ATOMIC_COMMIT = ATOMIC_COMMIT_TYPE.ATOMIC_MULTICAST;
     }
 
     public SPSI_PDV_GC(JessyGroupManager m, DataStore s) {
@@ -189,10 +188,12 @@ public class SPSI_PDV_GC extends SPSI {
         PartitionDependenceVector<String> pdv = receivedVectors.get(history.getTransactionHandler().getId());
 
         // Assigning pdv to the entities.
-        for (JessyEntity e : history.getWriteSet().getEntities()) {
-            e.setLocalVector(pdv.clone());
-            e.temporaryObject = null;
-            e.getLocalVector().setSelfKey(manager.getMyGroup().name());
+        if (history.getWriteSet() != null) {
+            for (JessyEntity e : history.getWriteSet().getEntities()) {
+                e.setLocalVector(pdv.clone());
+                e.temporaryObject = null;
+                e.getLocalVector().setSelfKey(manager.getMyGroup().name());
+            }
         }
     }
 
