@@ -88,16 +88,22 @@ public abstract class SPSI extends Consistency {
             // TODO: Thinking about it, probably it is not the case, i.e. blind writes.
 
             // The two transaction's write sets should be disjoint.
-            if (CollectionUtils.isIntersectingWith(h1.getWriteSet().getKeys(), h2.getWriteSet().getKeys()))
-                return false;
+            if (h1.getWriteSet() != null && h2.getWriteSet() != null) {
+                if (CollectionUtils.isIntersectingWith(h1.getWriteSet().getKeys(), h2.getWriteSet().getKeys()))
+                    return false;
+            }
 
             // Check h1's read set against h2's write set.
-            if (CollectionUtils.isIntersectingWith(h1.getReadSet().getKeys(), h2.getWriteSet().getKeys()))
-                return false;
+            if (h1.getReadSet() != null && h2.getWriteSet() != null) {
+                if (CollectionUtils.isIntersectingWith(h1.getReadSet().getKeys(), h2.getWriteSet().getKeys()))
+                    return false;
+            }
 
             // Then, do the opposite: check h2's read set against h1's write set.
-            if (CollectionUtils.isIntersectingWith(h2.getReadSet().getKeys(), h1.getWriteSet().getKeys()))
-                return false;
+            if (h2.getReadSet() != null && h1.getWriteSet() != null) {
+                if (CollectionUtils.isIntersectingWith(h2.getReadSet().getKeys(), h1.getWriteSet().getKeys()))
+                    return false;
+            }
 
             return true;
 
