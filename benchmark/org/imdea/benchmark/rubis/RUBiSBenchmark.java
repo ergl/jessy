@@ -48,7 +48,10 @@ public class RUBiSBenchmark {
     private static final int USER_PASSWORD_MAX_LENGTH = 16;
     private static final int USER_PASSWORD_MIN_LENGTH = 8;
 
+    private int mAborted;
     private RUBiSClient mClient;
+    private int mCommitted;
+    private final Object mLock = new Object();
 
     public RUBiSBenchmark() {
         try {
@@ -72,76 +75,77 @@ public class RUBiSBenchmark {
             registerRandomItem();
     }
 
-    private void issueRandomAboutMe() {
+    private int issueRandomAboutMe() {
         Random rand = new Random();
         long userId = Math.abs(rand.nextLong()) % INITIAL_USERS;
-        mClient.aboutMe(userId);
+        return mClient.aboutMe(userId);
     }
 
-    private void issueRandomSearchItemsByCategory() {
+    private int issueRandomSearchItemsByCategory() {
         Random rand = new Random();
         long categoryId = Math.abs(rand.nextLong()) % INITIAL_CATEGORIES;
-        mClient.searchItemByCategory(categoryId);
+        return mClient.searchItemByCategory(categoryId);
     }
 
-    private void issueRandomSearchItemsByRegion() {
+    private int issueRandomSearchItemsByRegion() {
         Random rand = new Random();
+        long categoryId = Math.abs(rand.nextLong()) % INITIAL_CATEGORIES;
         long regionId = Math.abs(rand.nextLong()) % INITIAL_REGIONS;
-        mClient.searchItemByRegion(regionId);
+        return mClient.searchItemByRegion(regionId, categoryId);
     }
 
-    private void issueRandomUserInfo() {
+    private int issueRandomUserInfo() {
         Random rand = new Random();
         long userId = Math.abs(rand.nextLong()) % INITIAL_USERS;
-        mClient.viewUserInfo(userId);
+        return mClient.viewUserInfo(userId);
     }
 
-    private void issueRandomViewBidHistory() {
+    private int issueRandomViewBidHistory() {
         Random rand = new Random();
         long itemId = Math.abs(rand.nextLong()) % INITIAL_ITEMS;
-        mClient.viewBidHistory(itemId);
+        return  mClient.viewBidHistory(itemId);
     }
 
-    private void issueRandomViewItem() {
+    private int issueRandomViewItem() {
         Random rand = new Random();
         long itemId = Math.abs(rand.nextLong()) % INITIAL_ITEMS;
-        mClient.viewItem(itemId);
+        return mClient.viewItem(itemId);
     }
 
-    private void registerRandomBid() {
+    private int registerRandomBid() {
         Random rand = new Random();
         long userId = Math.abs(rand.nextLong()) % INITIAL_USERS;
         long itemId = Math.abs(rand.nextLong()) % INITIAL_ITEMS;
         int qty = 1;
         float bid = rand.nextFloat() * (BIDS_MAX_BID - BIDS_MIN_BID) + BIDS_MIN_BID;
         float maxBid = rand.nextFloat() * (BIDS_MAX_MAX_BID - BIDS_MAX_MAX_BID) + BIDS_MIN_MAX_BID;
-        mClient.storeBid(userId, itemId, qty, bid, maxBid);
+        return mClient.storeBid(userId, itemId, qty, bid, maxBid);
     }
 
-    private void registerRandomBuyNow() {
+    private int registerRandomBuyNow() {
         Random rand = new Random();
         long buyerId = Math.abs(rand.nextLong()) % INITIAL_USERS;
         long itemId = Math.abs(rand.nextLong()) % INITIAL_ITEMS;
         int qty = 1;
-        mClient.storeBuyNow(buyerId, itemId, qty);
+        return mClient.storeBuyNow(buyerId, itemId, qty);
     }
 
-    private void registerRandomCategory() {
+    private int registerRandomCategory() {
         String name = TextUtils.randomString(CATEGORY_NAME_MIN_LENGTH, CATEGORY_NAME_MAX_LENGTH);
-        mClient.registerCategory(name);
+        return mClient.registerCategory(name);
     }
 
-    private void registerRandomComment() {
+    private int registerRandomComment() {
         Random rand = new Random();
         long fromUserId = Math.abs(rand.nextLong()) % INITIAL_USERS;
         long toUserId = Math.abs(rand.nextLong()) % INITIAL_USERS;
         long itemId = Math.abs(rand.nextLong()) % INITIAL_ITEMS;
         int rating = rand.nextInt(6);
         String comment = TextUtils.randomString(COMMENT_COMMENT_MIN_LENGTH, COMMENT_COMMENT_MAX_LENGTH);
-        mClient.storeComment(fromUserId, toUserId, itemId, rating, comment);
+        return mClient.storeComment(fromUserId, toUserId, itemId, rating, comment);
     }
 
-    private void registerRandomItem() {
+    private int registerRandomItem() {
         Random rand = new Random();
         String name = TextUtils.randomString(ITEM_NAME_MIN_LENGTH, ITEM_NAME_MAX_LENGTH);
         String description = TextUtils.randomString(ITEM_DESC_MIN_LENGTH, ITEM_DESC_MAX_LENGTH);
@@ -153,16 +157,16 @@ public class RUBiSBenchmark {
         Date endDate = new Date(startDate.getTime() + (30l * 24l * 60l * 60l * 1000l));
         long seller = rand.nextInt(INITIAL_USERS);
         long category = rand.nextInt(INITIAL_CATEGORIES);
-        mClient.registerItem(name, description, initialPrice, quantity, reservePrice, buyNow, startDate, endDate,
+        return mClient.registerItem(name, description, initialPrice, quantity, reservePrice, buyNow, startDate, endDate,
                 seller, category);
     }
 
-    private void registerRandomRegion() {
+    private int registerRandomRegion() {
         String name = TextUtils.randomString(REGION_NAME_MIN_LENGTH, REGION_NAME_MAX_LENGTH);
-        mClient.registerRegion(name);
+        return mClient.registerRegion(name);
     }
 
-    private void registerRandomUser() {
+    private int registerRandomUser() {
         Random rand = new Random();
         String firstname = TextUtils.randomString(USER_FIRSTNAME_MIN_LENGTH, USER_FIRSTNAME_MAX_LENGTH);
         String lastname = TextUtils.randomString(USER_LASTNAME_MIN_LENGTH, USER_LASTNAME_MAX_LENGTH);
@@ -170,7 +174,7 @@ public class RUBiSBenchmark {
         String password = TextUtils.randomString(USER_PASSWORD_MIN_LENGTH, USER_PASSWORD_MAX_LENGTH);
         String email = TextUtils.randomString(USER_EMAIL_MIN_LENGTH, USER_EMAIL_MAX_LENGTH);
         long region = rand.nextInt(INITIAL_REGIONS);
-        mClient.registerUser(firstname, lastname, nickname, password, email, region);
+        return mClient.registerUser(firstname, lastname, nickname, password, email, region);
     }
 
     public void start(int iters) {
@@ -178,7 +182,6 @@ public class RUBiSBenchmark {
         init();
         workload(iters);
         //mClient.end();
-        System.out.println("Helloz");
     }
 
     private void workload(final int iters) {
@@ -191,36 +194,47 @@ public class RUBiSBenchmark {
                 @Override
                 public void run() {
                     Random random = ThreadLocalRandom.current();
+                    int outcome = 1;
 
                     for (int i = 0; i < iters; i++) {
                         float choice = random.nextFloat();
 
                         if (choice <= 0.005f) {
-                            registerRandomItem();
+                            outcome = registerRandomItem();
                         } else if (choice <= 0.01f) {
-                            issueRandomAboutMe();
+                            outcome = issueRandomAboutMe();
                         } else if (choice <= 0.015f) {
-                            registerRandomCategory();
+                            outcome = registerRandomCategory();
                         } else if (choice <= 0.02f) {
-                            registerRandomItem();
+                            outcome = registerRandomUser();
                         } else if (choice <= 0.26f) {
-                            registerRandomRegion();
+                            outcome = registerRandomRegion();
                         } else if (choice <= 0.5f) {
-                            issueRandomSearchItemsByCategory();
+                            outcome = issueRandomSearchItemsByCategory();
                         } else if (choice <= 0.51f) {
-                            issueRandomSearchItemsByRegion();
+                            outcome = issueRandomSearchItemsByRegion();
                         } else if (choice <= 0.52f) {
-                            registerRandomBid();
+                            outcome = registerRandomBid();
                         } else if (choice <= 0.53f) {
-                            registerRandomBuyNow();
+                            outcome = registerRandomBuyNow();
                         } else if (choice <= 0.73f) {
-                            registerRandomComment();
+                            outcome = registerRandomComment();
                         } else if (choice <= 0.51f) {
-                            issueRandomViewBidHistory();
+                            outcome = issueRandomViewBidHistory();
                         } else if (choice <= 0.99f) {
-                            issueRandomViewItem();
-                        } else if (choice <= 1f) {
-                            issueRandomUserInfo();
+                            outcome = issueRandomViewItem();
+                        } else {
+                            outcome = issueRandomUserInfo();
+                        }
+
+                        synchronized (mLock) {
+                            if (outcome == RUBiSClient.EXIT_SUCCESS)
+                                mCommitted++;
+                            else
+                                mAborted++;
+
+                            if ((mCommitted + mAborted) % 10 == 0)
+                                System.out.println(mCommitted + "/" + mAborted + "]");
                         }
                     }
                 }

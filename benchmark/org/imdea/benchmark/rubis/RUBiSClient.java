@@ -122,9 +122,9 @@ public class RUBiSClient {
         }
     }
 
-    public int searchItemByRegion(long regionId) {
+    public int searchItemByRegion(long regionId, long categoryId) {
         try {
-            SearchItemsByRegionTransaction trans = new SearchItemsByRegionTransaction(mJessy, regionId);
+            SearchItemsByRegionTransaction trans = new SearchItemsByRegionTransaction(mJessy, regionId, categoryId);
             return executeTransaction(trans);
         } catch (Exception e) {
             e.printStackTrace();
