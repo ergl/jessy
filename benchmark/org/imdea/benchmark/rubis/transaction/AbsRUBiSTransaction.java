@@ -12,13 +12,17 @@ import org.imdea.benchmark.rubis.table.Index;
 import org.imdea.benchmark.rubis.table.AbsTable;
 
 public abstract class AbsRUBiSTransaction extends Transaction {
+    public static final String NAME = AbsRUBiSTransaction.class.getName() + "::NAME";
+
     public AbsRUBiSTransaction(Jessy jessy) throws Exception {
         super(jessy);
+        init();
     }
 
     public AbsRUBiSTransaction(Jessy jessy, int readOperations, int updateOperations, int createOperations) throws
             Exception {
         super(jessy, readOperations, updateOperations, createOperations);
+        init();
     }
 
     protected void createIndexFor(Index index, long key) {
@@ -39,6 +43,10 @@ public abstract class AbsRUBiSTransaction extends Transaction {
         ArrayList<Long> pointers = new ArrayList<>();
         pointers.add(pointer);
         create(new IndexEntity(Index.on(index).lookFor(value).getDatastoreUniqueIdentifier(), pointers));
+    }
+
+    private void init() {
+        putExtra(NAME, getClass().getSimpleName());
     }
 
     protected <E extends AbsRUBiSEntity> E readEntity(AbsTable<E> table, long id) {
