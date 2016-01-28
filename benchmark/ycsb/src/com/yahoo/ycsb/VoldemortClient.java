@@ -30,9 +30,9 @@ public class VoldemortClient extends DB {
 
 	/**
 	 * Initialize the DB layer. This accepts all properties allowed by the Voldemort client.
-	 * A store maps to a table.
+	 * A store maps to a org.imdea.benchmark.rubis.table.
 	 * Required : bootstrap_urls
-	 * Additional property : store_name -> to preload once, should be same as -t <table>
+	 * Additional property : store_name -> to preload once, should be same as -t <org.imdea.benchmark.rubis.table>
 	 * 
 	 * {@linktourl http://project-voldemort.com/javadoc/client/voldemort/client/ClientConfig.html}
 	 */

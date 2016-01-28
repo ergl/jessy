@@ -178,7 +178,7 @@ public class CassandraClient10 extends DB
 * be stored in a HashMap.
 *
 * @param table
-* The name of the table
+* The name of the org.imdea.benchmark.rubis.table
 * @param key
 * The record key of the record to read.
 * @param fields
@@ -279,7 +279,7 @@ public class CassandraClient10 extends DB
 * pair from the result will be stored in a HashMap.
 *
 * @param table
-* The name of the table
+* The name of the org.imdea.benchmark.rubis.table
 * @param startkey
 * The record key of the first record to read.
 * @param recordcount
@@ -390,7 +390,7 @@ public class CassandraClient10 extends DB
 * key, overwriting any existing values with the same field name.
 *
 * @param table
-* The name of the table
+* The name of the org.imdea.benchmark.rubis.table
 * @param key
 * The record key of the record to write.
 * @param values
@@ -409,7 +409,7 @@ public class CassandraClient10 extends DB
 * key.
 *
 * @param table
-* The name of the table
+* The name of the org.imdea.benchmark.rubis.table
 * @param key
 * The record key of the record to insert.
 * @param values
@@ -490,7 +490,7 @@ public class CassandraClient10 extends DB
 * Delete a record from the database.
 *
 * @param table
-* The name of the table
+* The name of the org.imdea.benchmark.rubis.table
 * @param key
 * The record key of the record to delete.
 * @return Zero on success, a non-zero error code on error
@@ -544,16 +544,16 @@ public class CassandraClient10 extends DB
 /*
   public static void main(String[] args)
   {
-    CassandraClient10 cli = new CassandraClient10();
+    CassandraClient10 org.imdea.benchmark.rubis.cli = new CassandraClient10();
 
     Properties props = new Properties();
 
     props.setProperty("hosts", args[0]);
-    cli.setProperties(props);
+    org.imdea.benchmark.rubis.cli.setProperties(props);
 
     try
     {
-      cli.init();
+      org.imdea.benchmark.rubis.cli.init();
     } catch (Exception e)
     {
       e.printStackTrace();
@@ -564,7 +564,7 @@ public class CassandraClient10 extends DB
     vals.put("age", new StringByteIterator("57"));
     vals.put("middlename", new StringByteIterator("bradley"));
     vals.put("favoritecolor", new StringByteIterator("blue"));
-    int res = cli.insert("usertable", "BrianFrankCooper", vals);
+    int res = org.imdea.benchmark.rubis.cli.insert("usertable", "BrianFrankCooper", vals);
     System.out.println("Result of insert: " + res);
 
     HashMap<String, ByteIterator> result = new HashMap<String, ByteIterator>();
@@ -572,14 +572,14 @@ public class CassandraClient10 extends DB
     fields.add("middlename");
     fields.add("age");
     fields.add("favoritecolor");
-    res = cli.read("usertable", "BrianFrankCooper", null, result);
+    res = org.imdea.benchmark.rubis.cli.read("usertable", "BrianFrankCooper", null, result);
     System.out.println("Result of read: " + res);
     for (String s : result.keySet())
     {
       System.out.println("[" + s + "]=[" + result.get(s) + "]");
     }
 
-    res = cli.delete("usertable", "BrianFrankCooper");
+    res = org.imdea.benchmark.rubis.cli.delete("usertable", "BrianFrankCooper");
     System.out.println("Result of delete: " + res);
   }
 

@@ -70,7 +70,7 @@ public class RedisClient extends DB {
         return key.hashCode();
     }
 
-    //XXX jedis.select(int index) to switch to `table`
+    //XXX jedis.select(int index) to switch to `org.imdea.benchmark.rubis.table`
 
     @Override
     public int read(String table, String key, Set<String> fields,

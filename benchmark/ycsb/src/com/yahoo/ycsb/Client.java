@@ -333,11 +333,11 @@ public class Client
 	
 	static enum YCSBTransactionType {
 		/**
-		 * read transaction
+		 * read org.imdea.benchmark.rubis.transaction
 		 */
 		READ,
 		/**
-		 * write transaction
+		 * write org.imdea.benchmark.rubis.transaction
 		 */
 		WRITE
 	};

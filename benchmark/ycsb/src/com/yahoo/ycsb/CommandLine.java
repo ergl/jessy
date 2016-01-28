@@ -257,7 +257,7 @@ public class CommandLine
 	    
 	    long st=System.currentTimeMillis();
 	    //handle commands
-	    if (tokens[0].compareTo("table")==0)
+	    if (tokens[0].compareTo("org/imdea/benchmark/rubis/table")==0)
 	    {
 	       if (tokens.length==1)
 	       {

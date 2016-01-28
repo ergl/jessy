@@ -59,12 +59,12 @@ public class CoreWorkload extends Workload
 {
 
 	/**
-	 * The name of the database table to run queries against.
+	 * The name of the database org.imdea.benchmark.rubis.table to run queries against.
 	 */
-	public static final String TABLENAME_PROPERTY="table";
+	public static final String TABLENAME_PROPERTY= "org/imdea/benchmark/rubis/table";
 
 	/**
-	 * The default name of the database table to run queries against.
+	 * The default name of the database org.imdea.benchmark.rubis.table to run queries against.
 	 */
 	public static final String TABLENAME_PROPERTY_DEFAULT="usertable";
 
@@ -358,7 +358,7 @@ public class CoreWorkload extends Workload
 	}
 
 	/**
-	 * Do one transaction operation. Because it will be called concurrently from multiple client threads, this 
+	 * Do one org.imdea.benchmark.rubis.transaction operation. Because it will be called concurrently from multiple client threads, this
 	 * function must be thread safe. However, avoid synchronized, or the threads will block waiting for each 
 	 * other, and it will be difficult to reach the target throughput. Ideally, this function would have no side
 	 * effects other than DB operations.
@@ -468,7 +468,7 @@ public class CoreWorkload extends Workload
 		   values.put(fieldname,data);
 		}
 
-		//do the transaction
+		//do the org.imdea.benchmark.rubis.transaction
 		
 		long st=System.currentTimeMillis();
 

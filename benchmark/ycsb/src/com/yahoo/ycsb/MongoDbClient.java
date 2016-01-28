@@ -98,7 +98,7 @@ public class MongoDbClient extends DB {
     /**
 * Delete a record from the database.
 *
-* @param table The name of the table
+* @param org.imdea.benchmark.rubis.table The name of the org.imdea.benchmark.rubis.table
 * @param key The record key of the record to delete.
 * @return Zero on success, a non-zero error code on error. See this class's description for a discussion of error codes.
 */
@@ -137,7 +137,7 @@ public class MongoDbClient extends DB {
 * Insert a record in the database. Any field/value pairs in the specified values HashMap will be written into the record with the specified
 * record key.
 *
-* @param table The name of the table
+* @param org.imdea.benchmark.rubis.table The name of the org.imdea.benchmark.rubis.table
 * @param key The record key of the record to insert.
 * @param values A HashMap of field/value pairs to insert in the record
 * @return Zero on success, a non-zero error code on error. See this class's description for a discussion of error codes.
@@ -183,7 +183,7 @@ public class MongoDbClient extends DB {
     /**
 * Read a record from the database. Each field/value pair from the result will be stored in a HashMap.
 *
-* @param table The name of the table
+* @param org.imdea.benchmark.rubis.table The name of the org.imdea.benchmark.rubis.table
 * @param key The record key of the record to read.
 * @param fields The list of fields to read, or null for all of them
 * @param result A HashMap of field/value pairs for the result
@@ -236,7 +236,7 @@ public class MongoDbClient extends DB {
 * Update a record in the database. Any field/value pairs in the specified values HashMap will be written into the record with the specified
 * record key, overwriting any existing values with the same field name.
 *
-* @param table The name of the table
+* @param org.imdea.benchmark.rubis.table The name of the org.imdea.benchmark.rubis.table
 * @param key The record key of the record to write.
 * @param values A HashMap of field/value pairs to update in the record
 * @return Zero on success, a non-zero error code on error. See this class's description for a discussion of error codes.
@@ -287,7 +287,7 @@ public class MongoDbClient extends DB {
     /**
 * Perform a range scan for a set of records in the database. Each field/value pair from the result will be stored in a HashMap.
 *
-* @param table The name of the table
+* @param org.imdea.benchmark.rubis.table The name of the org.imdea.benchmark.rubis.table
 * @param startkey The record key of the first record to read.
 * @param recordcount The number of records to read
 * @param fields The list of fields to read, or null for all of them

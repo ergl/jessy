@@ -116,7 +116,7 @@ public class NHBaseClient extends com.yahoo.ycsb.DB
     /**
      * Read a record from the database. Each field/value pair from the result will be stored in a HashMap.
      *
-     * @param table The name of the table
+     * @param table The name of the org.imdea.benchmark.rubis.table
      * @param key The record key of the record to read.
      * @param fields The list of fields to read, or null for all of them
      * @param result A HashMap of field/value pairs for the result
@@ -124,7 +124,7 @@ public class NHBaseClient extends com.yahoo.ycsb.DB
      */
     public int read(String table, String key, Set<String> fields, HashMap<String,String> result)
     {
-        //if this is a "new" table, init HTable object.  Else, use existing one
+        //if this is a "new" org.imdea.benchmark.rubis.table, init HTable object.  Else, use existing one
         if (!_table.equals(table)) {
             _hTable = null;
             try
@@ -183,7 +183,7 @@ public class NHBaseClient extends com.yahoo.ycsb.DB
     /**
      * Perform a range scan for a set of records in the database. Each field/value pair from the result will be stored in a HashMap.
      *
-     * @param table The name of the table
+     * @param table The name of the org.imdea.benchmark.rubis.table
      * @param startkey The record key of the first record to read.
      * @param recordcount The number of records to read
      * @param fields The list of fields to read, or null for all of them
@@ -192,7 +192,7 @@ public class NHBaseClient extends com.yahoo.ycsb.DB
      */
     public int scan(String table, String startkey, int recordcount, Set<String> fields, Vector<HashMap<String,String>> result)
     {
-        //if this is a "new" table, init HTable object.  Else, use existing one
+        //if this is a "new" org.imdea.benchmark.rubis.table, init HTable object.  Else, use existing one
         if (!_table.equals(table)) {
             _hTable = null;
             try
@@ -274,14 +274,14 @@ public class NHBaseClient extends com.yahoo.ycsb.DB
      * Update a record in the database. Any field/value pairs in the specified values HashMap will be written into the record with the specified
      * record key, overwriting any existing values with the same field name.
      *
-     * @param table The name of the table
+     * @param table The name of the org.imdea.benchmark.rubis.table
      * @param key The record key of the record to write
      * @param values A HashMap of field/value pairs to update in the record
      * @return Zero on success, a non-zero error code on error
      */
     public int update(String table, String key, HashMap<String,String> values)
     {
-        //if this is a "new" table, init HTable object.  Else, use existing one
+        //if this is a "new" org.imdea.benchmark.rubis.table, init HTable object.  Else, use existing one
         if (!_table.equals(table)) {
             _hTable = null;
             try
@@ -334,7 +334,7 @@ public class NHBaseClient extends com.yahoo.ycsb.DB
      * Insert a record in the database. Any field/value pairs in the specified values HashMap will be written into the record with the specified
      * record key.
      *
-     * @param table The name of the table
+     * @param table The name of the org.imdea.benchmark.rubis.table
      * @param key The record key of the record to insert.
      * @param values A HashMap of field/value pairs to insert in the record
      * @return Zero on success, a non-zero error code on error
@@ -347,13 +347,13 @@ public class NHBaseClient extends com.yahoo.ycsb.DB
     /**
      * Delete a record from the database.
      *
-     * @param table The name of the table
+     * @param table The name of the org.imdea.benchmark.rubis.table
      * @param key The record key of the record to delete.
      * @return Zero on success, a non-zero error code on error
      */
     public int delete(String table, String key)
     {
-        //if this is a "new" table, init HTable object.  Else, use existing one
+        //if this is a "new" org.imdea.benchmark.rubis.table, init HTable object.  Else, use existing one
         if (!_table.equals(table)) {
             _hTable = null;
             try
@@ -417,14 +417,14 @@ public class NHBaseClient extends com.yahoo.ycsb.DB
                     {
                         Random random=new Random();
 
-                        NewYCSBHBaseClient cli=new NewYCSBHBaseClient();
+                        NewYCSBHBaseClient org.imdea.benchmark.rubis.cli=new NewYCSBHBaseClient();
 
                         Properties props=new Properties();
                         props.setProperty("columnfamily",columnfamily);
                         props.setProperty("debug","true");
-                        cli.setProperties(props);
+                        org.imdea.benchmark.rubis.cli.setProperties(props);
 
-                        cli.init();
+                        org.imdea.benchmark.rubis.cli.init();
 
                         //HashMap<String,String> result=new HashMap<String,String>();
 
@@ -441,20 +441,20 @@ public class NHBaseClient extends com.yahoo.ycsb.DB
                             hm.put("field1","value1");
                             hm.put("field2","value2");
                             hm.put("field3","value3");
-                            rescode=cli.insert("table1",key,hm);
+                            rescode=org.imdea.benchmark.rubis.cli.insert("table1",key,hm);
                             HashSet<String> s = new HashSet();
                             s.add("field1");
                             s.add("field2");
 
-                            rescode=cli.read("table1", key, s, result);
-                            //rescode=cli.delete("table1",key);
-                            rescode=cli.read("table1", key, s, result);
+                            rescode=org.imdea.benchmark.rubis.cli.read("table1", key, s, result);
+                            //rescode=org.imdea.benchmark.rubis.cli.delete("table1",key);
+                            rescode=org.imdea.benchmark.rubis.cli.read("table1", key, s, result);
                             
                             HashSet<String> scanFields = new HashSet<String>();
                             scanFields.add("field1");
                             scanFields.add("field3");
                             Vector<HashMap<String,ByteIterator>> scanResults = new Vector<HashMap<String,ByteIterator>>();
-                            rescode = cli.scan("table1","user2",20,null,scanResults);
+                            rescode = org.imdea.benchmark.rubis.cli.scan("table1","user2",20,null,scanResults);
 
                             long en=System.currentTimeMillis();
 
@@ -472,7 +472,7 @@ public class NHBaseClient extends com.yahoo.ycsb.DB
                         }
 
                         //System.out.println("Average latency: "+(((double)accum)/((double)opcount)));
-                        //System.out.println("Average get latency: "+(((double)cli.TotalGetTime)/((double)cli.TotalGetOps)));
+                        //System.out.println("Average get latency: "+(((double)org.imdea.benchmark.rubis.cli.TotalGetTime)/((double)org.imdea.benchmark.rubis.cli.TotalGetOps)));
                     }
                     catch (Exception e)
                     {

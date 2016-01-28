@@ -81,7 +81,7 @@ public abstract class Workload
       public abstract boolean doInsert(DB db, Object threadstate);
       
       /**
-       * Do one transaction operation. Because it will be called concurrently from multiple client threads, this 
+       * Do one org.imdea.benchmark.rubis.transaction operation. Because it will be called concurrently from multiple client threads, this
        * function must be thread safe. However, avoid synchronized, or the threads will block waiting for each 
        * other, and it will be difficult to reach the target throughput. Ideally, this function would have no side
        * effects other than DB operations and mutations on threadstate. Mutations to threadstate do not need to be

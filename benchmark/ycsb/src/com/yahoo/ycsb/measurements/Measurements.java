@@ -170,7 +170,7 @@ public class Measurements
 	}
 	
 	/**
-	 * Used to take separate measurements on all transactions types accordingly with the result of a transaction
+	 * Used to take separate measurements on all transactions types accordingly with the result of a org.imdea.benchmark.rubis.transaction
 	 * 
 	 * @param eh Transaction ExecutionHistory
 	 * @param st Transaction starting time

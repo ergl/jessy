@@ -75,7 +75,7 @@ public class DBWrapper extends DB {
 	 * will be stored in a HashMap.
 	 * 
 	 * @param table
-	 *            The name of the table
+	 *            The name of the org.imdea.benchmark.rubis.table
 	 * @param key
 	 *            The record key of the record to read.
 	 * @param fields
@@ -99,7 +99,7 @@ public class DBWrapper extends DB {
 	 * field/value pair from the result will be stored in a HashMap.
 	 * 
 	 * @param table
-	 *            The name of the table
+	 *            The name of the org.imdea.benchmark.rubis.table
 	 * @param startkey
 	 *            The record key of the first record to read.
 	 * @param recordcount
@@ -127,7 +127,7 @@ public class DBWrapper extends DB {
 	 * key, overwriting any existing values with the same field name.
 	 * 
 	 * @param table
-	 *            The name of the table
+	 *            The name of the org.imdea.benchmark.rubis.table
 	 * @param key
 	 *            The record key of the record to write.
 	 * @param values
@@ -149,7 +149,7 @@ public class DBWrapper extends DB {
 	 * key.
 	 * 
 	 * @param table
-	 *            The name of the table
+	 *            The name of the org.imdea.benchmark.rubis.table
 	 * @param key
 	 *            The record key of the record to insert.
 	 * @param values
@@ -169,7 +169,7 @@ public class DBWrapper extends DB {
 	 * Delete a record from the database.
 	 * 
 	 * @param table
-	 *            The name of the table
+	 *            The name of the org.imdea.benchmark.rubis.table
 	 * @param key
 	 *            The record key of the record to delete.
 	 * @return Zero on success, a non-zero error code on error

@@ -30,7 +30,7 @@ public class YCSBEntity extends JessyEntity implements Externalizable {
 		super("");
 	}
 
-	/* Fields of the entity */
+	/* Fields of the org.imdea.benchmark.rubis.entity */
 	private HashMap<String, String> fields;
 
 	public void setFields(HashMap<String, String> fields) {
