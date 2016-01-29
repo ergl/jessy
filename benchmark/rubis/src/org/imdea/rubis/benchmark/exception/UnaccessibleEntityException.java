@@ -20,4 +20,14 @@
 package org.imdea.rubis.benchmark.exception;
 
 public class UnaccessibleEntityException extends RuntimeException {
+    private String mId;
+
+    public UnaccessibleEntityException(String id) {
+        mId = id;
+    }
+
+    @Override
+    public String getMessage() {
+        return "Entity identified by " + mId + " is unaccessible.";
+    }
 }

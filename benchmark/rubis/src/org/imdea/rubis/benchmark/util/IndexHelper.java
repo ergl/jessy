@@ -64,8 +64,9 @@ public class IndexHelper {
         }
 
         public IndexEntity find(String value) {
+            String id = generateId(mIndex, value);
+
             try {
-                String id = generateId(mIndex, value);
                 IndexEntity entity = mTrans.read(IndexEntity.class, id);
 
                 if (entity == null)
@@ -73,7 +74,7 @@ public class IndexHelper {
 
                 return entity;
             } catch (Exception e) {
-                throw new UnaccessibleIndexException();
+                throw new UnaccessibleIndexException(id);
             }
         }
     }

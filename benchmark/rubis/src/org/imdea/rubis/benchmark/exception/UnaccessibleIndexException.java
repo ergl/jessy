@@ -20,4 +20,14 @@
 package org.imdea.rubis.benchmark.exception;
 
 public class UnaccessibleIndexException extends RuntimeException {
+    private String mId;
+
+    public UnaccessibleIndexException(String id) {
+        mId = id;
+    }
+
+    @Override
+    public String getMessage() {
+        return "Index identified by " + mId + " is unaccessible.";
+    }
 }

@@ -38,10 +38,12 @@ public class EntityHelper {
         }
 
         public E withKey(String value) {
+            String id = generateId(mTable, value);
+
             try {
-                return mTrans.read(mTable.getEntityClass(), generateId(mTable, value));
+                return mTrans.read(mTable.getEntityClass(), id);
             } catch (Exception e) {
-                throw new UnaccessibleEntityException();
+                throw new UnaccessibleEntityException(id);
             }
         }
     }
