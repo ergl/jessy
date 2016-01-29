@@ -54,8 +54,8 @@ public class EntityHelper {
         mTrans = trans;
     }
 
-    public static String generateId(AbsTable table, String value) {
-        return "@" + table.getName() + "~id#" + value;
+    public static <E extends AbsRUBiSEntity> String generateId(AbsTable<E> table, String value) {
+        return Naming.of(table, "id", value);
     }
 
     public <E extends AbsRUBiSEntity> Reader<E> readEntityFrom(AbsTable<E> table) {

@@ -90,7 +90,7 @@ public class IndexHelper {
     }
 
     public static String generateId(Index index, String value) {
-        return "@" + index.getTable().getName() + "~" + index.getAttributeName() + "#" + value;
+        return Naming.of(index.getTable(), index.getAttributeName(), value);
     }
 
     public Reader readIndex(Index index) {
