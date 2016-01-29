@@ -30,11 +30,11 @@ public abstract class AbsTable<T extends AbsRUBiSEntity> {
         mName = name;
     }
 
-    Class<T> getEntityClass() {
+    public Class<T> getEntityClass() {
         return mClass;
     }
 
-    String getName() {
+    public String getName() {
         return mName;
     }
 }

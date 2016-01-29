@@ -29,7 +29,7 @@ import java.util.Date;
 
 import org.imdea.rubis.benchmark.entity.IndexEntity;
 import org.imdea.rubis.benchmark.entity.UserEntity;
-import org.imdea.rubis.benchmark.table.UnaccessibleIndexException;
+import org.imdea.rubis.benchmark.exception.UnaccessibleIndexException;
 
 public class RegisterUserTransaction extends AbsRUBiSTransaction {
     private UserEntity mUser;
@@ -48,14 +48,14 @@ public class RegisterUserTransaction extends AbsRUBiSTransaction {
         // TODO: actual code of Jessy doesn't allow this: reading a non-existent org.imdea.benchmark.rubis.entity will increase the fail read
         // TODO: count (after retrying 10 times) and a lot of code should be changed in order to avoid this.
         long id = mUser.getId();
-        createIndexFor(bids.user_id, id);
-        createIndexFor(buy_now.buyer_id, id);
-        createIndexFor(comments.from_user_id, id);
-        createIndexFor(comments.to_user_id, id);
-        createIndexFor(items.seller, id);
+        createIndex(bids.user_id).justEmpty().forKey(id);
+        createIndex(buy_now.buyer_id).justEmpty().forKey(id);
+        createIndex(comments.from_user_id).justEmpty().forKey(id);
+        createIndex(comments.to_user_id).justEmpty().forKey(id);
+        createIndex(items.seller).justEmpty().forKey(id);
         // TODO: For the same reason it is not convenient to create an index on the pair <nickname, password>. If there
         // TODO: is a mismatch, Jessy will try 10 times before giving up. D:
-        createIndexFor(users.nickname, mUser.getNickname(), id);
+        createIndex(users.nickname).withPointer(id).forKey(mUser.getNickname());
     }
 
     @Override
@@ -66,7 +66,7 @@ public class RegisterUserTransaction extends AbsRUBiSTransaction {
             // TODO: Same problem here, if the nickname does not exist (which is very likely in the benchmark) Jessy
             // TODO: will try to read the index 10 times.
             try {
-                nickIndex = readIndexFor(users.nickname, mUser.getNickname());
+                nickIndex = readIndex(users.nickname).find(mUser.getNickname());
             } catch (UnaccessibleIndexException ignored) {
                 // TODO: In the actual implementation when the index does not exist (i.e. the nickname is not in the
                 // TODO: database) an UnaccessibleIndexException is thrown. So nickIndex remains null.
@@ -87,7 +87,7 @@ public class RegisterUserTransaction extends AbsRUBiSTransaction {
     }
 
     private void updateIndexes() {
-        IndexEntity regionIndex = readIndexFor(users.region, mUser.getRegion());
+        IndexEntity regionIndex = readIndex(users.region).find(mUser.getRegion());
         regionIndex.edit().addPointer(mUser.getId()).write(this);
     }
 }

@@ -19,6 +19,8 @@
 
 package org.imdea.rubis.benchmark.transaction;
 
+import static org.imdea.rubis.benchmark.table.Tables.*;
+
 import fr.inria.jessy.Jessy;
 import fr.inria.jessy.transaction.ExecutionHistory;
 
@@ -27,7 +29,6 @@ import java.util.Date;
 import org.imdea.rubis.benchmark.entity.CommentEntity;
 import org.imdea.rubis.benchmark.entity.IndexEntity;
 import org.imdea.rubis.benchmark.entity.UserEntity;
-import org.imdea.rubis.benchmark.table.Tables;
 
 public class StoreCommentTransaction extends AbsRUBiSTransaction {
     private CommentEntity mComment;
@@ -44,7 +45,7 @@ public class StoreCommentTransaction extends AbsRUBiSTransaction {
             // Insert the new comment in the data store.
             create(mComment);
             // Select the receiver from the data store and store the updated version of the user in the data store.
-            UserEntity receiver = readEntity(Tables.users, mComment.getToUserId());
+            UserEntity receiver = readEntityFrom(users).withKey(mComment.getToUserId());
             receiver.edit().setRating(receiver.getRating() + mComment.getRating()).write(this);
 
             updateIndexes();
@@ -58,13 +59,13 @@ public class StoreCommentTransaction extends AbsRUBiSTransaction {
     }
 
     private void updateIndexes() {
-        IndexEntity fromIndex = readIndexFor(Tables.comments.from_user_id, mComment.getFromUserId());
+        IndexEntity fromIndex = readIndex(comments.from_user_id).find(mComment.getFromUserId());
         fromIndex.edit().addPointer(mComment.getId()).write(this);
 
-        IndexEntity itemIndex = readIndexFor(Tables.comments.item_id, mComment.getItemId());
+        IndexEntity itemIndex = readIndex(comments.item_id).find(mComment.getItemId());
         itemIndex.edit().addPointer(mComment.getId()).write(this);
 
-        IndexEntity toIndex = readIndexFor(Tables.comments.to_user_id, mComment.getToUserId());
+        IndexEntity toIndex = readIndex(comments.to_user_id).find(mComment.getToUserId());
         toIndex.edit().addPointer(mComment.getId()).write(this);
     }
 }

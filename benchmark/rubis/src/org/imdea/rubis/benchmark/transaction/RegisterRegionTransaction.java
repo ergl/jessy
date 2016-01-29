@@ -38,7 +38,7 @@ public class RegisterRegionTransaction extends AbsRUBiSTransaction {
         // TODO: This sucks. For less spaghetti code index entities should be created on the fly, when needed, but the
         // TODO: actual code of Jessy doesn't allow this: reading a non-existent org.imdea.benchmark.rubis.entity will increase the fail read
         // TODO: count (after retrying 10 times) and a lot of code should be changed in order to avoid this.
-        createIndexFor(users.region, mRegion.getId());
+        createIndex(users.region).justEmpty().forKey(mRegion.getId());
     }
 
     @Override

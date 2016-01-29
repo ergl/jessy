@@ -24,7 +24,7 @@ import java.io.ObjectInput;
 import java.io.ObjectOutput;
 
 import org.imdea.rubis.benchmark.table.AbsTable;
-import org.imdea.rubis.benchmark.table.Entities;
+import org.imdea.rubis.benchmark.util.EntityHelper;
 
 public abstract class AbsTableEntity extends AbsRUBiSEntity {
     public AbsTableEntity() {
@@ -32,7 +32,7 @@ public abstract class AbsTableEntity extends AbsRUBiSEntity {
     }
 
     public AbsTableEntity(AbsTable<? extends AbsRUBiSEntity> table, long id) {
-        super(Entities.of(table).withKey(id).getDatastoreUniqueIdentifier());
+        super(EntityHelper.generateId(table, Long.toString(id)));
     }
 
     @Override

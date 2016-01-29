@@ -38,10 +38,10 @@ public class SearchItemsByCategoryTransaction extends AbsRUBiSTransaction {
     @Override
     public ExecutionHistory execute() {
         try {
-            IndexEntity itemsIndex = readIndexFor(items.category, mCategoryId);
+            IndexEntity itemsIndex = readIndex(items.category).find(mCategoryId);
 
             for (long key : itemsIndex.getPointers()) {
-                ItemEntity item = readEntity(items, key);
+                ItemEntity item = readEntityFrom(items).withKey(key);
             }
 
             return commitTransaction();

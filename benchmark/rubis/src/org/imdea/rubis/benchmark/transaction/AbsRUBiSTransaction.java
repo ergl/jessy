@@ -22,16 +22,17 @@ package org.imdea.rubis.benchmark.transaction;
 import fr.inria.jessy.Jessy;
 import fr.inria.jessy.transaction.Transaction;
 
-import java.util.ArrayList;
-
-import org.imdea.rubis.benchmark.entity.IndexEntity;
 import org.imdea.rubis.benchmark.entity.AbsRUBiSEntity;
-import org.imdea.rubis.benchmark.table.Entities;
+import org.imdea.rubis.benchmark.util.EntityHelper;
 import org.imdea.rubis.benchmark.table.Index;
 import org.imdea.rubis.benchmark.table.AbsTable;
+import org.imdea.rubis.benchmark.util.IndexHelper;
 
 public abstract class AbsRUBiSTransaction extends Transaction {
     public static final String NAME = AbsRUBiSTransaction.class.getName() + "::NAME";
+
+    private EntityHelper mEntityHelper = new EntityHelper(this);
+    private IndexHelper mIndexHelper = new IndexHelper(this);
 
     public AbsRUBiSTransaction(Jessy jessy) throws Exception {
         super(jessy);
@@ -44,39 +45,19 @@ public abstract class AbsRUBiSTransaction extends Transaction {
         init();
     }
 
-    protected void createIndexFor(Index index, long key) {
-        create(new IndexEntity(Index.on(index).lookFor(key).getDatastoreUniqueIdentifier(), new ArrayList<Long>()));
-    }
-
-    protected void createIndexFor(Index index, long key, long pointer) {
-        ArrayList<Long> pointers = new ArrayList<>();
-        pointers.add(pointer);
-        create(new IndexEntity(Index.on(index).lookFor(key).getDatastoreUniqueIdentifier(), pointers));
-    }
-
-    protected void createIndexFor(Index index, String value) {
-        create(new IndexEntity(Index.on(index).lookFor(value).getDatastoreUniqueIdentifier(), new ArrayList<Long>()));
-    }
-
-    protected void createIndexFor(Index index, String value, long pointer) {
-        ArrayList<Long> pointers = new ArrayList<>();
-        pointers.add(pointer);
-        create(new IndexEntity(Index.on(index).lookFor(value).getDatastoreUniqueIdentifier(), pointers));
+    protected IndexHelper.Initializer createIndex(Index index) {
+        return mIndexHelper.createIndex(index);
     }
 
     private void init() {
         putExtra(NAME, getClass().getSimpleName());
     }
 
-    protected <E extends AbsRUBiSEntity> E readEntity(AbsTable<E> table, long id) {
-        return Entities.of(table).withKey(id).readAs(this);
+    protected <E extends AbsRUBiSEntity> EntityHelper.Reader<E> readEntityFrom(AbsTable<E> table) {
+        return mEntityHelper.readEntityFrom(table);
     }
 
-    protected IndexEntity readIndexFor(Index index, long key) {
-        return Index.on(index).lookFor(key).readAs(this);
-    }
-
-    protected IndexEntity readIndexFor(Index index, String value) {
-        return Index.on(index).lookFor(value).readAs(this);
+    protected IndexHelper.Reader readIndex(Index index) {
+        return mIndexHelper.readIndex(index);
     }
 }

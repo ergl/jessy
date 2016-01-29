@@ -17,7 +17,16 @@
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.
  */
 
-package org.imdea.rubis.benchmark.table;
+package org.imdea.rubis.benchmark.util;
 
-public class UnaccessibleIndexException extends RuntimeException {
+public class ThreadSafeSequence extends Sequence {
+    @Override
+    public synchronized long get() {
+        return super.get();
+    }
+
+    @Override
+    public synchronized long next() {
+        return super.next();
+    }
 }

@@ -19,13 +19,14 @@
 
 package org.imdea.rubis.benchmark.transaction;
 
+import static org.imdea.rubis.benchmark.table.Tables.*;
+
 import fr.inria.jessy.Jessy;
 import fr.inria.jessy.transaction.ExecutionHistory;
 
 import org.imdea.rubis.benchmark.entity.CommentEntity;
 import org.imdea.rubis.benchmark.entity.IndexEntity;
 import org.imdea.rubis.benchmark.entity.UserEntity;
-import org.imdea.rubis.benchmark.table.Tables;
 
 public class ViewUserInfoTransaction extends AbsRUBiSTransaction {
     private long mUserId;
@@ -38,14 +39,14 @@ public class ViewUserInfoTransaction extends AbsRUBiSTransaction {
     @Override
     public ExecutionHistory execute() {
         try {
-            UserEntity user = readEntity(Tables.users, mUserId);
+            UserEntity user = readEntityFrom(users).withKey(mUserId);
 
             if (user != null) {
-                IndexEntity commentsIndex = readIndexFor(Tables.comments.to_user_id, mUserId);
+                IndexEntity commentsIndex = readIndex(comments.to_user_id).find(mUserId);
 
                 for (long key : commentsIndex.getPointers()) {
-                    CommentEntity comment = readEntity(Tables.comments, key);
-                    UserEntity author = readEntity(Tables.users, comment.getFromUserId());
+                    CommentEntity comment = readEntityFrom(comments).withKey(key);
+                    UserEntity author = readEntityFrom(users).withKey(comment.getFromUserId());
                 }
             }
 

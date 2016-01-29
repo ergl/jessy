@@ -19,11 +19,12 @@
 
 package org.imdea.rubis.benchmark.transaction;
 
+import static org.imdea.rubis.benchmark.table.Tables.*;
+
 import fr.inria.jessy.Jessy;
 import fr.inria.jessy.transaction.ExecutionHistory;
 
 import org.imdea.rubis.benchmark.entity.CategoryEntity;
-import org.imdea.rubis.benchmark.table.Tables;
 
 public class RegisterCategoryTransaction extends AbsRUBiSTransaction {
     private CategoryEntity mCategory;
@@ -37,7 +38,7 @@ public class RegisterCategoryTransaction extends AbsRUBiSTransaction {
         // TODO: This sucks. For less spaghetti code index entities should be created on the fly, when needed, but the
         // TODO: actual code of Jessy doesn't allow this: reading a non-existent org.imdea.benchmark.rubis.entity will increase the fail read
         // TODO: count (after retrying 10 times) and a lot of code should be changed in order to avoid this.
-        createIndexFor(Tables.items.category, mCategory.getId());
+        createIndex(items.category).justEmpty().forKey(mCategory.getId());
     }
 
     @Override

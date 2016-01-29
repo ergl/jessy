@@ -45,7 +45,7 @@ public class StoreBidTransaction extends AbsRUBiSTransaction {
             // Insert the new bid in the data store.
             create(mBid);
             // Select the respective item from the data store.
-            ItemEntity item = readEntity(items, mBid.getItemId());
+            ItemEntity item = readEntityFrom(items).withKey(mBid.getItemId());
             // Update nbOfBids and maxBid fields.
             int nbOfBids = item.getNbOfBids() + 1;
             float maxBid = Math.max(item.getMaxBid(), mBid.getBid());
@@ -62,10 +62,10 @@ public class StoreBidTransaction extends AbsRUBiSTransaction {
     }
 
     private void updateIndexes() {
-        IndexEntity itemIndex = readIndexFor(bids.item_id, mBid.getItemId());
+        IndexEntity itemIndex = readIndex(bids.item_id).find(mBid.getItemId());
         itemIndex.edit().addPointer(mBid.getId()).write(this);
 
-        IndexEntity userIndex = readIndexFor(bids.user_id, mBid.getUserId());
+        IndexEntity userIndex = readIndex(bids.user_id).find(mBid.getUserId());
         userIndex.edit().addPointer(mBid.getId()).write(this);
     }
 }

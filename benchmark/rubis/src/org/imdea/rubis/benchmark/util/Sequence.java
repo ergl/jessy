@@ -20,9 +20,13 @@
 package org.imdea.rubis.benchmark.util;
 
 public class Sequence {
-    private long mValue;
+    private long mValue = -1;
 
-    public synchronized long next() {
-        return mValue++;
+    public long get() {
+        return mValue;
+    }
+
+    public long next() {
+        return ++mValue;
     }
 }

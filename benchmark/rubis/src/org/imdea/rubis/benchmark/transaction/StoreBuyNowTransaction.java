@@ -43,7 +43,7 @@ public class StoreBuyNowTransaction extends AbsRUBiSTransaction {
     public ExecutionHistory execute() {
         try {
             // Select the data item we are buying.
-            ItemEntity item = readEntity(items, mBuyNow.getItemId());
+            ItemEntity item = readEntityFrom(items).withKey(mBuyNow.getItemId());
             int quantityLeft = item.getQuantity() - mBuyNow.getQty();
 
             if (quantityLeft >= 0) {
@@ -65,10 +65,10 @@ public class StoreBuyNowTransaction extends AbsRUBiSTransaction {
     }
 
     private void updateIndexes() {
-        IndexEntity buyerIndex = readIndexFor(buy_now.buyer_id, mBuyNow.getBuyerId());
+        IndexEntity buyerIndex = readIndex(buy_now.buyer_id).find(mBuyNow.getBuyerId());
         buyerIndex.edit().addPointer(mBuyNow.getId()).write(this);
 
-        IndexEntity itemIndex = readIndexFor(buy_now.item_id, mBuyNow.getItemId());
+        IndexEntity itemIndex = readIndex(buy_now.item_id).find(mBuyNow.getItemId());
         itemIndex.edit().addPointer(mBuyNow.getId()).write(this);
     }
 }

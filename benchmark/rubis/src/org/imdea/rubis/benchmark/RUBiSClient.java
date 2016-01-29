@@ -30,20 +30,20 @@ import java.util.Date;
 
 import org.imdea.rubis.benchmark.entity.AbsRUBiSEntity;
 import org.imdea.rubis.benchmark.transaction.*;
-import org.imdea.rubis.benchmark.util.Sequence;
+import org.imdea.rubis.benchmark.util.ThreadSafeSequence;
 
 public class RUBiSClient {
     public static final int EXIT_FAILURE = -1;
     public static final int EXIT_SUCCESS = 0;
 
-    private Sequence mBidsSequence = new Sequence();
-    private Sequence mBuyNowSequence = new Sequence();
-    private Sequence mCategoriesSequence = new Sequence();
-    private Sequence mCommentSequence = new Sequence();
-    private Sequence mItemsSequence = new Sequence();
+    private ThreadSafeSequence mBidsSequence = new ThreadSafeSequence();
+    private ThreadSafeSequence mBuyNowSequence = new ThreadSafeSequence();
+    private ThreadSafeSequence mCategoriesSequence = new ThreadSafeSequence();
+    private ThreadSafeSequence mCommentSequence = new ThreadSafeSequence();
+    private ThreadSafeSequence mItemsSequence = new ThreadSafeSequence();
     private Jessy mJessy;
-    private Sequence mRegionsSequence = new Sequence();
-    private Sequence mUsersSequence = new Sequence();
+    private ThreadSafeSequence mRegionsSequence = new ThreadSafeSequence();
+    private ThreadSafeSequence mUsersSequence = new ThreadSafeSequence();
 
     public RUBiSClient() {
         try {

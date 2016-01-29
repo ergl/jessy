@@ -19,6 +19,8 @@
 
 package org.imdea.rubis.benchmark.transaction;
 
+import static org.imdea.rubis.benchmark.table.Tables.*;
+
 import fr.inria.jessy.Jessy;
 import fr.inria.jessy.transaction.ExecutionHistory;
 
@@ -26,7 +28,6 @@ import java.util.Date;
 
 import org.imdea.rubis.benchmark.entity.IndexEntity;
 import org.imdea.rubis.benchmark.entity.ItemEntity;
-import org.imdea.rubis.benchmark.table.Tables;
 
 public class RegisterItemTransaction extends AbsRUBiSTransaction {
     private ItemEntity mItem;
@@ -43,9 +44,9 @@ public class RegisterItemTransaction extends AbsRUBiSTransaction {
         // TODO: This sucks. For less spaghetti code index entities should be created on the fly, when needed, but the
         // TODO: actual code of Jessy doesn't allow this: reading a non-existent org.imdea.benchmark.rubis.entity will increase the fail read
         // TODO: count (after retrying 10 times) and a lot of code should be changed in order to avoid this.
-        createIndexFor(Tables.bids.item_id, mItem.getId());
-        createIndexFor(Tables.buy_now.item_id, mItem.getId());
-        createIndexFor(Tables.comments.item_id, mItem.getId());
+        createIndex(bids.item_id).justEmpty().forKey(mItem.getId());
+        createIndex(buy_now.item_id).justEmpty().forKey(mItem.getId());
+        createIndex(comments.item_id).justEmpty().forKey(mItem.getId());
     }
 
     @Override
@@ -63,10 +64,10 @@ public class RegisterItemTransaction extends AbsRUBiSTransaction {
     }
 
     private void updateIndexes() {
-        IndexEntity categoryIndex = readIndexFor(Tables.items.category, mItem.getCategory());
+        IndexEntity categoryIndex = readIndex(items.category).find(mItem.getCategory());
         categoryIndex.edit().addPointer(mItem.getId()).write(this);
 
-        IndexEntity sellerIndex = readIndexFor(Tables.items.seller, mItem.getSeller());
+        IndexEntity sellerIndex = readIndex(items.seller).find(mItem.getSeller());
         sellerIndex.edit().addPointer(mItem.getId()).write(this);
     }
 }

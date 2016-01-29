@@ -19,17 +19,14 @@
 
 package org.imdea.rubis.benchmark.transaction;
 
+import static org.imdea.rubis.benchmark.table.Tables.*;
+
 import fr.inria.jessy.Jessy;
 import fr.inria.jessy.transaction.ExecutionHistory;
 
 import org.imdea.rubis.benchmark.entity.IndexEntity;
 import org.imdea.rubis.benchmark.entity.ItemEntity;
 import org.imdea.rubis.benchmark.entity.UserEntity;
-import org.imdea.rubis.benchmark.table.Tables;
-import org.imdea.rubis.benchmark.entity.IndexEntity;
-import org.imdea.rubis.benchmark.entity.ItemEntity;
-import org.imdea.rubis.benchmark.entity.UserEntity;
-import org.imdea.rubis.benchmark.table.Tables;
 
 public class SearchItemsByRegionTransaction extends AbsRUBiSTransaction {
     private long mCategoryId;
@@ -49,19 +46,19 @@ public class SearchItemsByRegionTransaction extends AbsRUBiSTransaction {
             // each of them we get the ids of all the items they sell (or sold). For each item we check if its
             // category matches the given one (checking if categoryIndex contains the index of that item), if yes we
             // read the corresponding ItemEntity.
-            IndexEntity categoriesIndex = readIndexFor(Tables.items.category, mCategoryId);
-            IndexEntity regionsIndex = readIndexFor(Tables.users.region, mRegionId);
+            IndexEntity categoriesIndex = readIndex(items.category).find(mCategoryId);
+            IndexEntity regionsIndex = readIndex(users.region).find(mRegionId);
 
             for (long userKey : regionsIndex.getPointers()) {
-                UserEntity seller = readEntity(Tables.users, userKey);
-                IndexEntity itemsIndex = readIndexFor(Tables.items.seller, seller.getId());
+                UserEntity seller = readEntityFrom(users).withKey(userKey);
+                IndexEntity itemsIndex = readIndex(items.seller).find(seller.getId());
 
                 for (long itemKey : itemsIndex.getPointers()) {
                     // Only the items of the given category should be read. To do so we check the id of each item
                     // against the ids contained in categoriesIndex. If categoriesIndex contains such an id we read
                     // the corresponding ItemEntity.
                     if (categoriesIndex.getPointers().contains(itemKey)) {
-                        ItemEntity item = readEntity(Tables.items, itemKey);
+                        ItemEntity item = readEntityFrom(items).withKey(itemKey);
                     }
                 }
             }

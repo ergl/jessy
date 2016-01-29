@@ -40,14 +40,14 @@ public class ViewBidHistoryTransaction extends AbsRUBiSTransaction {
     @Override
     public ExecutionHistory execute() {
         try {
-            ItemEntity item = readEntity(items, mItemId);
+            ItemEntity item = readEntityFrom(items).withKey(mItemId);
 
             if (item != null) {
-                IndexEntity bidsIndex = readIndexFor(bids.item_id, mItemId);
+                IndexEntity bidsIndex = readIndex(bids.item_id).find(mItemId);
 
                 for (long key : bidsIndex.getPointers()) {
-                    BidEntity bid = readEntity(bids, key);
-                    UserEntity bidder = readEntity(users, bid.getUserId());
+                    BidEntity bid = readEntityFrom(bids).withKey(key);
+                    UserEntity bidder = readEntityFrom(users).withKey(bid.getUserId());
                 }
             }
 
