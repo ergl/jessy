@@ -56,12 +56,12 @@ public class IndexHelper {
         }
         
         public Creator justEmpty() {
-        	ArrayList<Long> pointers = new ArrayList<Long>();
+        	ArrayList<Long> pointers = new ArrayList<Long>(0);
             return withPointers(pointers);
         }
 
         public Creator withPointer(long pointer) {
-            ArrayList<Long> pointers = new ArrayList<Long>();
+            ArrayList<Long> pointers = new ArrayList<Long>(1);
             pointers.add(pointer);
             return withPointers(pointers);
         }
