@@ -42,7 +42,7 @@ public class SearchItemsByRegionTransaction extends AbsRUBiSTransaction {
     public ExecutionHistory execute() {
         try {
             // This requires a little bit of explanation. The query selects all the items of a given category sold by
-            // user in a given region. First we get the ids of all the users in the given region (regionsIndex). For
+            // users in a given region. First we get the ids of all the users in the given region (regionsIndex). For
             // each of them we get the ids of all the items they sell (or sold). For each item we check if its
             // category matches the given one (checking if categoryIndex contains the index of that item), if yes we
             // read the corresponding ItemEntity.
