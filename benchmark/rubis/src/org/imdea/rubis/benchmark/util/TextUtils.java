@@ -23,7 +23,8 @@ import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class TextUtils {
-    private static final String AVAILABLE_CHARS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    private static final String AVAILABLE_CHARS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+                                                + "1234567890 ,;.:-_!\"£$%&/()=?^";
 
     public static String randomString(int length) {
         return randomString(length, length);
