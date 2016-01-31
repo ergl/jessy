@@ -25,37 +25,27 @@ import fr.inria.jessy.Jessy;
 import fr.inria.jessy.transaction.ExecutionHistory;
 
 import org.imdea.rubis.benchmark.entity.CategoryEntity;
+import org.imdea.rubis.benchmark.entity.ScannerEntity;
 
-public class RegisterCategoryTransaction extends AbsRUBiSTransaction {
-    private CategoryEntity mCategory;
-
-    public RegisterCategoryTransaction(Jessy jessy, long id, String name) throws Exception {
+public class BrowseCategoriesTransaction extends AbsRUBiSTransaction {
+    public BrowseCategoriesTransaction(Jessy jessy) throws Exception {
         super(jessy);
-        mCategory = new CategoryEntity(id, name);
-    }
-
-    private void createNeededIndexEntities() {
-        // TODO: This sucks. For less spaghetti code index entities should be created on the fly, when needed, but the
-        // TODO: actual code of Jessy doesn't allow this: reading a non-existent org.imdea.benchmark.rubis.entity will increase the fail read
-        // TODO: count (after retrying 10 times) and a lot of code should be changed in order to avoid this.
-        createIndex(items.category).justEmpty().forKey(mCategory.getId());
     }
 
     @Override
     public ExecutionHistory execute() {
         try {
-            create(mCategory);
-            createNeededIndexEntities();
-            updateScanner();
+            ScannerEntity scanner = readScannerOf(categories);
+
+            for (long categoryId : scanner.getPointers()) {
+                CategoryEntity category = readEntityFrom(categories).withKey(categoryId);
+            }
+
             return commitTransaction();
         } catch (Exception e) {
             e.printStackTrace();
         }
 
         return null;
-    }
-
-    private void updateScanner() {
-        readScannerOf(categories).edit().addPointer(mCategory.getId()).write(this);
     }
 }

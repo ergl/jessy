@@ -19,11 +19,15 @@
 
 package org.imdea.rubis.benchmark.transaction;
 
+import static org.imdea.rubis.benchmark.table.Tables.*;
+
 import fr.inria.jessy.Jessy;
 import fr.inria.jessy.transaction.Transaction;
 
 import org.imdea.rubis.benchmark.entity.AbsRUBiSEntity;
+import org.imdea.rubis.benchmark.entity.IndexEntity;
 import org.imdea.rubis.benchmark.entity.ScannerEntity;
+import org.imdea.rubis.benchmark.entity.UserEntity;
 import org.imdea.rubis.benchmark.util.EntityHelper;
 import org.imdea.rubis.benchmark.table.Index;
 import org.imdea.rubis.benchmark.table.AbsTable;
@@ -46,6 +50,20 @@ public abstract class AbsRUBiSTransaction extends Transaction {
             Exception {
         super(jessy, readOperations, updateOperations, createOperations);
         init();
+    }
+
+    protected long authenticate(String nickname, String password) {
+        IndexEntity nickIndex = readIndex(users.nickname).find(nickname);
+
+        if (nickIndex != null && nickIndex.getPointers().size() > 0) {
+            long userId = nickIndex.getPointers().get(0);
+            UserEntity user = readEntityFrom(users).withKey(userId);
+
+            if (user.getPassword().equals(password))
+                return userId;
+        }
+
+        return -1;
     }
 
     protected IndexHelper.Initializer createIndex(Index index) {

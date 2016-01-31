@@ -24,38 +24,47 @@ import static org.imdea.rubis.benchmark.table.Tables.*;
 import fr.inria.jessy.Jessy;
 import fr.inria.jessy.transaction.ExecutionHistory;
 
-import org.imdea.rubis.benchmark.entity.CategoryEntity;
+import org.imdea.rubis.benchmark.entity.BidEntity;
+import org.imdea.rubis.benchmark.entity.IndexEntity;
+import org.imdea.rubis.benchmark.entity.ItemEntity;
+import org.imdea.rubis.benchmark.entity.UserEntity;
 
-public class RegisterCategoryTransaction extends AbsRUBiSTransaction {
-    private CategoryEntity mCategory;
+public class PutBidTransaction extends AbsRUBiSTransaction {
+    private long mItemId;
+    private String mNickname;
+    private String mPassword;
 
-    public RegisterCategoryTransaction(Jessy jessy, long id, String name) throws Exception {
+    public PutBidTransaction(Jessy jessy, long itemId, String nickname, String password) throws Exception {
         super(jessy);
-        mCategory = new CategoryEntity(id, name);
-    }
-
-    private void createNeededIndexEntities() {
-        // TODO: This sucks. For less spaghetti code index entities should be created on the fly, when needed, but the
-        // TODO: actual code of Jessy doesn't allow this: reading a non-existent org.imdea.benchmark.rubis.entity will increase the fail read
-        // TODO: count (after retrying 10 times) and a lot of code should be changed in order to avoid this.
-        createIndex(items.category).justEmpty().forKey(mCategory.getId());
+        mItemId = itemId;
+        mNickname = nickname;
+        mPassword = password;
     }
 
     @Override
     public ExecutionHistory execute() {
         try {
-            create(mCategory);
-            createNeededIndexEntities();
-            updateScanner();
+            long userId = authenticate(mNickname, mPassword);
+
+            if (userId != -1) {
+                ItemEntity item = readEntityFrom(items).withKey(mItemId);
+                UserEntity seller = readEntityFrom(users).withKey(item.getSeller());
+                IndexEntity bidsIndex = readIndex(bids.item_id).find(item.getId());
+                int count = 0;
+                float max = 0.0f;
+
+                for (long bidId : bidsIndex.getPointers()) {
+                    BidEntity bid = readEntityFrom(bids).withKey(bidId);
+                    max = Math.max(max, bid.getBid());
+                    count++;
+                }
+            }
+
             return commitTransaction();
         } catch (Exception e) {
             e.printStackTrace();
         }
 
         return null;
-    }
-
-    private void updateScanner() {
-        readScannerOf(categories).edit().addPointer(mCategory.getId()).write(this);
     }
 }
