@@ -31,25 +31,33 @@ import org.imdea.rubis.benchmark.entity.ItemEntity;
 import org.imdea.rubis.benchmark.entity.UserEntity;
 
 public class AboutMeTransaction extends AbsRUBiSTransaction {
-    private long mUserId;
+    private String mNickname;
+    private String mPassword;
+    private long mTargetUserId;
 
-    public AboutMeTransaction(Jessy jessy, long userId) throws Exception {
+    public AboutMeTransaction(Jessy jessy, long userId, String nickname, String password) throws Exception {
         super(jessy);
         putExtra(SPSI.LEVEL, SPSI.SER);
-        mUserId = userId;
+        mTargetUserId = userId;
+        mNickname = nickname;
+        mPassword = password;
     }
 
     @Override
     public ExecutionHistory execute() {
         try {
-            UserEntity user = readEntityFrom(users).withKey(mUserId);
+            long userId = authenticate(mNickname, mPassword);
 
-            if (user != null) {
-                listBids();
-                listItems();
-                listWonItems();
-                listBoughtItems();
-                listComments();
+            if (userId != -1) {
+                UserEntity user = readEntityFrom(users).withKey(mTargetUserId);
+
+                if (user != null) {
+                    listBids();
+                    listItems();
+                    listWonItems();
+                    listBoughtItems();
+                    listComments();
+                }
             }
 
             return commitTransaction();
@@ -61,7 +69,7 @@ public class AboutMeTransaction extends AbsRUBiSTransaction {
     }
 
     private void listBids() {
-        IndexEntity wonIndex = readIndex(bids.user_id).find(mUserId);
+        IndexEntity wonIndex = readIndex(bids.user_id).find(mTargetUserId);
 
         for (long wonKey : wonIndex.getPointers()) {
             ItemEntity item = readEntityFrom(items).withKey(wonKey);
@@ -70,7 +78,7 @@ public class AboutMeTransaction extends AbsRUBiSTransaction {
     }
 
     private void listBoughtItems() {
-        IndexEntity boughtsIndex = readIndex(buy_now.buyer_id).find(mUserId);
+        IndexEntity boughtsIndex = readIndex(buy_now.buyer_id).find(mTargetUserId);
 
         for (long boughtsKey : boughtsIndex.getPointers()) {
             ItemEntity boughtItem = readEntityFrom(items).withKey(boughtsKey);
@@ -79,7 +87,7 @@ public class AboutMeTransaction extends AbsRUBiSTransaction {
     }
 
     private void listComments() {
-        IndexEntity commentsIndex = readIndex(comments.to_user_id).find(mUserId);
+        IndexEntity commentsIndex = readIndex(comments.to_user_id).find(mTargetUserId);
 
         for (long commentKey : commentsIndex.getPointers()) {
             CommentEntity comment = readEntityFrom(comments).withKey(commentKey);
@@ -88,7 +96,7 @@ public class AboutMeTransaction extends AbsRUBiSTransaction {
     }
 
     private void listItems() {
-        IndexEntity sellingIndex = readIndex(items.seller).find(mUserId);
+        IndexEntity sellingIndex = readIndex(items.seller).find(mTargetUserId);
 
         for (long sellingKey : sellingIndex.getPointers()) {
             ItemEntity item = readEntityFrom(items).withKey(sellingKey);
@@ -96,7 +104,7 @@ public class AboutMeTransaction extends AbsRUBiSTransaction {
     }
 
     private void listWonItems() {
-        IndexEntity wonIndex = readIndex(bids.user_id).find(mUserId);
+        IndexEntity wonIndex = readIndex(bids.user_id).find(mTargetUserId);
 
         for (long wonKey : wonIndex.getPointers()) {
             ItemEntity item = readEntityFrom(items).withKey(wonKey);
