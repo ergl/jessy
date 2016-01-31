@@ -23,16 +23,19 @@ import fr.inria.jessy.Jessy;
 import fr.inria.jessy.transaction.Transaction;
 
 import org.imdea.rubis.benchmark.entity.AbsRUBiSEntity;
+import org.imdea.rubis.benchmark.entity.ScannerEntity;
 import org.imdea.rubis.benchmark.util.EntityHelper;
 import org.imdea.rubis.benchmark.table.Index;
 import org.imdea.rubis.benchmark.table.AbsTable;
 import org.imdea.rubis.benchmark.util.IndexHelper;
+import org.imdea.rubis.benchmark.util.ScannerHelper;
 
 public abstract class AbsRUBiSTransaction extends Transaction {
     public static final String NAME = AbsRUBiSTransaction.class.getName() + "::NAME";
 
     private EntityHelper mEntityHelper = new EntityHelper(this);
     private IndexHelper mIndexHelper = new IndexHelper(this);
+    private ScannerHelper mScannerHelper = new ScannerHelper(this);
 
     public AbsRUBiSTransaction(Jessy jessy) throws Exception {
         super(jessy);
@@ -49,6 +52,10 @@ public abstract class AbsRUBiSTransaction extends Transaction {
         return mIndexHelper.createIndex(index);
     }
 
+    protected <E extends AbsRUBiSEntity> void createScannerFor(AbsTable<E> table) {
+        mScannerHelper.createScannerFor(table);
+    }
+
     private void init() {
         putExtra(NAME, getClass().getSimpleName());
     }
@@ -59,5 +66,9 @@ public abstract class AbsRUBiSTransaction extends Transaction {
 
     protected IndexHelper.Reader readIndex(Index index) {
         return mIndexHelper.readIndex(index);
+    }
+
+    protected <E extends AbsRUBiSEntity> ScannerEntity readScannerOf(AbsTable<E> table) {
+        return mScannerHelper.readScannerOf(table);
     }
 }
