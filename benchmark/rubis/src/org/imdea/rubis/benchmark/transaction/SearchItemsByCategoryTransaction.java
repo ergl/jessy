@@ -28,7 +28,7 @@ import org.imdea.rubis.benchmark.entity.IndexEntity;
 import org.imdea.rubis.benchmark.entity.ItemEntity;
 
 public class SearchItemsByCategoryTransaction extends AbsRUBiSTransaction {
-    private static final int DEFAULT_ITEMS_PER_PAGE = 16;
+    private static final int DEFAULT_ITEMS_PER_PAGE = 25;
 
     private long mCategoryId;
     private String mCategoryName;
