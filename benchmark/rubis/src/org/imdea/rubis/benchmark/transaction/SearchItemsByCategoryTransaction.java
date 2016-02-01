@@ -31,23 +31,18 @@ public class SearchItemsByCategoryTransaction extends AbsRUBiSTransaction {
     private static final int DEFAULT_ITEMS_PER_PAGE = 25;
 
     private long mCategoryId;
-    private String mCategoryName;
     private int mNbOfItems;
     private int mPage;
 
+
     public SearchItemsByCategoryTransaction(Jessy jessy, long categoryId) throws Exception {
-        this(jessy, categoryId, "");
+        this(jessy, categoryId, 0, DEFAULT_ITEMS_PER_PAGE);
     }
 
-    public SearchItemsByCategoryTransaction(Jessy jessy, long categoryId, String categoryName) throws Exception {
-        this(jessy, categoryId, categoryName, 0, DEFAULT_ITEMS_PER_PAGE);
-    }
-
-    public SearchItemsByCategoryTransaction(Jessy jessy, long categoryId, String categoryName, int page, int nbOfItems)
+    public SearchItemsByCategoryTransaction(Jessy jessy, long categoryId, int page, int nbOfItems)
             throws Exception {
         super(jessy);
         mCategoryId = categoryId;
-        mCategoryName = categoryName;
         mPage = page;
         mNbOfItems = nbOfItems;
     }
