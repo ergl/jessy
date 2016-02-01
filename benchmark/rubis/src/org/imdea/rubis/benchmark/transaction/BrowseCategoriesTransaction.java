@@ -25,19 +25,57 @@ import fr.inria.jessy.Jessy;
 import fr.inria.jessy.transaction.ExecutionHistory;
 
 import org.imdea.rubis.benchmark.entity.CategoryEntity;
-import org.imdea.rubis.benchmark.entity.ScannerEntity;
+import org.imdea.rubis.benchmark.entity.RegionEntity;
+import org.imdea.rubis.benchmark.util.TextUtils;
 
 public class BrowseCategoriesTransaction extends AbsRUBiSTransaction {
+    private String mNickname;
+    private String mPassword;
+    private String mRegionName;
+
     public BrowseCategoriesTransaction(Jessy jessy) throws Exception {
+        this(jessy, "", "");
+    }
+
+    public BrowseCategoriesTransaction(Jessy jessy, String nickname, String password) throws Exception {
+        this(jessy, "", nickname, password);
+    }
+
+    public BrowseCategoriesTransaction(Jessy jessy, String regionId, String nickname, String password) throws
+            Exception {
         super(jessy);
+        mRegionName = regionId;
+        mNickname = nickname;
+        mPassword = password;
     }
 
     @Override
     public ExecutionHistory execute() {
         try {
-            ScannerEntity scanner = readScannerOf(categories);
+            if (!TextUtils.isEmpty(mNickname) || !TextUtils.isEmpty(mPassword)) {
+                long userId = authenticate(mNickname, mPassword);
 
-            for (long categoryId : scanner.getPointers()) {
+                if (userId == -1)
+                    return commitTransaction();
+            }
+
+            if (!TextUtils.isEmpty(mRegionName)) {
+                boolean found = false;
+
+                for (long regionId : readScannerOf(regions).getPointers()) {
+                    RegionEntity region = readEntityFrom(regions).withKey(regionId);
+
+                    if (region.getName().equals(mRegionName)) {
+                        found = true;
+                        break;
+                    }
+                }
+
+                if (!found)
+                    return commitTransaction();
+            }
+
+            for (long categoryId : readScannerOf(categories).getPointers()) {
                 CategoryEntity category = readEntityFrom(categories).withKey(categoryId);
             }
 
