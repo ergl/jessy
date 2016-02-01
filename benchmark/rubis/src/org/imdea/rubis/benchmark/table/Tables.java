@@ -19,6 +19,11 @@
 
 package org.imdea.rubis.benchmark.table;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
+import java.util.ArrayList;
+import java.util.List;
+
 public class Tables {
     public static final BidTable bids = new BidTable();
     public static final BuyNowTable buy_now = new BuyNowTable();
@@ -27,4 +32,18 @@ public class Tables {
     public static final ItemsTable items = new ItemsTable();
     public static final RegionsTable regions = new RegionsTable();
     public static final UsersTable users = new UsersTable();
+
+    public static List<AbsTable> list() {
+        List<AbsTable> tables = new ArrayList<AbsTable>();
+
+        try {
+            for (Field field : Tables.class.getDeclaredFields()) {
+                if (Modifier.isStatic(field.getModifiers()))
+                    tables.add((AbsTable) field.get(null));
+            }
+        } catch (IllegalAccessException ignored) {
+        }
+
+        return tables;
+    }
 }
