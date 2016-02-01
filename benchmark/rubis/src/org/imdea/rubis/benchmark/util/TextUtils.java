@@ -26,6 +26,10 @@ public class TextUtils {
     private static final String AVAILABLE_CHARS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
                                                 + "1234567890 ,;.:-_!\"£$%&/()=?^";
 
+    public static boolean isEmpty(String string) {
+        return string == null || string.equals("");
+    }
+
     public static String randomString(int length) {
         return randomString(length, length);
     }
