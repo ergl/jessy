@@ -46,11 +46,16 @@ public class RegisterRegionTransaction extends AbsRUBiSTransaction {
         try {
             create(mRegion);
             createNeededIndexEntities();
+            updateScanner();
             return commitTransaction();
         } catch (Exception e) {
             e.printStackTrace();
         }
 
         return null;
+    }
+
+    private void updateScanner() {
+        readScannerOf(regions).edit().addPointer(mRegion.getId()).write(this);
     }
 }
