@@ -41,10 +41,10 @@ public class BrowseCategoriesTransaction extends AbsRUBiSTransaction {
         this(jessy, "", nickname, password);
     }
 
-    public BrowseCategoriesTransaction(Jessy jessy, String regionId, String nickname, String password) throws
+    public BrowseCategoriesTransaction(Jessy jessy, String regionName, String nickname, String password) throws
             Exception {
         super(jessy);
-        mRegionName = regionId;
+        mRegionName = regionName;
         mNickname = nickname;
         mPassword = password;
     }
