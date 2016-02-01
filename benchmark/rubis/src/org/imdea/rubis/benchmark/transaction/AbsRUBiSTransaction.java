@@ -37,6 +37,10 @@ import org.imdea.rubis.benchmark.util.ScannerHelper;
 public abstract class AbsRUBiSTransaction extends Transaction {
     public static final String NAME = AbsRUBiSTransaction.class.getName() + "::NAME";
 
+    public enum Outcome {
+        SUCCESS, FAILURE, ERROR
+    }
+
     private EntityHelper mEntityHelper = new EntityHelper(this);
     private IndexHelper mIndexHelper = new IndexHelper(this);
     private ScannerHelper mScannerHelper = new ScannerHelper(this);
