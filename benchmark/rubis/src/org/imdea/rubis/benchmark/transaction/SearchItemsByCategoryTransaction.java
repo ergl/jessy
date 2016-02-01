@@ -28,19 +28,39 @@ import org.imdea.rubis.benchmark.entity.IndexEntity;
 import org.imdea.rubis.benchmark.entity.ItemEntity;
 
 public class SearchItemsByCategoryTransaction extends AbsRUBiSTransaction {
+    private static final int DEFAULT_ITEMS_PER_PAGE = 16;
+
     private long mCategoryId;
+    private String mCategoryName;
+    private int mNbOfItems;
+    private int mPage;
 
     public SearchItemsByCategoryTransaction(Jessy jessy, long categoryId) throws Exception {
+        this(jessy, categoryId, "");
+    }
+
+    public SearchItemsByCategoryTransaction(Jessy jessy, long categoryId, String categoryName) throws Exception {
+        this(jessy, categoryId, categoryName, 0, DEFAULT_ITEMS_PER_PAGE);
+    }
+
+    public SearchItemsByCategoryTransaction(Jessy jessy, long categoryId, String categoryName, int page, int nbOfItems)
+            throws Exception {
         super(jessy);
         mCategoryId = categoryId;
+        mCategoryName = categoryName;
+        mPage = page;
+        mNbOfItems = nbOfItems;
     }
 
     @Override
     public ExecutionHistory execute() {
         try {
             IndexEntity itemsIndex = readIndex(items.category).find(mCategoryId);
+            int start = mPage * mNbOfItems;
+            int end = start + mNbOfItems;
 
-            for (long key : itemsIndex.getPointers()) {
+            for (int i = start; i < end; i++) {
+                long key = itemsIndex.getPointers().get(i);
                 ItemEntity item = readEntityFrom(items).withKey(key);
             }
 
