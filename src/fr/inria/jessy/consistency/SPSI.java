@@ -70,56 +70,21 @@ public abstract class SPSI extends Consistency {
      */
     @Override
     public boolean certificationCommute(ExecutionHistory h1, ExecutionHistory h2) {
-        // TODO: Not only a transaction marked as SER should execute in a serializable fashion. Two transaction T1
-        // TODO: and T2 executing on the same machine should be "implicitly" serializable (meaning that they should be
-        // TODO: serializable even if they are marked as PSI).
-        // TODO: Or, better, the projection of a transaction on a single shard should be serializable, meaning that
-        // TODO: the operations of a transaction made on a single machine should be serializable.
-        if (isMarkedSerializable(h1) || isMarkedSerializable(h2)) {
-            // If one of the two transaction was marked as serializable, then the write sets of the two transaction
-            // must be disjoint; also the one's read set must not intersect with the other's write set.
-
-            // TODO: In a comment in PSI consistency they state that if the group size is greater than one, the two
-            // TODO: transaction cannot commute under any condition. Then,
-            // TODO: if (manager.getMyGroup().size() > 1) return false;
-
-            // TODO: Here we check for write-write intersections, conversely of what they did in SER. Is their
-            // TODO: implementation incomplete? It probably is, considering the TODO comment they wrote above.
-            // TODO: Thinking about it, probably it is not the case, i.e. blind writes.
-
-            // The two transaction's write sets should be disjoint.
-            if (h1.getWriteSet() != null && h2.getWriteSet() != null) {
-                if (CollectionUtils.isIntersectingWith(h1.getWriteSet().getKeys(), h2.getWriteSet().getKeys()))
-                    return false;
-            }
-
-            // Check h1's read set against h2's write set.
-            if (h1.getReadSet() != null && h2.getWriteSet() != null) {
-                if (CollectionUtils.isIntersectingWith(h1.getReadSet().getKeys(), h2.getWriteSet().getKeys()))
-                    return false;
-            }
-
-            // Then, do the opposite: check h2's read set against h1's write set.
-            if (h2.getReadSet() != null && h1.getWriteSet() != null) {
-                if (CollectionUtils.isIntersectingWith(h2.getReadSet().getKeys(), h1.getWriteSet().getKeys()))
-                    return false;
-            }
-
-            return true;
-
-            // TODO: The stuff above works (I hope) if the group is composed by only one replica. A thing like this,
-            // TODO: if (manager.getMyGroup().size() > 1) return false;
-            // TODO: may be more efficient. This may be what the first TODO comment was about.
-            // Always return false to guarantee a global order within replicas on certification.
-            //return false;
-        } else {
-            // If a transaction is not marked as serializable (and then it executes under PSI), it commutes with
-            // another transaction only if the two write sets are disjoint.
-            if (CollectionUtils.isIntersectingWith(h1.getWriteSet().getKeys(), h2.getWriteSet().getKeys()))
+        // Check h1's read set against h2's write set.
+        if (h1.getReadSet() != null && h2.getWriteSet() != null) {
+            if (CollectionUtils.isIntersectingWith(h1.getReadSet().getKeys(), h2.getWriteSet().getKeys()))
                 return false;
-
-            return true;
         }
+
+        // Then, do the opposite: check h2's read set against h1's write set.
+        if (h1.getWriteSet() != null && h2.getReadSet() != null) {
+            if (CollectionUtils.isIntersectingWith(h2.getReadSet().getKeys(), h1.getWriteSet().getKeys()))
+                return false;
+        }
+
+        // No need to check ww conflicts because rs is a superset of ws.
+
+        return true;
     }
 
     /**
@@ -135,28 +100,17 @@ public abstract class SPSI extends Consistency {
      */
     @Override
     public boolean certificationCommute(TransactionTouchedKeys k1, TransactionTouchedKeys k2) {
-        // TODO: No way to determine if a transaction is marked as serializable or not using TransactionTouchedKeys: to
-        // TODO: be sure, and not getting anomalies that we do not want, we should always return false.
-        // TODO: But
-        // TODO: If the two transaction commute under SER they also commute under PSI. If we use the SER criterion
-        // TODO: here, we probably gain a boost since two read only transaction commute.
-        // TODO: Also,
-        // TODO: if (manager.getMyGroup().size() > 1) return false;
+        // Check k1's read set against k2's write set.
+        if (CollectionUtils.isIntersectingWith(k1.readKeys, k2.writeKeys))
+            return false;
 
-//        // The two write sets should be disjoint.
-//        if (CollectionUtils.isIntersectingWith(k1.writeKeys, k2.writeKeys))
-//            return false;
-//
-//        // Check k1's read set against k2's write set.
-//        if (CollectionUtils.isIntersectingWith(k1.readKeys, k2.writeKeys))
-//            return false;
-//
-//        // Then, do the opposite: check k2's read set against k1's write set.
-//        if (CollectionUtils.isIntersectingWith(k2.readKeys, k1.writeKeys))
-//            return false;
-//
-//        return true;
-        return false;
+        // Then, do the opposite: check k2's read set against k1's write set.
+        if (CollectionUtils.isIntersectingWith(k1.writeKeys, k2.readKeys))
+            return false;
+
+        // No need to check ww conflicts because rs is a superset of ws.
+
+        return true;
     }
 
     /**
@@ -171,7 +125,7 @@ public abstract class SPSI extends Consistency {
      * <p>
      * In the case of SPSI concistency model we should only distinguish between PSI transaction and SER transactions.
      *
-     * @param h The execution history.
+     * @param h      The execution history.
      * @param target The target.
      * @return The set of concerning keys for that target.
      */

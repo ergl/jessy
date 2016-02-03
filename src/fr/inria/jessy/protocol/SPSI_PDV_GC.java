@@ -2,7 +2,7 @@ package fr.inria.jessy.protocol;
 
 import static fr.inria.jessy.ConstantPool.*;
 import static fr.inria.jessy.transaction.ExecutionHistory.TransactionType;
-import static fr.inria.jessy.transaction.ExecutionHistory.TransactionType.BLIND_WRITE;
+import static fr.inria.jessy.transaction.ExecutionHistory.TransactionType.*;
 import static fr.inria.jessy.vector.Vector.CompatibleResult;
 
 import com.googlecode.concurrentlinkedhashmap.ConcurrentLinkedHashMap;
@@ -70,8 +70,6 @@ public class SPSI_PDV_GC extends SPSI {
             String groupName = manager.getMyGroup().name();
 
             // For each entity we load an initial only-zeros dependence vector.
-            // TODO: Probably the best place where to do this initialization is in the method createEntity. See
-            // TODO: NMSI_PDV_GC#createEntity.
             for (JessyEntity e : history.getCreateSet().getEntities())
                 e.setLocalVector(new PartitionDependenceVector<>(groupName, 0));
 
@@ -79,20 +77,11 @@ public class SPSI_PDV_GC extends SPSI {
         }
 
         // If a transaction is readonly it should always commit.
-        if (type == TransactionType.READONLY_TRANSACTION) {
+        if (type == TransactionType.READONLY_TRANSACTION)
             return true;
-        }
 
         Set<JessyEntity> checkEntities = new HashSet<>();
-
-        if (isMarkedSerializable(history)) {
-            checkEntities.addAll(history.getReadSet().getEntities());
-        } else {
-            // If an operation is neither an init nor a read only operation we treat the create operations as update
-            // operations. Then for each update operation we check its compatibility.
-            checkEntities.addAll(history.getCreateSet().getEntities());
-            checkEntities.addAll(history.getWriteSet().getEntities());
-        }
+        checkEntities.addAll(history.getReadSet().getEntities());
 
         for (JessyEntity e : checkEntities) {
             // Check only for local entities. read-write conflicts and write-write conflicts should be checked
@@ -116,8 +105,7 @@ public class SPSI_PDV_GC extends SPSI {
                             return false;
                     } else {
                         // We check if e and the value stored in the database are compatible. If not, we reject
-                        // certification.
-                        // TODO: Write down a comment to say when two operations are compatible.
+                        // certification. Two PDVs are compatible they are equal.
                         if (last.getLocalVector().isCompatible(e.getLocalVector()) != CompatibleResult.COMPATIBLE)
                             return false;
                     }
