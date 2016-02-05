@@ -68,6 +68,7 @@ public class IndexEntity extends AbsIndexEntity {
     private String mId;
     private List<Long> mPointers;
 
+    @Deprecated
     public IndexEntity() {
     }
 

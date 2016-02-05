@@ -23,6 +23,8 @@ import static fr.inria.jessy.ConstantPool.JESSY_MID;
 
 import static org.imdea.rubis.benchmark.table.Tables.*;
 
+import com.sleepycat.persist.model.Entity;
+
 import fr.inria.jessy.transaction.Transaction;
 
 import java.io.IOException;
@@ -30,6 +32,7 @@ import java.io.ObjectInput;
 import java.io.ObjectOutput;
 import java.util.Date;
 
+@Entity
 public class ItemEntity extends AbsTableEntity {
     private static final long serialVersionUID = JESSY_MID;
 
@@ -153,6 +156,7 @@ public class ItemEntity extends AbsTableEntity {
     private long mSeller;
     private Date mStartDate;
 
+    @Deprecated
     public ItemEntity() {
     }
 

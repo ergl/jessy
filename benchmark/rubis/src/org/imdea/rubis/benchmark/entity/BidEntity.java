@@ -23,6 +23,8 @@ import static fr.inria.jessy.ConstantPool.*;
 
 import static org.imdea.rubis.benchmark.table.Tables.*;
 
+import com.sleepycat.persist.model.Entity;
+
 import fr.inria.jessy.transaction.Transaction;
 
 import java.io.Externalizable;
@@ -31,6 +33,7 @@ import java.io.ObjectInput;
 import java.io.ObjectOutput;
 import java.util.Date;
 
+@Entity
 public class BidEntity extends AbsTableEntity implements Externalizable {
     private static final long serialVersionUID = JESSY_MID;
 
@@ -105,6 +108,7 @@ public class BidEntity extends AbsTableEntity implements Externalizable {
     private int mQty;
     private long mUserId;
 
+    @Deprecated
     public BidEntity() {
     }
 

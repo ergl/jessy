@@ -67,6 +67,7 @@ public class CategoryEntity extends AbsTableEntity implements Externalizable {
     private long mId;
     private String mName;
 
+    @Deprecated
     public CategoryEntity() {
     }
 

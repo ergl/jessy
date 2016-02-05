@@ -104,6 +104,7 @@ public class CommentEntity extends AbsTableEntity {
     private int mRating;
     private long mToUserId;
 
+    @Deprecated
     public CommentEntity() {
     }
 

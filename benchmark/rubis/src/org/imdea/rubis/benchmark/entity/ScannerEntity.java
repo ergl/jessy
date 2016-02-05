@@ -68,6 +68,7 @@ public class ScannerEntity extends AbsIndexEntity {
     private String mId;
     private List<Long> mPointers;
 
+    @Deprecated
     public ScannerEntity() {
     }
 
