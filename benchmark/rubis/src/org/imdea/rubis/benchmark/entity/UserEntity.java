@@ -19,11 +19,14 @@
 
 package org.imdea.rubis.benchmark.entity;
 
+import static com.sleepycat.persist.model.Relationship.*;
+
 import static fr.inria.jessy.ConstantPool.JESSY_MID;
 
 import static org.imdea.rubis.benchmark.table.Tables.*;
 
 import com.sleepycat.persist.model.Entity;
+import com.sleepycat.persist.model.SecondaryKey;
 
 import fr.inria.jessy.transaction.Transaction;
 
@@ -127,9 +130,11 @@ public class UserEntity extends AbsTableEntity {
     private String mFirstname;
     private long mId;
     private String mLastname;
+    @SecondaryKey(relate = ONE_TO_ONE)
     private String mNickname;
     private String mPassword;
     private int mRating;
+    @SecondaryKey(relate = MANY_TO_ONE)
     private long mRegion;
 
     @Deprecated

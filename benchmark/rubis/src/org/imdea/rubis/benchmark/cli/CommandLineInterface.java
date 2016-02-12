@@ -21,10 +21,17 @@ package org.imdea.rubis.benchmark.cli;
 
 import static org.imdea.rubis.benchmark.cli.Constants.*;
 
+import edu.rice.rubis.client.ClientEmulator;
+import edu.rice.rubis.client.InitDB;
+
+import fr.inria.jessy.DistributedJessy;
+import fr.inria.jessy.Jessy;
+
 import java.io.File;
 
 import org.apache.commons.cli.*;
-import org.imdea.rubis.benchmark.RUBiSBenchmark;
+
+import org.imdea.rubis.benchmark.entity.*;
 
 public class CommandLineInterface {
     private String[] mArgs;
@@ -41,8 +48,13 @@ public class CommandLineInterface {
     }
 
     private void init() {
-        mOptions.addOption(OPT_HELP, OPT_HELP_LONG, false, OPT_HELP_DESC);
-        mOptions.addOption(OPT_ITERS, OPT_ITERS_LONG, true, OPT_ITERS_DESC);
+    	OptionGroup group = new OptionGroup();
+    	Option help = Option.builder(OPT_HELP)
+    			.longOpt(OPT_HELP_LONG)
+    			.desc(OPT_HELP_DESC)
+    			.build();
+    	group.addOption(help);
+        mOptions.addOptionGroup(group);
     }
 
     public static void main(String... args) {
@@ -58,15 +70,8 @@ public class CommandLineInterface {
             if (cmd.hasOption(OPT_HELP)) {
                 printHelp();
             } else {
-                int iters;
-
-                if (cmd.hasOption(OPT_ITERS))
-                    iters = Integer.parseInt(cmd.getOptionValue(OPT_ITERS));
-                else
-                    iters = OPT_ITERS_DEFAULT;
-
-                RUBiSBenchmark benchmark = new RUBiSBenchmark();
-                benchmark.start(iters);
+                String propFileName = cmd.getOptionValue(OPT_PROPERTIES);
+                startEmulation(propFileName);
             }
         } catch (Exception e) {
             printHelp();
@@ -76,5 +81,45 @@ public class CommandLineInterface {
     private void printHelp() {
         HelpFormatter formatter = new HelpFormatter();
         formatter.printHelp(getJarName(), mOptions, true);
+    }
+
+    private void setupJessyInstance(Jessy jessy) {
+        try {
+            jessy.addEntity(BidEntity.class);
+            jessy.addEntity(BuyNowEntity.class);
+            jessy.addEntity(CategoryEntity.class);
+            jessy.addEntity(CategoryEntity.class);
+            jessy.addEntity(CommentEntity.class);
+            jessy.addEntity(IndexEntity.class);
+            jessy.addEntity(ItemEntity.class);
+            jessy.addEntity(RegionEntity.class);
+            jessy.addEntity(ScannerEntity.class);
+            jessy.addEntity(UserEntity.class);
+            jessy.addSecondaryIndex(BidEntity.class, Long.class, "mItemId");
+            jessy.addSecondaryIndex(BidEntity.class, Long.class, "mUserId");
+            jessy.addSecondaryIndex(BuyNowEntity.class, Long.class, "mBuyerId");
+            jessy.addSecondaryIndex(BuyNowEntity.class, Long.class, "mItemId");
+            jessy.addSecondaryIndex(CommentEntity.class, Long.class, "mFromUserId");
+            jessy.addSecondaryIndex(CommentEntity.class, Long.class, "mItemId");
+            jessy.addSecondaryIndex(CommentEntity.class, Long.class, "mToUserId");
+            jessy.addSecondaryIndex(ItemEntity.class, Long.class, "mCategory");
+            jessy.addSecondaryIndex(ItemEntity.class, Long.class, "mSeller");
+            jessy.addSecondaryIndex(UserEntity.class, String.class, "mNickname");
+            jessy.addSecondaryIndex(UserEntity.class, Long.class, "mRegion");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void startEmulation(String propFileName) {
+        try {
+            Jessy jessy = DistributedJessy.getInstance();
+            setupJessyInstance(jessy);
+
+            ClientEmulator client = new ClientEmulator(jessy);
+            client.start();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

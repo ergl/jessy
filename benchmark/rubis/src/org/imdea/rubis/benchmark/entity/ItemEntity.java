@@ -19,12 +19,15 @@
 
 package org.imdea.rubis.benchmark.entity;
 
+import static com.sleepycat.persist.model.Relationship.*;
+
 import static fr.inria.jessy.ConstantPool.JESSY_MID;
 
 import static org.imdea.rubis.benchmark.table.Tables.*;
 
 import com.sleepycat.persist.model.Entity;
 
+import com.sleepycat.persist.model.SecondaryKey;
 import fr.inria.jessy.transaction.Transaction;
 
 import java.io.IOException;
@@ -143,6 +146,7 @@ public class ItemEntity extends AbsTableEntity {
     }
 
     private float mBuyNow;
+    @SecondaryKey(relate = MANY_TO_ONE)
     private long mCategory;
     private String mDescription;
     private Date mEndDate;
@@ -153,6 +157,7 @@ public class ItemEntity extends AbsTableEntity {
     private int mNbOfBids;
     private int mQuantity;
     private float mReservePrice;
+    @SecondaryKey(relate = MANY_TO_ONE)
     private long mSeller;
     private Date mStartDate;
 

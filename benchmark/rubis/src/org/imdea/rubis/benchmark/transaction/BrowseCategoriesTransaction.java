@@ -37,6 +37,11 @@ public class BrowseCategoriesTransaction extends AbsRUBiSTransaction {
         this(jessy, "", "");
     }
 
+    public BrowseCategoriesTransaction(Jessy jessy, String regionName) throws Exception {
+        this(jessy, regionName, "", "");
+        mRegionName = regionName;
+    }
+
     public BrowseCategoriesTransaction(Jessy jessy, String nickname, String password) throws Exception {
         this(jessy, "", nickname, password);
     }

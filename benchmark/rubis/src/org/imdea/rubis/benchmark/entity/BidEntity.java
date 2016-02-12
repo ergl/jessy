@@ -19,11 +19,14 @@
 
 package org.imdea.rubis.benchmark.entity;
 
+import static com.sleepycat.persist.model.Relationship.*;
+
 import static fr.inria.jessy.ConstantPool.*;
 
 import static org.imdea.rubis.benchmark.table.Tables.*;
 
 import com.sleepycat.persist.model.Entity;
+import com.sleepycat.persist.model.SecondaryKey;
 
 import fr.inria.jessy.transaction.Transaction;
 
@@ -103,9 +106,11 @@ public class BidEntity extends AbsTableEntity implements Externalizable {
     private float mBid;
     private Date mDate;
     private long mId;
+    @SecondaryKey(relate = MANY_TO_ONE)
     private long mItemId;
     private float mMaxBid;
     private int mQty;
+    @SecondaryKey(relate = MANY_TO_ONE)
     private long mUserId;
 
     @Deprecated
