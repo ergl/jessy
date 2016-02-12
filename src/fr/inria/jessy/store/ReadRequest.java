@@ -120,7 +120,7 @@ public class ReadRequest<E extends JessyEntity> implements Externalizable {
 	public String getPartitioningKey() {
 		if(isOneKeyRequest) {
 			return oneKey.toString();
-		}  else {
+		} else {
 			StringBuilder builder = new StringBuilder();
 
 			for (ReadRequestKey<?> rk : multiKeys)
