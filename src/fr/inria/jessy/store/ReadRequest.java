@@ -126,7 +126,7 @@ public class ReadRequest<E extends JessyEntity> implements Externalizable {
 		else{
 			String keyConcatenation = "";
 			for (ReadRequestKey<?> rk : multiKeys){
-				keyConcatenation.concat(rk.toString());
+				keyConcatenation = keyConcatenation.concat(rk.toString());
 			}
 			return keyConcatenation;
 		}
