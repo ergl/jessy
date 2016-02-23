@@ -90,6 +90,14 @@ public class CategoryEntity extends JessyEntity implements Externalizable {
             throw new UnsupportedOperationException("This entity is immutable.");
         }
 
+        @Override
+        public Object clone() {
+            Scanner entity = (Scanner) super.clone();
+            entity.mCategoryId = mCategoryId;
+            entity.mDummy = mDummy;
+            return entity;
+        }
+
         public long getCategoryId() {
             return mCategoryId;
         }

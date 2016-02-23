@@ -127,6 +127,14 @@ public class BidEntity extends JessyEntity implements Externalizable {
             throw new UnsupportedOperationException("This object is immutable.");
         }
 
+        @Override
+        public Object clone() {
+            ItemIdIndex entity = (ItemIdIndex) super.clone();
+            entity.mBidId = mBidId;
+            entity.mItemId = mItemId;
+            return entity;
+        }
+
         public long getBidId() {
             return mBidId;
         }
@@ -164,6 +172,14 @@ public class BidEntity extends JessyEntity implements Externalizable {
         @Override
         public void clearValue() {
             throw new UnsupportedOperationException("This object is immutable.");
+        }
+
+        @Override
+        public Object clone() {
+            UserIdIndex entity = (UserIdIndex) super.clone();
+            entity.mBidId = mBidId;
+            entity.mUserId = mUserId;
+            return entity;
         }
 
         public long getBidId() {

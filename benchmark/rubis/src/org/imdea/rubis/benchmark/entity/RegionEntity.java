@@ -91,6 +91,14 @@ public class RegionEntity extends JessyEntity implements Externalizable {
             throw new UnsupportedOperationException("This entity is immutable.");
         }
 
+        @Override
+        public Object clone() {
+            NameIndex entity = (NameIndex) super.clone();
+            entity.mName = mName;
+            entity.mRegionId = mRegionId;
+            return entity;
+        }
+
         public long getRegionId() {
             return mRegionId;
         }
@@ -132,6 +140,14 @@ public class RegionEntity extends JessyEntity implements Externalizable {
         @Override
         public void clearValue() {
             throw new UnsupportedOperationException("This entity is immutable.");
+        }
+
+        @Override
+        public Object clone() {
+            Scanner entity = (Scanner) super.clone();
+            entity.mDummy = mDummy;
+            entity.mRegionId = mRegionId;
+            return entity;
         }
 
         public long getRegionId() {

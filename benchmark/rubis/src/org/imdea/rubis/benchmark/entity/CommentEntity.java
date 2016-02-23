@@ -24,6 +24,7 @@ import static fr.inria.jessy.ConstantPool.JESSY_MID;
 import com.sleepycat.persist.model.Entity;
 import com.sleepycat.persist.model.Relationship;
 import com.sleepycat.persist.model.SecondaryKey;
+
 import fr.inria.jessy.store.JessyEntity;
 import fr.inria.jessy.transaction.Transaction;
 
@@ -125,6 +126,14 @@ public class CommentEntity extends JessyEntity implements Externalizable {
             throw new UnsupportedOperationException("This entity is immutable.");
         }
 
+        @Override
+        public Object clone() {
+            FromUserIdIndex entity = (FromUserIdIndex) super.clone();
+            entity.mCommentId = mCommentId;
+            entity.mFromUserId = mFromUserId;
+            return entity;
+        }
+
         public long getCommentId() {
             return mCommentId;
         }
@@ -169,6 +178,14 @@ public class CommentEntity extends JessyEntity implements Externalizable {
             throw new UnsupportedOperationException("This entity is immutable.");
         }
 
+        @Override
+        public Object clone() {
+            ItemIdIndex entity = (ItemIdIndex) super.clone();
+            entity.mCommentId = mCommentId;
+            entity.mItemId = mItemId;
+            return entity;
+        }
+
         public long getCommentId() {
             return mCommentId;
         }
@@ -211,6 +228,14 @@ public class CommentEntity extends JessyEntity implements Externalizable {
         @Override
         public void clearValue() {
             throw new UnsupportedOperationException("This entity is immutable.");
+        }
+
+        @Override
+        public Object clone() {
+            ToUserIdIndex entity = (ToUserIdIndex) super.clone();
+            entity.mCommentId = mCommentId;
+            entity.mToUserId = mToUserId;
+            return entity;
         }
 
         public long getCommentId() {

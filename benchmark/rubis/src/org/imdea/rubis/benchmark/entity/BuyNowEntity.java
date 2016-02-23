@@ -113,6 +113,14 @@ public class BuyNowEntity extends JessyEntity implements Externalizable {
             throw new UnsupportedOperationException("This entity is immutable.");
         }
 
+        @Override
+        public Object clone() {
+            BuyerIdIndex entity = (BuyerIdIndex) super.clone();
+            entity.mBuyerId = mBuyerId;
+            entity.mBuyNowId = mBuyNowId;
+            return entity;
+        }
+
         public long getBuyNowId() {
             return mBuyNowId;
         }
@@ -155,6 +163,14 @@ public class BuyNowEntity extends JessyEntity implements Externalizable {
         @Override
         public void clearValue() {
             throw new UnsupportedOperationException("This entity is immutable.");
+        }
+
+        @Override
+        public Object clone() {
+            ItemIdIndex entity = (ItemIdIndex) super.clone();
+            entity.mBuyNowId = mBuyNowId;
+            entity.mItemId = mItemId;
+            return entity;
         }
 
         public long getBuyNowId() {
