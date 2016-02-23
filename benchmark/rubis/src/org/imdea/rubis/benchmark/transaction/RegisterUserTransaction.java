@@ -28,6 +28,7 @@ import java.util.Date;
 
 import org.imdea.rubis.benchmark.entity.RegionEntity;
 import org.imdea.rubis.benchmark.entity.UserEntity;
+import org.imdea.rubis.benchmark.util.TextUtils;
 
 public class RegisterUserTransaction extends AbsRUBiSTransaction {
     private float mBalance;
@@ -40,7 +41,7 @@ public class RegisterUserTransaction extends AbsRUBiSTransaction {
     private String mPassword;
     private int mRating;
     private String mRegion;
-    private long mRegionId;
+    private String mRegionKey;
 
     public RegisterUserTransaction(Jessy jessy, long id, String firstname, String lastname, String nickname, String
             password, String email, String region) throws Exception {
@@ -69,19 +70,19 @@ public class RegisterUserTransaction extends AbsRUBiSTransaction {
     @Override
     public ExecutionHistory execute() {
         try {
-            mRegionId = -1;
+            mRegionKey = null;
 
             Collection<RegionEntity> regions = readBySecondary(RegionEntity.class, "mName", mRegion);
 
             if (regions != null && regions.size() > 0)
-                mRegionId = regions.iterator().next().getId();
+                mRegionKey = regions.iterator().next().getKey();
 
-            if (mRegionId != -1) {
+            if (TextUtils.isEmpty(mRegionKey)) {
                 Collection<UserEntity> users = readBySecondary(UserEntity.class, "mNickname", mNickname);
 
                 if (users == null || users.size() == 0) {
                     UserEntity user = new UserEntity(mId, mFirstname, mLastname, mNickname, mPassword, mEmail, mRating,
-                            mBalance, mCreationDate, mRegionId);
+                            mBalance, mCreationDate, mRegionKey);
                     create(user);
                 }
             }

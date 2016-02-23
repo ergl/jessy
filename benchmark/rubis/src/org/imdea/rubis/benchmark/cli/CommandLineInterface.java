@@ -88,26 +88,26 @@ public class CommandLineInterface {
     private void setupJessyInstance(Jessy jessy) {
         try {
             jessy.addEntity(BidEntity.class);
-            jessy.addSecondaryIndex(BidEntity.class, Long.class, "mItemId");
-            jessy.addSecondaryIndex(BidEntity.class, Long.class, "mUserId");
+            jessy.addSecondaryIndex(BidEntity.class, String.class, "mItemKey");
+            jessy.addSecondaryIndex(BidEntity.class, String.class, "mUserKey");
             jessy.addEntity(BuyNowEntity.class);
-            jessy.addSecondaryIndex(BuyNowEntity.class, Long.class, "mBuyerId");
-            jessy.addSecondaryIndex(BuyNowEntity.class, Long.class, "mItemId");
+            jessy.addSecondaryIndex(BuyNowEntity.class, String.class, "mBuyerKey");
+            jessy.addSecondaryIndex(BuyNowEntity.class, String.class, "mItemKey");
             jessy.addEntity(CategoryEntity.class);
             jessy.addSecondaryIndex(CategoryEntity.class, String.class, "mDummy");
             jessy.addEntity(CommentEntity.class);
-            jessy.addSecondaryIndex(CommentEntity.class, Long.class, "mFromUserId");
-            jessy.addSecondaryIndex(CommentEntity.class, Long.class, "mItemId");
-            jessy.addSecondaryIndex(CommentEntity.class, Long.class, "mToUserId");
+            jessy.addSecondaryIndex(CommentEntity.class, String.class, "mFromUserKey");
+            jessy.addSecondaryIndex(CommentEntity.class, String.class, "mItemKey");
+            jessy.addSecondaryIndex(CommentEntity.class, String.class, "mToUserKey");
             jessy.addEntity(ItemEntity.class);
-            jessy.addSecondaryIndex(ItemEntity.class, Long.class, "mCategory");
-            jessy.addSecondaryIndex(ItemEntity.class, Long.class, "mSeller");
+            jessy.addSecondaryIndex(ItemEntity.class, String.class, "mCategoryKey");
+            jessy.addSecondaryIndex(ItemEntity.class, String.class, "mSellerKey");
             jessy.addEntity(RegionEntity.class);
             jessy.addSecondaryIndex(RegionEntity.class, String.class, "mDummy");
             jessy.addSecondaryIndex(RegionEntity.class, String.class, "mName");
             jessy.addEntity(UserEntity.class);
             jessy.addSecondaryIndex(UserEntity.class, String.class, "mNickname");
-            jessy.addSecondaryIndex(UserEntity.class, Long.class, "mRegion");
+            jessy.addSecondaryIndex(UserEntity.class, String.class, "mRegionKey");
         } catch (Exception e) {
             e.printStackTrace();
         }

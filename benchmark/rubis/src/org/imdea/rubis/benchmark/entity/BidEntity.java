@@ -43,23 +43,23 @@ public class BidEntity extends JessyEntity implements Externalizable {
         private float mBid;
         private Date mDate;
         private long mId;
-        private long mItemId;
+        private String mItemKey;
         private float mMaxBid;
         private int mQty;
-        private long mUserId;
+        private String mUserKey;
 
         Editor(BidEntity source) {
             mBid = source.getBid();
             mDate = source.getDate();
             mId = source.getId();
-            mItemId = source.getItemId();
+            mItemKey = source.getItemKey();
             mMaxBid = source.getMaxBid();
             mQty = source.getQty();
-            mUserId = source.getUserId();
+            mUserKey = source.getUserKey();
         }
 
         private BidEntity done() {
-            return new BidEntity(mId, mUserId, mItemId, mQty, mBid, mMaxBid, mDate);
+            return new BidEntity(mId, mUserKey, mItemKey, mQty, mBid, mMaxBid, mDate);
         }
 
         public Editor setBid(float bid) {
@@ -77,8 +77,8 @@ public class BidEntity extends JessyEntity implements Externalizable {
             return this;
         }
 
-        public Editor setItemId(long itemId) {
-            this.mItemId = itemId;
+        public Editor setItemKey(String itemKey) {
+            this.mItemKey = itemKey;
             return this;
         }
 
@@ -92,8 +92,8 @@ public class BidEntity extends JessyEntity implements Externalizable {
             return this;
         }
 
-        public Editor setUserId(long userId) {
-            this.mUserId = userId;
+        public Editor setUserKey(String userKey) {
+            this.mUserKey = userKey;
             return this;
         }
 
@@ -106,22 +106,22 @@ public class BidEntity extends JessyEntity implements Externalizable {
     private Date mDate;
     private long mId;
     @SecondaryKey(relate = MANY_TO_ONE)
-    private long mItemId;
+    private String mItemKey;
     private float mMaxBid;
     private int mQty;
     @SecondaryKey(relate = MANY_TO_ONE)
-    private long mUserId;
+    private String mUserKey;
 
     @Deprecated
     public BidEntity() {
         super("");
     }
 
-    public BidEntity(long id, long userId, long itemId, int qty, float bid, float maxBid, Date date) {
-        super(Long.toString(id));
+    public BidEntity(long id, String userKey, String itemKey, int qty, float bid, float maxBid, Date date) {
+        super("bids~id#" + id + "~item_key#" + itemKey + "~user_key#" + userKey);
         mId = id;
-        mUserId = userId;
-        mItemId = itemId;
+        mUserKey = userKey;
+        mItemKey = itemKey;
         mQty = qty;
         mBid = bid;
         mMaxBid = maxBid;
@@ -137,8 +137,8 @@ public class BidEntity extends JessyEntity implements Externalizable {
     public Object clone() {
         BidEntity entity = (BidEntity) super.clone();
         entity.mId = mId;
-        entity.mUserId = mUserId;
-        entity.mItemId = mItemId;
+        entity.mUserKey = mUserKey;
+        entity.mItemKey = mItemKey;
         entity.mQty = mQty;
         entity.mBid = mBid;
         entity.mMaxBid = mMaxBid;
@@ -162,8 +162,8 @@ public class BidEntity extends JessyEntity implements Externalizable {
         return mId;
     }
 
-    public long getItemId() {
-        return mItemId;
+    public String getItemKey() {
+        return mItemKey;
     }
 
     public float getMaxBid() {
@@ -174,17 +174,16 @@ public class BidEntity extends JessyEntity implements Externalizable {
         return mQty;
     }
 
-    public long getUserId() {
-        return mUserId;
+    public String getUserKey() {
+        return mUserKey;
     }
 
     @Override
     public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
         super.readExternal(in);
-
         mId = in.readLong();
-        mUserId = in.readLong();
-        mItemId = in.readLong();
+        mUserKey = (String) in.readObject();
+        mItemKey = (String) in.readObject();
         mQty = in.readInt();
         mBid = in.readFloat();
         mMaxBid = in.readFloat();
@@ -194,10 +193,9 @@ public class BidEntity extends JessyEntity implements Externalizable {
     @Override
     public void writeExternal(ObjectOutput out) throws IOException {
         super.writeExternal(out);
-
         out.writeLong(mId);
-        out.writeLong(mUserId);
-        out.writeLong(mItemId);
+        out.writeObject(mUserKey);
+        out.writeObject(mItemKey);
         out.writeInt(mQty);
         out.writeFloat(mBid);
         out.writeFloat(mMaxBid);

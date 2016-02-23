@@ -26,15 +26,15 @@ import org.imdea.rubis.benchmark.entity.ItemEntity;
 import org.imdea.rubis.benchmark.entity.UserEntity;
 
 public class PutComment extends AbsRUBiSTransaction {
-    private long mToUserId;
-    private long mItemId;
+    private String mToUserKey;
+    private String mItemKey;
     private String mNickname;
     private String mPassword;
 
-    public PutComment(Jessy jessy, long toUserId, long itemId, String nickname, String password) throws Exception {
+    public PutComment(Jessy jessy, String toUserKey, String itemKey, String nickname, String password) throws Exception {
         super(jessy);
-        mToUserId = toUserId;
-        mItemId = itemId;
+        mToUserKey = toUserKey;
+        mItemKey = itemKey;
         mNickname = nickname;
         mPassword = password;
     }
@@ -45,8 +45,8 @@ public class PutComment extends AbsRUBiSTransaction {
             long userId = authenticate(mNickname, mPassword);
 
             if (userId != -1) {
-                UserEntity user = read(UserEntity.class, Long.toString(mToUserId));
-                ItemEntity item = read(ItemEntity.class, Long.toString(mItemId));
+                UserEntity user = read(UserEntity.class, mToUserKey);
+                ItemEntity item = read(ItemEntity.class, mItemKey);
             }
 
             return commitTransaction();

@@ -28,13 +28,13 @@ import org.imdea.rubis.benchmark.entity.ItemEntity;
 import org.imdea.rubis.benchmark.entity.UserEntity;
 
 public class PutBidTransaction extends AbsRUBiSTransaction {
-    private long mItemId;
+    private String mItemKey;
     private String mNickname;
     private String mPassword;
 
-    public PutBidTransaction(Jessy jessy, long itemId, String nickname, String password) throws Exception {
+    public PutBidTransaction(Jessy jessy, String itemKey, String nickname, String password) throws Exception {
         super(jessy);
-        mItemId = itemId;
+        mItemKey = itemKey;
         mNickname = nickname;
         mPassword = password;
     }
@@ -45,9 +45,9 @@ public class PutBidTransaction extends AbsRUBiSTransaction {
             long userId = authenticate(mNickname, mPassword);
 
             if (userId != -1) {
-                ItemEntity item = read(ItemEntity.class, Long.toString(mItemId));
-                UserEntity seller = read(UserEntity.class, Long.toString(item.getSeller()));
-                Collection<BidEntity> bids = readBySecondary(BidEntity.class, "mItemId", mItemId);
+                ItemEntity item = read(ItemEntity.class, mItemKey);
+                UserEntity seller = read(UserEntity.class, item.getSellerKey());
+                Collection<BidEntity> bids = readBySecondary(BidEntity.class, "mItemKey", mItemKey);
                 int count = 0;
                 float max = 0.0f;
 

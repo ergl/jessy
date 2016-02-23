@@ -30,12 +30,12 @@ import org.imdea.rubis.benchmark.entity.*;
 public class AboutMeTransaction extends AbsRUBiSTransaction {
     private String mNickname;
     private String mPassword;
-    private long mTargetUserId;
+    private String mTargetUserKey;
 
-    public AboutMeTransaction(Jessy jessy, long userId, String nickname, String password) throws Exception {
+    public AboutMeTransaction(Jessy jessy, String userKey, String nickname, String password) throws Exception {
         super(jessy);
         putExtra(SPSI.LEVEL, SPSI.SER);
-        mTargetUserId = userId;
+        mTargetUserKey = userKey;
         mNickname = nickname;
         mPassword = password;
     }
@@ -46,7 +46,7 @@ public class AboutMeTransaction extends AbsRUBiSTransaction {
             long userId = authenticate(mNickname, mPassword);
 
             if (userId != -1) {
-                UserEntity user = read(UserEntity.class, Long.toString(mTargetUserId));
+                UserEntity user = read(UserEntity.class, mTargetUserKey);
 
                 if (user != null) {
                     listBids();
@@ -66,41 +66,41 @@ public class AboutMeTransaction extends AbsRUBiSTransaction {
     }
 
     private void listBids() throws Exception {
-        Collection<BidEntity> bids = readBySecondary(BidEntity.class, "mUserId", mTargetUserId);
+        Collection<BidEntity> bids = readBySecondary(BidEntity.class, "mUserKey", mTargetUserKey);
 
         for (BidEntity bid : bids) {
-            ItemEntity item = read(ItemEntity.class, Long.toString(bid.getItemId()));
-            UserEntity seller = read(UserEntity.class, Long.toString(item.getSeller()));
+            ItemEntity item = read(ItemEntity.class, bid.getItemKey());
+            UserEntity seller = read(UserEntity.class, item.getSellerKey());
         }
     }
 
     private void listBoughtItems() throws Exception {
-        Collection<BuyNowEntity> buyNows = readBySecondary(BuyNowEntity.class, "mUserId", mTargetUserId);
+        Collection<BuyNowEntity> buyNows = readBySecondary(BuyNowEntity.class, "mUserKey", mTargetUserKey);
 
         for (BuyNowEntity buyNow : buyNows) {
-            ItemEntity item = read(ItemEntity.class, Long.toString(buyNow.getItemId()));
-            UserEntity seller = read(UserEntity.class, Long.toString(item.getSeller()));
+            ItemEntity item = read(ItemEntity.class, buyNow.getItemKey());
+            UserEntity seller = read(UserEntity.class, item.getSellerKey());
         }
     }
 
     private void listComments() throws Exception {
-        Collection<CommentEntity> comments = readBySecondary(CommentEntity.class, "mToUserId", mTargetUserId);
+        Collection<CommentEntity> comments = readBySecondary(CommentEntity.class, "mUserKey", mTargetUserKey);
 
         for (CommentEntity comment : comments) {
-            UserEntity commenter = read(UserEntity.class, Long.toString(comment.getFromUserId()));
+            UserEntity commenter = read(UserEntity.class, comment.getFromUserKey());
         }
     }
 
     private void listItems() throws Exception {
-        Collection<ItemEntity> sellings = readBySecondary(ItemEntity.class, "mSeller", mTargetUserId);
+        Collection<ItemEntity> sellings = readBySecondary(ItemEntity.class, "mUserKey", mTargetUserKey);
     }
 
     private void listWonItems() throws Exception {
-        Collection<BidEntity> wons = readBySecondary(BidEntity.class, "mUserId", mTargetUserId);
+        Collection<BidEntity> wons = readBySecondary(BidEntity.class, "mUserKey", mTargetUserKey);
 
         for (BidEntity won : wons) {
-            ItemEntity item = read(ItemEntity.class, Long.toString(won.getItemId()));
-            UserEntity seller = read(UserEntity.class, Long.toString(item.getSeller()));
+            ItemEntity item = read(ItemEntity.class, won.getItemKey());
+            UserEntity seller = read(UserEntity.class, item.getSellerKey());
         }
     }
 }

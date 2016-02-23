@@ -40,26 +40,26 @@ public class BuyNowEntity extends JessyEntity implements Externalizable {
     private static final long serialVersionUID = JESSY_MID;
 
     public static class Editor {
-        private long mBuyerId;
+        private String mBuyerKey;
         private Date mDate;
         private long mId;
-        private long mItemId;
+        private String mItemKey;
         private int mQty;
 
         Editor(BuyNowEntity source) {
-            mBuyerId = source.getBuyerId();
+            mBuyerKey = source.getBuyerKey();
             mDate = source.getDate();
             mId = source.getId();
-            mItemId = source.getItemId();
+            mItemKey = source.getItemKey();
             mQty = source.getQty();
         }
 
         private BuyNowEntity done() {
-            return new BuyNowEntity(mId, mBuyerId, mItemId, mQty, mDate);
+            return new BuyNowEntity(mId, mBuyerKey, mItemKey, mQty, mDate);
         }
 
-        public Editor setBuyerId(long buyerId) {
-            mBuyerId = buyerId;
+        public Editor setBuyerKey(String buyerKey) {
+            mBuyerKey = buyerKey;
             return this;
         }
 
@@ -73,8 +73,8 @@ public class BuyNowEntity extends JessyEntity implements Externalizable {
             return this;
         }
 
-        public Editor setItemId(long itemId) {
-            mItemId = itemId;
+        public Editor setItemKey(String itemKey) {
+            mItemKey = itemKey;
             return this;
         }
 
@@ -89,11 +89,11 @@ public class BuyNowEntity extends JessyEntity implements Externalizable {
     }
 
     @SecondaryKey(relate = MANY_TO_ONE)
-    private long mBuyerId;
+    private String mBuyerKey;
     private Date mDate;
     private long mId;
     @SecondaryKey(relate = MANY_TO_ONE)
-    private long mItemId;
+    private String mItemKey;
     private int mQty;
 
     @Deprecated
@@ -101,11 +101,11 @@ public class BuyNowEntity extends JessyEntity implements Externalizable {
         super("");
     }
 
-    public BuyNowEntity(long id, long buyerId, long itemId, int qty, Date date) {
-        super(Long.toString(id));
+    public BuyNowEntity(long id, String buyerKey, String itemKey, int qty, Date date) {
+        super("buy_now~id#" + id + "~buyer_key#" + buyerKey + "~item_key#" + itemKey);
         mId = id;
-        mBuyerId = buyerId;
-        mItemId = itemId;
+        mBuyerKey = buyerKey;
+        mItemKey = itemKey;
         mQty = qty;
         mDate = date;
     }
@@ -119,8 +119,8 @@ public class BuyNowEntity extends JessyEntity implements Externalizable {
     public Object clone() {
         BuyNowEntity entity = (BuyNowEntity) super.clone();
         entity.mId = mId;
-        entity.mBuyerId = mBuyerId;
-        entity.mItemId = mItemId;
+        entity.mBuyerKey = mBuyerKey;
+        entity.mItemKey = mItemKey;
         entity.mQty = mQty;
         entity.mDate = (Date) mDate.clone();
         return entity;
@@ -130,8 +130,8 @@ public class BuyNowEntity extends JessyEntity implements Externalizable {
         return new Editor(this);
     }
 
-    public long getBuyerId() {
-        return mBuyerId;
+    public String getBuyerKey() {
+        return mBuyerKey;
     }
 
     public Date getDate() {
@@ -142,8 +142,8 @@ public class BuyNowEntity extends JessyEntity implements Externalizable {
         return mId;
     }
 
-    public long getItemId() {
-        return mItemId;
+    public String getItemKey() {
+        return mItemKey;
     }
 
     public int getQty() {
@@ -153,10 +153,9 @@ public class BuyNowEntity extends JessyEntity implements Externalizable {
     @Override
     public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
         super.readExternal(in);
-
         mId = in.readLong();
-        mBuyerId = in.readLong();
-        mItemId = in.readLong();
+        mBuyerKey = (String) in.readObject();
+        mItemKey = (String) in.readObject();
         mQty = in.readInt();
         mDate = (Date) in.readObject();
     }
@@ -164,10 +163,9 @@ public class BuyNowEntity extends JessyEntity implements Externalizable {
     @Override
     public void writeExternal(ObjectOutput out) throws IOException {
         super.writeExternal(out);
-
         out.writeLong(mId);
-        out.writeLong(mBuyerId);
-        out.writeLong(mItemId);
+        out.writeObject(mBuyerKey);
+        out.writeObject(mItemKey);
         out.writeInt(mQty);
         out.writeObject(mDate);
     }

@@ -23,24 +23,25 @@ import fr.inria.jessy.Jessy;
 import fr.inria.jessy.transaction.ExecutionHistory;
 
 import java.util.Collection;
+
 import org.imdea.rubis.benchmark.entity.ItemEntity;
 
 public class SearchItemsByCategoryTransaction extends AbsRUBiSTransaction {
     private static final int DEFAULT_ITEMS_PER_PAGE = 25;
 
-    private long mCategoryId;
+    private String mCategoryKey;
     private int mNbOfItems;
     private int mPage;
 
 
-    public SearchItemsByCategoryTransaction(Jessy jessy, long categoryId) throws Exception {
-        this(jessy, categoryId, 0, DEFAULT_ITEMS_PER_PAGE);
+    public SearchItemsByCategoryTransaction(Jessy jessy, String categoryKey) throws Exception {
+        this(jessy, categoryKey, 0, DEFAULT_ITEMS_PER_PAGE);
     }
 
-    public SearchItemsByCategoryTransaction(Jessy jessy, long categoryId, int page, int nbOfItems)
+    public SearchItemsByCategoryTransaction(Jessy jessy, String categoryKey, int page, int nbOfItems)
             throws Exception {
         super(jessy);
-        mCategoryId = categoryId;
+        mCategoryKey = categoryKey;
         mPage = page;
         mNbOfItems = nbOfItems;
     }
@@ -52,7 +53,7 @@ public class SearchItemsByCategoryTransaction extends AbsRUBiSTransaction {
             int end = start + mNbOfItems;
 
             // It actually reads all the items in a given category, not only the ones in the current page
-            Collection<ItemEntity> items = readBySecondary(ItemEntity.class, "mCategory", mCategoryId);
+            Collection<ItemEntity> items = readBySecondary(ItemEntity.class, "mCategoryKey", mCategoryKey);
 
             return commitTransaction();
         } catch (Exception e) {

@@ -49,7 +49,7 @@ public class UserEntity extends JessyEntity implements Externalizable {
         private String mNickname;
         private String mPassword;
         private int mRating;
-        private long mRegion;
+        private String mRegionKey;
 
         Editor(UserEntity source) {
             mBalance = source.getBalance();
@@ -61,12 +61,12 @@ public class UserEntity extends JessyEntity implements Externalizable {
             mNickname = source.getNickname();
             mPassword = source.getPassword();
             mRating = source.getRating();
-            mRegion = source.getRegion();
+            mRegionKey = source.getRegionKey();
         }
 
         private UserEntity done() {
             return new UserEntity(mId, mFirstname, mLastname, mNickname, mPassword, mEmail, mRating, mBalance,
-                    mCreationDate, mRegion);
+                    mCreationDate, mRegionKey);
         }
 
         public Editor setBalance(float balance) {
@@ -114,8 +114,8 @@ public class UserEntity extends JessyEntity implements Externalizable {
             return this;
         }
 
-        public Editor setRegion(long region) {
-            mRegion = region;
+        public Editor setRegionKey(String regionKey) {
+            mRegionKey = regionKey;
             return this;
         }
 
@@ -135,7 +135,7 @@ public class UserEntity extends JessyEntity implements Externalizable {
     private String mPassword;
     private int mRating;
     @SecondaryKey(relate = MANY_TO_ONE)
-    private long mRegion;
+    private String mRegionKey;
 
     @Deprecated
     public UserEntity() {
@@ -143,8 +143,8 @@ public class UserEntity extends JessyEntity implements Externalizable {
     }
 
     public UserEntity(long id, String firstname, String lastname, String nickname, String password, String email, int
-            rating, float balance, Date creationDate, long region) {
-        super(Long.toString(id));
+            rating, float balance, Date creationDate, String regionKey) {
+        super("users~id#" + id + "~nickname#" + nickname + "~region_key#" + regionKey);
 
         mId = id;
         mFirstname = firstname;
@@ -155,7 +155,7 @@ public class UserEntity extends JessyEntity implements Externalizable {
         mRating = rating;
         mBalance = balance;
         mCreationDate = creationDate;
-        mRegion = region;
+        mRegionKey = regionKey;
     }
 
     @Override
@@ -175,7 +175,7 @@ public class UserEntity extends JessyEntity implements Externalizable {
         entity.mRating = mRating;
         entity.mBalance = mBalance;
         entity.mCreationDate = (Date) mCreationDate.clone();
-        entity.mRegion = mRegion;
+        entity.mRegionKey = mRegionKey;
         return entity;
     }
 
@@ -219,14 +219,13 @@ public class UserEntity extends JessyEntity implements Externalizable {
         return mRating;
     }
 
-    public long getRegion() {
-        return mRegion;
+    public String getRegionKey() {
+        return mRegionKey;
     }
 
     @Override
     public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
         super.readExternal(in);
-
         mId = in.readLong();
         mFirstname = (String) in.readObject();
         mLastname = (String) in.readObject();
@@ -236,13 +235,12 @@ public class UserEntity extends JessyEntity implements Externalizable {
         mRating = in.readInt();
         mBalance = in.readFloat();
         mCreationDate = (Date) in.readObject();
-        mRegion = in.readLong();
+        mRegionKey = (String) in.readObject();
     }
 
     @Override
     public void writeExternal(ObjectOutput out) throws IOException {
         super.writeExternal(out);
-
         out.writeLong(mId);
         out.writeObject(mFirstname);
         out.writeObject(mLastname);
@@ -252,6 +250,6 @@ public class UserEntity extends JessyEntity implements Externalizable {
         out.writeInt(mRating);
         out.writeFloat(mBalance);
         out.writeObject(mCreationDate);
-        out.writeLong(mRegion);
+        out.writeObject(mRegionKey);
     }
 }

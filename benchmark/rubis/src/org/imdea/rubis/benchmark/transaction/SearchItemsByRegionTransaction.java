@@ -30,21 +30,21 @@ import org.imdea.rubis.benchmark.entity.UserEntity;
 public class SearchItemsByRegionTransaction extends AbsRUBiSTransaction {
     private static final int DEFAULT_ITEMS_PER_PAGE = 25;
 
-    private long mCategoryId;
+    private String mCategoryId;
     private int mNbOfItems;
     private int mPage;
-    private long mRegionId;
+    private String mRegionId;
 
-    public SearchItemsByRegionTransaction(Jessy jessy, long regionId, long categoryId) throws
+    public SearchItemsByRegionTransaction(Jessy jessy, String regionKey, String categoryKey) throws
             Exception {
-        this(jessy, regionId, categoryId, 0, DEFAULT_ITEMS_PER_PAGE);
+        this(jessy, regionKey, categoryKey, 0, DEFAULT_ITEMS_PER_PAGE);
     }
 
-    public SearchItemsByRegionTransaction(Jessy jessy, long regionId, long categoryId, int page, int nbOfItems) throws
-            Exception {
+    public SearchItemsByRegionTransaction(Jessy jessy, String regionKey, String categoryKey, int page, int nbOfItems)
+            throws Exception {
         super(jessy);
-        mRegionId = regionId;
-        mCategoryId = categoryId;
+        mRegionId = regionKey;
+        mCategoryId = categoryKey;
         mPage = page;
         mNbOfItems = nbOfItems;
     }
@@ -52,12 +52,12 @@ public class SearchItemsByRegionTransaction extends AbsRUBiSTransaction {
     @Override
     public ExecutionHistory execute() {
         try {
-            Collection<ItemEntity> itemsInCategory = readBySecondary(ItemEntity.class, "mCategory", mCategoryId);
-            Collection<UserEntity> usersInRegion = readBySecondary(UserEntity.class, "mRegion", mRegionId);
+            Collection<ItemEntity> itemsInCategory = readBySecondary(ItemEntity.class, "mCategoryKey", mCategoryId);
+            Collection<UserEntity> usersInRegion = readBySecondary(UserEntity.class, "mRegionKey", mRegionId);
 
             // We actually read all the items. Sorry.
             for (UserEntity seller : usersInRegion) {
-                Collection<ItemEntity> itemsOfSeller = readBySecondary(ItemEntity.class, "mSeller", seller.getId());
+                Collection<ItemEntity> itemsOfSeller = readBySecondary(ItemEntity.class, "mSellerKey", seller.getKey());
             }
 
             return commitTransaction();

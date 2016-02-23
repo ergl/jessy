@@ -76,7 +76,7 @@ public class CategoryEntity extends JessyEntity implements Externalizable {
     }
 
     public CategoryEntity(long id, String name) {
-        super(Long.toString(id));
+        super("categories~id#" + id);
         mId = id;
         mName = name;
     }

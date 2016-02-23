@@ -26,20 +26,20 @@ import org.imdea.rubis.benchmark.entity.ItemEntity;
 import org.imdea.rubis.benchmark.entity.UserEntity;
 
 public class ViewItemTransaction extends AbsRUBiSTransaction {
-    private long mItemId;
+    private String mItemKey;
 
-    public ViewItemTransaction(Jessy jessy, long itemId) throws Exception {
+    public ViewItemTransaction(Jessy jessy, String itemKey) throws Exception {
         super(jessy);
-        mItemId = itemId;
+        mItemKey = itemKey;
     }
 
     @Override
     public ExecutionHistory execute() {
         try {
-            ItemEntity item = read(ItemEntity.class, Long.toString(mItemId));
+            ItemEntity item = read(ItemEntity.class, mItemKey);
 
             if (item != null) {
-                UserEntity seller = read(UserEntity.class, Long.toString(item.getSeller()));
+                UserEntity seller = read(UserEntity.class, item.getSellerKey());
             }
 
             return commitTransaction();

@@ -41,7 +41,7 @@ public class ItemEntity extends JessyEntity implements Externalizable {
 
     public static class Editor {
         private float mBuyNow;
-        private long mCategory;
+        private String mCategoryKey;
         private String mDescription;
         private Date mEndDate;
         private long mId;
@@ -51,12 +51,12 @@ public class ItemEntity extends JessyEntity implements Externalizable {
         private int mNbOfBids;
         private int mQuantity;
         private float mReservePrice;
-        private long mSeller;
+        private String mSeller;
         private Date mStartDate;
 
         Editor(ItemEntity source) {
             mBuyNow = source.getBuyNow();
-            mCategory = source.getCategory();
+            mCategoryKey = source.getCategoryKey();
             mDescription = source.getDescription();
             mEndDate = source.getEndDate();
             mId = source.getId();
@@ -66,13 +66,13 @@ public class ItemEntity extends JessyEntity implements Externalizable {
             mNbOfBids = source.getNbOfBids();
             mQuantity = source.getQuantity();
             mReservePrice = source.getReservePrice();
-            mSeller = source.getSeller();
+            mSeller = source.getSellerKey();
             mStartDate = source.getStartDate();
         }
 
         private ItemEntity done() {
             return new ItemEntity(mId, mName, mDescription, mInitialPrice, mQuantity, mReservePrice, mBuyNow,
-                    mNbOfBids, mMaxBid, mStartDate, mEndDate, mSeller, mCategory);
+                    mNbOfBids, mMaxBid, mStartDate, mEndDate, mSeller, mCategoryKey);
         }
 
         public Editor setBuyNow(float buyNow) {
@@ -80,8 +80,8 @@ public class ItemEntity extends JessyEntity implements Externalizable {
             return this;
         }
 
-        public Editor setCategory(long category) {
-            mCategory = category;
+        public Editor setCategoryKey(String categoryKey) {
+            mCategoryKey = categoryKey;
             return this;
         }
 
@@ -130,8 +130,8 @@ public class ItemEntity extends JessyEntity implements Externalizable {
             return this;
         }
 
-        public Editor setSeller(long seller) {
-            mSeller = seller;
+        public Editor setSellerKey(String sellerKey) {
+            mSeller = sellerKey;
             return this;
         }
 
@@ -147,7 +147,7 @@ public class ItemEntity extends JessyEntity implements Externalizable {
 
     private float mBuyNow;
     @SecondaryKey(relate = MANY_TO_ONE)
-    private long mCategory;
+    private String mCategoryKey;
     private String mDescription;
     private Date mEndDate;
     private long mId;
@@ -158,7 +158,7 @@ public class ItemEntity extends JessyEntity implements Externalizable {
     private int mQuantity;
     private float mReservePrice;
     @SecondaryKey(relate = MANY_TO_ONE)
-    private long mSeller;
+    private String mSellerKey;
     private Date mStartDate;
 
     @Deprecated
@@ -167,9 +167,9 @@ public class ItemEntity extends JessyEntity implements Externalizable {
     }
 
     public ItemEntity(long id, String name, String description, float initialPrice, int quantity, float reservePrice,
-                      float buyNow, int nbOfBids, float maxBid, Date startDate, Date endDate, long seller, long
-                              category) {
-        super(Long.toString(id));
+                      float buyNow, int nbOfBids, float maxBid, Date startDate, Date endDate, String sellerKey, String
+                              categoryKey) {
+        super("items~id#" + id + "~category_key#" + categoryKey + "~seller_key#" + sellerKey);
         mId = id;
         mName = name;
         mDescription = description;
@@ -181,8 +181,8 @@ public class ItemEntity extends JessyEntity implements Externalizable {
         mMaxBid = maxBid;
         mStartDate = startDate;
         mEndDate = endDate;
-        mSeller = seller;
-        mCategory = category;
+        mSellerKey = sellerKey;
+        mCategoryKey = categoryKey;
     }
 
     @Override
@@ -205,8 +205,8 @@ public class ItemEntity extends JessyEntity implements Externalizable {
         entity.mMaxBid = mMaxBid;
         entity.mStartDate = (Date) mStartDate.clone();
         entity.mEndDate = (Date) mEndDate.clone();
-        entity.mSeller = mSeller;
-        entity.mCategory = mCategory;
+        entity.mSellerKey = mSellerKey;
+        entity.mCategoryKey = mCategoryKey;
         return entity;
     }
 
@@ -218,8 +218,8 @@ public class ItemEntity extends JessyEntity implements Externalizable {
         return mBuyNow;
     }
 
-    public long getCategory() {
-        return mCategory;
+    public String getCategoryKey() {
+        return mCategoryKey;
     }
 
     public String getDescription() {
@@ -258,8 +258,8 @@ public class ItemEntity extends JessyEntity implements Externalizable {
         return mReservePrice;
     }
 
-    public long getSeller() {
-        return mSeller;
+    public String getSellerKey() {
+        return mSellerKey;
     }
 
     public Date getStartDate() {
@@ -269,7 +269,6 @@ public class ItemEntity extends JessyEntity implements Externalizable {
     @Override
     public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
         super.readExternal(in);
-
         mId = in.readLong();
         mName = (String) in.readObject();
         mDescription = (String) in.readObject();
@@ -281,14 +280,13 @@ public class ItemEntity extends JessyEntity implements Externalizable {
         mMaxBid = in.readFloat();
         mStartDate = (Date) in.readObject();
         mEndDate = (Date) in.readObject();
-        mSeller = in.readLong();
-        mCategory = in.readLong();
+        mSellerKey = (String) in.readObject();
+        mCategoryKey = (String) in.readObject();
     }
 
     @Override
     public void writeExternal(ObjectOutput out) throws IOException {
         super.writeExternal(out);
-
         out.writeLong(mId);
         out.writeObject(mName);
         out.writeObject(mDescription);
@@ -300,7 +298,7 @@ public class ItemEntity extends JessyEntity implements Externalizable {
         out.writeFloat(mMaxBid);
         out.writeObject(mStartDate);
         out.writeObject(mEndDate);
-        out.writeLong(mSeller);
-        out.writeLong(mCategory);
+        out.writeObject(mSellerKey);
+        out.writeObject(mCategoryKey);
     }
 }

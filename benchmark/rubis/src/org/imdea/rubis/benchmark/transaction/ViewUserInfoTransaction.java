@@ -28,23 +28,23 @@ import org.imdea.rubis.benchmark.entity.CommentEntity;
 import org.imdea.rubis.benchmark.entity.UserEntity;
 
 public class ViewUserInfoTransaction extends AbsRUBiSTransaction {
-    private long mUserId;
+    private String mUserKey;
 
-    public ViewUserInfoTransaction(Jessy jessy, long userId) throws Exception {
+    public ViewUserInfoTransaction(Jessy jessy, String userKey) throws Exception {
         super(jessy);
-        mUserId = userId;
+        mUserKey = userKey;
     }
 
     @Override
     public ExecutionHistory execute() {
         try {
-            UserEntity user = read(UserEntity.class, Long.toString(mUserId));
+            UserEntity user = read(UserEntity.class, mUserKey);
 
             if (user != null) {
-                Collection<CommentEntity> comments = readBySecondary(CommentEntity.class, "mToUserId", mUserId);
+                Collection<CommentEntity> comments = readBySecondary(CommentEntity.class, "mToUserKey", mUserKey);
 
                 for (CommentEntity comment : comments) {
-                    UserEntity author = read(UserEntity.class, Long.toString(comment.getFromUserId()));
+                    UserEntity author = read(UserEntity.class, comment.getFromUserKey());
                 }
             }
 

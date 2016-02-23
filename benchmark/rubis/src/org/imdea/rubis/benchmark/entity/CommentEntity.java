@@ -24,6 +24,7 @@ import static com.sleepycat.persist.model.Relationship.*;
 import static fr.inria.jessy.ConstantPool.JESSY_MID;
 
 import com.sleepycat.persist.model.SecondaryKey;
+
 import fr.inria.jessy.store.JessyEntity;
 import fr.inria.jessy.transaction.Transaction;
 
@@ -39,24 +40,24 @@ public class CommentEntity extends JessyEntity implements Externalizable {
     public static class Editor {
         private String mComment;
         private Date mDate;
-        private long mFromUserId;
+        private String mFromUserKey;
         private long mId;
-        private long mItemId;
+        private String mItemKey;
         private int mRating;
-        private long mToUserId;
+        private String mToUserKey;
 
         Editor(CommentEntity source) {
             mComment = source.getComment();
             mDate = source.getDate();
-            mFromUserId = source.getFromUserId();
+            mFromUserKey = source.getFromUserKey();
             mId = source.getId();
-            mItemId = source.getItemId();
+            mItemKey = source.getItemKey();
             mRating = source.getRating();
-            mToUserId = source.getToUserId();
+            mToUserKey = source.getToUserKey();
         }
 
         private CommentEntity done() {
-            return new CommentEntity(mId, mFromUserId, mToUserId, mItemId, mRating, mDate, mComment);
+            return new CommentEntity(mId, mFromUserKey, mToUserKey, mItemKey, mRating, mDate, mComment);
         }
 
         public Editor setComment(String comment) {
@@ -69,8 +70,8 @@ public class CommentEntity extends JessyEntity implements Externalizable {
             return this;
         }
 
-        public Editor setFromUserId(long fromUserId) {
-            mFromUserId = fromUserId;
+        public Editor setFromUserKey(String fromUserKey) {
+            mFromUserKey = fromUserKey;
             return this;
         }
 
@@ -79,8 +80,8 @@ public class CommentEntity extends JessyEntity implements Externalizable {
             return this;
         }
 
-        public Editor setItemId(long itemId) {
-            mItemId = itemId;
+        public Editor setItemKey(String itemKey) {
+            mItemKey = itemKey;
             return this;
         }
 
@@ -89,8 +90,8 @@ public class CommentEntity extends JessyEntity implements Externalizable {
             return this;
         }
 
-        public Editor setToUserId(long toUserId) {
-            mToUserId = toUserId;
+        public Editor setToUserKey(String toUserKey) {
+            mToUserKey = toUserKey;
             return this;
         }
 
@@ -102,25 +103,27 @@ public class CommentEntity extends JessyEntity implements Externalizable {
     private String mComment;
     private Date mDate;
     @SecondaryKey(relate = MANY_TO_ONE)
-    private long mFromUserId;
+    private String mFromUserKey;
     private long mId;
     @SecondaryKey(relate = MANY_TO_ONE)
-    private long mItemId;
+    private String mItemKey;
     private int mRating;
     @SecondaryKey(relate = MANY_TO_ONE)
-    private long mToUserId;
+    private String mToUserKey;
 
     @Deprecated
     public CommentEntity() {
         super("");
     }
 
-    public CommentEntity(long id, long fromUserId, long toUserId, long itemId, int rating, Date date, String comment) {
-        super(Long.toString(id));
+    public CommentEntity(long id, String fromUserKey, String toUserKey, String itemKey, int rating, Date date, String
+            comment) {
+        super("comments~id#" + id + "~from_user_key#" + fromUserKey + "~item_key#" + itemKey + "~to_user_key#"
+                + toUserKey);
         mId = id;
-        mFromUserId = fromUserId;
-        mToUserId = toUserId;
-        mItemId = itemId;
+        mFromUserKey = fromUserKey;
+        mToUserKey = toUserKey;
+        mItemKey = itemKey;
         mRating = rating;
         mDate = date;
         mComment = comment;
@@ -136,9 +139,9 @@ public class CommentEntity extends JessyEntity implements Externalizable {
     public Object clone() {
         CommentEntity entity = (CommentEntity) super.clone();
         entity.mId = mId;
-        entity.mFromUserId = mFromUserId;
-        entity.mToUserId = mToUserId;
-        entity.mItemId = mItemId;
+        entity.mFromUserKey = mFromUserKey;
+        entity.mToUserKey = mToUserKey;
+        entity.mItemKey = mItemKey;
         entity.mRating = mRating;
         entity.mDate = (Date) mDate.clone();
         entity.mComment = mComment;
@@ -157,34 +160,33 @@ public class CommentEntity extends JessyEntity implements Externalizable {
         return mDate;
     }
 
-    public long getFromUserId() {
-        return mFromUserId;
+    public String getFromUserKey() {
+        return mFromUserKey;
     }
 
     public long getId() {
         return mId;
     }
 
-    public long getItemId() {
-        return mItemId;
+    public String getItemKey() {
+        return mItemKey;
     }
 
     public int getRating() {
         return mRating;
     }
 
-    public long getToUserId() {
-        return mToUserId;
+    public String getToUserKey() {
+        return mToUserKey;
     }
 
     @Override
     public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
         super.readExternal(in);
-
         mId = in.readLong();
-        mFromUserId = in.readLong();
-        mToUserId = in.readLong();
-        mItemId = in.readLong();
+        mFromUserKey = (String) in.readObject();
+        mToUserKey = (String) in.readObject();
+        mItemKey = (String) in.readObject();
         mRating = in.readInt();
         mDate = (Date) in.readObject();
         mComment = (String) in.readObject();
@@ -193,11 +195,10 @@ public class CommentEntity extends JessyEntity implements Externalizable {
     @Override
     public void writeExternal(ObjectOutput out) throws IOException {
         super.writeExternal(out);
-
         out.writeLong(mId);
-        out.writeLong(mFromUserId);
-        out.writeLong(mToUserId);
-        out.writeLong(mItemId);
+        out.writeObject(mFromUserKey);
+        out.writeObject(mToUserKey);
+        out.writeObject(mItemKey);
         out.writeInt(mRating);
         out.writeObject(mDate);
         out.writeObject(mComment);
