@@ -88,26 +88,40 @@ public class CommandLineInterface {
     private void setupJessyInstance(Jessy jessy) {
         try {
             jessy.addEntity(BidEntity.class);
-            jessy.addSecondaryIndex(BidEntity.class, String.class, "mItemKey");
-            jessy.addSecondaryIndex(BidEntity.class, String.class, "mUserKey");
+            jessy.addEntity(BidEntity.ItemIdIndex.class);
+            jessy.addSecondaryIndex(BidEntity.ItemIdIndex.class, Long.class, "mItemId");
+            jessy.addEntity(BidEntity.UserIdIndex.class);
+            jessy.addSecondaryIndex(BidEntity.UserIdIndex.class, Long.class, "mUserId");
             jessy.addEntity(BuyNowEntity.class);
-            jessy.addSecondaryIndex(BuyNowEntity.class, String.class, "mBuyerKey");
-            jessy.addSecondaryIndex(BuyNowEntity.class, String.class, "mItemKey");
+            jessy.addEntity(BuyNowEntity.BuyerIdIndex.class);
+            jessy.addSecondaryIndex(BuyNowEntity.BuyerIdIndex.class, Long.class, "mBuyerId");
+            jessy.addEntity(BuyNowEntity.ItemIdIndex.class);
+            jessy.addSecondaryIndex(BuyNowEntity.ItemIdIndex.class, Long.class, "mItemId");
             jessy.addEntity(CategoryEntity.class);
-            jessy.addSecondaryIndex(CategoryEntity.class, String.class, "mDummy");
+            jessy.addEntity(CategoryEntity.Scanner.class);
+            jessy.addSecondaryIndex(CategoryEntity.Scanner.class, String.class, "mDummy");
             jessy.addEntity(CommentEntity.class);
-            jessy.addSecondaryIndex(CommentEntity.class, String.class, "mFromUserKey");
-            jessy.addSecondaryIndex(CommentEntity.class, String.class, "mItemKey");
-            jessy.addSecondaryIndex(CommentEntity.class, String.class, "mToUserKey");
+            jessy.addEntity(CommentEntity.FromUserIdIndex.class);
+            jessy.addSecondaryIndex(CommentEntity.FromUserIdIndex.class, Long.class, "mFromUserId");
+            jessy.addEntity(CommentEntity.ItemIdIndex.class);
+            jessy.addSecondaryIndex(CommentEntity.ItemIdIndex.class, Long.class, "mItemId");
+            jessy.addEntity(CommentEntity.ToUserIdIndex.class);
+            jessy.addSecondaryIndex(CommentEntity.ToUserIdIndex.class, Long.class, "mToUserId");
             jessy.addEntity(ItemEntity.class);
-            jessy.addSecondaryIndex(ItemEntity.class, String.class, "mCategoryKey");
-            jessy.addSecondaryIndex(ItemEntity.class, String.class, "mSellerKey");
+            jessy.addEntity(ItemEntity.CategoryIdIndex.class);
+            jessy.addSecondaryIndex(ItemEntity.CategoryIdIndex.class, Long.class, "mCategoryId");
+            jessy.addEntity(ItemEntity.SellerIndex.class);
+            jessy.addSecondaryIndex(ItemEntity.SellerIndex.class, Long.class, "mSeller");
             jessy.addEntity(RegionEntity.class);
-            jessy.addSecondaryIndex(RegionEntity.class, String.class, "mDummy");
-            jessy.addSecondaryIndex(RegionEntity.class, String.class, "mName");
+            jessy.addEntity(RegionEntity.NameIndex.class);
+            jessy.addSecondaryIndex(RegionEntity.NameIndex.class, String.class, "mName");
+            jessy.addEntity(RegionEntity.Scanner.class);
+            jessy.addSecondaryIndex(RegionEntity.Scanner.class, String.class, "mDummy");
             jessy.addEntity(UserEntity.class);
-            jessy.addSecondaryIndex(UserEntity.class, String.class, "mNickname");
-            jessy.addSecondaryIndex(UserEntity.class, String.class, "mRegionKey");
+            jessy.addEntity(UserEntity.NicknameIndex.class);
+            jessy.addSecondaryIndex(UserEntity.NicknameIndex.class, String.class, "mNickname");
+            jessy.addEntity(UserEntity.RegionIdIndex.class);
+            jessy.addSecondaryIndex(UserEntity.RegionIdIndex.class, Long.class, "mRegionId");
         } catch (Exception e) {
             e.printStackTrace();
         }
