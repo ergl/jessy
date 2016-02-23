@@ -34,7 +34,13 @@ public class BrowseRegionsTransaction extends AbsRUBiSTransaction {
     @Override
     public ExecutionHistory execute() {
         try {
-            Collection<RegionEntity> regions = readBySecondary(RegionEntity.class, "mDummy", "");
+            Collection<RegionEntity.Scanner> pointers = readIndex(RegionEntity.Scanner.class, "mDummy",
+                    (String) null);
+
+            for (RegionEntity.Scanner pointer : pointers) {
+                RegionEntity region = read(RegionEntity.class, pointer.getRegionId());
+            }
+
             return commitTransaction();
         } catch (Exception e) {
             e.printStackTrace();

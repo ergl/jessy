@@ -246,7 +246,7 @@ public class UserEntity extends JessyEntity implements Externalizable {
 
     public UserEntity(long id, String firstname, String lastname, String nickname, String password, String email, int
             rating, float balance, Date creationDate, long regionId) {
-        super("users~id#" + id);
+        super(Long.toString(id));
 
         mId = id;
         mFirstname = firstname;

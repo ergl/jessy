@@ -29,23 +29,24 @@ import org.imdea.rubis.benchmark.entity.ItemEntity;
 import org.imdea.rubis.benchmark.entity.UserEntity;
 
 public class ViewBidHistoryTransaction extends AbsRUBiSTransaction {
-    private String mItemKey;
+    private long mItemId;
 
-    public ViewBidHistoryTransaction(Jessy jessy, String itemKey) throws Exception {
+    public ViewBidHistoryTransaction(Jessy jessy, long itemId) throws Exception {
         super(jessy);
-        mItemKey = itemKey;
+        mItemId = itemId;
     }
 
     @Override
     public ExecutionHistory execute() {
         try {
-            ItemEntity item = read(ItemEntity.class, mItemKey);
+            ItemEntity item = read(ItemEntity.class, mItemId);
 
             if (item != null) {
-                Collection<BidEntity> bids = readBySecondary(BidEntity.class, "mItemKey", mItemKey);
+                Collection<BidEntity.ItemIdIndex> pointers = readIndex(BidEntity.ItemIdIndex.class, "mItemId", mItemId);
 
-                for (BidEntity bid : bids) {
-                    UserEntity bidder = read(UserEntity.class, bid.getUserKey());
+                for (BidEntity.ItemIdIndex pointer : pointers) {
+                    BidEntity bid = read(BidEntity.class, pointer.getBidId());
+                    UserEntity bidder = read(UserEntity.class, bid.getUserId());
                 }
             }
 

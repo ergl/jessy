@@ -272,7 +272,7 @@ public class CommentEntity extends JessyEntity implements Externalizable {
 
     public CommentEntity(long id, long fromUserId, long toUserId, long itemId, int rating, Date date, String
             comment) {
-        super("comments~id#" + id);
+        super(Long.toString(id));
         mId = id;
         mFromUserId = fromUserId;
         mToUserId = toUserId;

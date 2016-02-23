@@ -30,10 +30,10 @@ import org.imdea.rubis.benchmark.entity.UserEntity;
 public class StoreCommentTransaction extends AbsRUBiSTransaction {
     private CommentEntity mComment;
 
-    public StoreCommentTransaction(Jessy jessy, long id, String fromUserKey, String toUserKey, String itemKey, int
+    public StoreCommentTransaction(Jessy jessy, long id, long fromUserId, long toUserId, long itemId, int
             rating, Date date, String comment) throws Exception {
         super(jessy);
-        mComment = new CommentEntity(id, fromUserKey, toUserKey, itemKey, rating, date, comment);
+        mComment = new CommentEntity(id, fromUserId, toUserId, itemId, rating, date, comment);
     }
 
     @Override
@@ -42,7 +42,7 @@ public class StoreCommentTransaction extends AbsRUBiSTransaction {
             // Insert the new comment in the data store.
             create(mComment);
             // Select the receiver from the data store and store the updated version of the user in the data store.
-            UserEntity receiver = read(UserEntity.class, mComment.getToUserKey());
+            UserEntity receiver = read(UserEntity.class, mComment.getToUserId());
             receiver.edit().setRating(receiver.getRating() + mComment.getRating()).write(this);
 
             return commitTransaction();

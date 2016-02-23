@@ -178,7 +178,7 @@ public class RegionEntity extends JessyEntity implements Externalizable {
     }
 
     public RegionEntity(long id, String name) {
-        super("regions~id#" + id);
+        super(Long.toString(id));
         mId = id;
         mName = name;
     }

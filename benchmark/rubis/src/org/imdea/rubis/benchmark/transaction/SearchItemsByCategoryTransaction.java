@@ -23,25 +23,26 @@ import fr.inria.jessy.Jessy;
 import fr.inria.jessy.transaction.ExecutionHistory;
 
 import java.util.Collection;
+import java.util.Iterator;
 
 import org.imdea.rubis.benchmark.entity.ItemEntity;
 
 public class SearchItemsByCategoryTransaction extends AbsRUBiSTransaction {
     private static final int DEFAULT_ITEMS_PER_PAGE = 25;
 
-    private String mCategoryKey;
+    private long mCategoryId;
     private int mNbOfItems;
     private int mPage;
 
 
-    public SearchItemsByCategoryTransaction(Jessy jessy, String categoryKey) throws Exception {
-        this(jessy, categoryKey, 0, DEFAULT_ITEMS_PER_PAGE);
+    public SearchItemsByCategoryTransaction(Jessy jessy, long categoryId) throws Exception {
+        this(jessy, categoryId, 0, DEFAULT_ITEMS_PER_PAGE);
     }
 
-    public SearchItemsByCategoryTransaction(Jessy jessy, String categoryKey, int page, int nbOfItems)
+    public SearchItemsByCategoryTransaction(Jessy jessy, long categoryId, int page, int nbOfItems)
             throws Exception {
         super(jessy);
-        mCategoryKey = categoryKey;
+        mCategoryId = categoryId;
         mPage = page;
         mNbOfItems = nbOfItems;
     }
@@ -49,11 +50,16 @@ public class SearchItemsByCategoryTransaction extends AbsRUBiSTransaction {
     @Override
     public ExecutionHistory execute() {
         try {
+            Collection<ItemEntity.CategoryIdIndex> pointers = readIndex(ItemEntity.CategoryIdIndex.class,
+                    "mCategoryId", mCategoryId);
+            Iterator<ItemEntity.CategoryIdIndex> iterator = pointers.iterator();
             int start = mPage * mNbOfItems;
             int end = start + mNbOfItems;
 
-            // It actually reads all the items in a given category, not only the ones in the current page
-            Collection<ItemEntity> items = readBySecondary(ItemEntity.class, "mCategoryKey", mCategoryKey);
+            for (int i = start; i < end; i++) {
+                long itemId = iterator.next().getItemId();
+                ItemEntity item = read(ItemEntity.class, itemId);
+            }
 
             return commitTransaction();
         } catch (Exception e) {

@@ -20,9 +20,13 @@
 package org.imdea.rubis.benchmark.transaction;
 
 import fr.inria.jessy.Jessy;
+import fr.inria.jessy.store.JessyEntity;
+import fr.inria.jessy.store.ReadRequestKey;
 import fr.inria.jessy.transaction.Transaction;
 
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 import org.imdea.rubis.benchmark.entity.UserEntity;
 
@@ -45,10 +49,11 @@ public abstract class AbsRUBiSTransaction extends Transaction {
     }
 
     protected long authenticate(String nickname, String password) throws Exception {
-        Collection<UserEntity> users = readBySecondary(UserEntity.class, "mNickname", nickname);
+        Collection<UserEntity.NicknameIndex> pointers = readIndex(UserEntity.NicknameIndex.class, "mNickname", nickname);
 
-        if (users != null && users.size() > 0) {
-            UserEntity user = users.iterator().next();
+        if (pointers.size() > 0) {
+            UserEntity.NicknameIndex pointer = pointers.iterator().next();
+            UserEntity user = read(UserEntity.class, pointer.getUserId());
 
             if (user.getPassword().equals(password))
                 return user.getId();
@@ -59,5 +64,21 @@ public abstract class AbsRUBiSTransaction extends Transaction {
 
     private void init() {
         putExtra(NAME, getClass().getSimpleName());
+    }
+
+    public <E extends JessyEntity> E read(Class<E> clazz, long value) throws Exception {
+        return read(clazz, Long.toString(value));
+    }
+
+    protected <E extends JessyEntity> Collection<E> readIndex(Class<E> clazz, String key, Long value) throws
+            Exception {
+        return readIndex(clazz, key, Long.toString(value));
+    }
+
+    protected <E extends JessyEntity> Collection<E> readIndex(Class<E> clazz, String key, String value) throws
+            Exception {
+        ReadRequestKey<String> requestKey = new ReadRequestKey<>(key, value);
+        List<ReadRequestKey<?>> requestKeys = Collections.singletonList(requestKey);
+        return read(clazz, requestKeys);
     }
 }

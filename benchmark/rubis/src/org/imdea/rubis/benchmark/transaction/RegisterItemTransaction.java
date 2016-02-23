@@ -31,10 +31,10 @@ public class RegisterItemTransaction extends AbsRUBiSTransaction {
 
     public RegisterItemTransaction(Jessy jessy, long id, String name, String description, float initialPrice, int
                 quantity, float reservePrice, float buyNow, int nbOfBids, float maxBid, Date startDate, Date endDate,
-                String sellerKey, String categoryKey) throws Exception {
+                long seller, long categoryId) throws Exception {
         super(jessy);
         mItem = new ItemEntity(id, name, description, initialPrice, quantity, reservePrice, buyNow, nbOfBids, maxBid,
-                startDate, endDate, sellerKey, categoryKey);
+                startDate, endDate, seller, categoryId);
     }
 
     @Override

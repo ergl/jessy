@@ -6,13 +6,13 @@ import fr.inria.jessy.transaction.ExecutionHistory;
 import org.imdea.rubis.benchmark.entity.ItemEntity;
 
 public class BuyNowTransaction extends AbsRUBiSTransaction {
-    private String mItemKey;
+    private long mItemId;
     private String mNickname;
     private String mPassword;
 
-    public BuyNowTransaction(Jessy jessy, String itemKey, String nickname, String password) throws Exception {
+    public BuyNowTransaction(Jessy jessy, long itemId, String nickname, String password) throws Exception {
         super(jessy);
-        mItemKey = itemKey;
+        mItemId = itemId;
         mNickname = nickname;
         mPassword = password;
     }
@@ -23,7 +23,7 @@ public class BuyNowTransaction extends AbsRUBiSTransaction {
             long userId = authenticate(mNickname, mPassword);
 
             if (userId != -1) {
-                ItemEntity item = read(ItemEntity.class, mItemKey);
+                ItemEntity item = read(ItemEntity.class, mItemId);
             }
 
             return commitTransaction();

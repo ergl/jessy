@@ -30,12 +30,12 @@ import org.imdea.rubis.benchmark.entity.*;
 public class AboutMeTransaction extends AbsRUBiSTransaction {
     private String mNickname;
     private String mPassword;
-    private String mTargetUserKey;
+    private long mTargetUserId;
 
-    public AboutMeTransaction(Jessy jessy, String userKey, String nickname, String password) throws Exception {
+    public AboutMeTransaction(Jessy jessy, long userId, String nickname, String password) throws Exception {
         super(jessy);
         putExtra(SPSI.LEVEL, SPSI.SER);
-        mTargetUserKey = userKey;
+        mTargetUserId = userId;
         mNickname = nickname;
         mPassword = password;
     }
@@ -46,7 +46,7 @@ public class AboutMeTransaction extends AbsRUBiSTransaction {
             long userId = authenticate(mNickname, mPassword);
 
             if (userId != -1) {
-                UserEntity user = read(UserEntity.class, mTargetUserKey);
+                UserEntity user = read(UserEntity.class, mTargetUserId);
 
                 if (user != null) {
                     listBids();
@@ -66,41 +66,51 @@ public class AboutMeTransaction extends AbsRUBiSTransaction {
     }
 
     private void listBids() throws Exception {
-        Collection<BidEntity> bids = readBySecondary(BidEntity.class, "mUserKey", mTargetUserKey);
+        Collection<BidEntity.UserIdIndex> pointers = readIndex(BidEntity.UserIdIndex.class, "mUserId", mTargetUserId);
 
-        for (BidEntity bid : bids) {
-            ItemEntity item = read(ItemEntity.class, bid.getItemKey());
-            UserEntity seller = read(UserEntity.class, item.getSellerKey());
+        for (BidEntity.UserIdIndex pointer : pointers) {
+            BidEntity bid = read(BidEntity.class, pointer.getBidId());
+            ItemEntity item = read(ItemEntity.class, bid.getItemId());
+            UserEntity seller = read(UserEntity.class, item.getSeller());
         }
     }
 
     private void listBoughtItems() throws Exception {
-        Collection<BuyNowEntity> buyNows = readBySecondary(BuyNowEntity.class, "mUserKey", mTargetUserKey);
+        Collection<BuyNowEntity.BuyerIdIndex> pointers = readIndex(BuyNowEntity.BuyerIdIndex.class, "mBuyerId",
+                mTargetUserId);
 
-        for (BuyNowEntity buyNow : buyNows) {
-            ItemEntity item = read(ItemEntity.class, buyNow.getItemKey());
-            UserEntity seller = read(UserEntity.class, item.getSellerKey());
+        for (BuyNowEntity.BuyerIdIndex pointer : pointers) {
+            BuyNowEntity buyNow = read(BuyNowEntity.class, pointer.getBuyNowId());
+            ItemEntity item = read(ItemEntity.class, Long.toString(buyNow.getItemId()));
+            UserEntity seller = read(UserEntity.class, Long.toString(item.getSeller()));
         }
     }
 
     private void listComments() throws Exception {
-        Collection<CommentEntity> comments = readBySecondary(CommentEntity.class, "mUserKey", mTargetUserKey);
+        Collection<CommentEntity.ToUserIdIndex> pointers = readIndex(CommentEntity.ToUserIdIndex.class, "mToUserId",
+                mTargetUserId);
 
-        for (CommentEntity comment : comments) {
-            UserEntity commenter = read(UserEntity.class, comment.getFromUserKey());
+        for (CommentEntity.ToUserIdIndex pointer : pointers) {
+            CommentEntity comment = read(CommentEntity.class, pointer.getCommentId());
+            UserEntity commenter = read(UserEntity.class, comment.getFromUserId());
         }
     }
 
     private void listItems() throws Exception {
-        Collection<ItemEntity> sellings = readBySecondary(ItemEntity.class, "mUserKey", mTargetUserKey);
+        Collection<ItemEntity.SellerIndex> pointers = readIndex(ItemEntity.SellerIndex.class, "mSeller", mTargetUserId);
+
+        for (ItemEntity.SellerIndex pointer : pointers) {
+            ItemEntity item = read(ItemEntity.class, pointer.getItemId());
+        }
     }
 
     private void listWonItems() throws Exception {
-        Collection<BidEntity> wons = readBySecondary(BidEntity.class, "mUserKey", mTargetUserKey);
+        Collection<BidEntity.UserIdIndex> pointers = readIndex(BidEntity.UserIdIndex.class, "mUserId", mTargetUserId);
 
-        for (BidEntity won : wons) {
-            ItemEntity item = read(ItemEntity.class, won.getItemKey());
-            UserEntity seller = read(UserEntity.class, item.getSellerKey());
+        for (BidEntity.UserIdIndex pointer : pointers) {
+            BidEntity bid = read(BidEntity.class, pointer.getBidId());
+            ItemEntity item = read(ItemEntity.class, bid.getItemId());
+            UserEntity seller = read(UserEntity.class, item.getSeller());
         }
     }
 }

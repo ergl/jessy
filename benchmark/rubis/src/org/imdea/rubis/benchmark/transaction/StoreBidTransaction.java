@@ -30,10 +30,10 @@ import org.imdea.rubis.benchmark.entity.ItemEntity;
 public class StoreBidTransaction extends AbsRUBiSTransaction {
     private BidEntity mBid;
 
-    public StoreBidTransaction(Jessy jessy, long id, String userKey, String itemKey, int qty, float bid, float maxBid,
+    public StoreBidTransaction(Jessy jessy, long id, long userId, long itemId, int qty, float bid, float maxBid,
                                Date date) throws Exception {
         super(jessy);
-        mBid = new BidEntity(id, userKey, itemKey, qty, bid, maxBid, date);
+        mBid = new BidEntity(id, userId, itemId, qty, bid, maxBid, date);
     }
 
     @Override
@@ -42,7 +42,7 @@ public class StoreBidTransaction extends AbsRUBiSTransaction {
             // Insert the new bid in the data store.
             create(mBid);
             // Select the respective item from the data store.
-            ItemEntity item = read(ItemEntity.class, mBid.getItemKey());
+            ItemEntity item = read(ItemEntity.class, mBid.getItemId());
             // Update nbOfBids and maxBid fields.
             int nbOfBids = item.getNbOfBids() + 1;
             float maxBid = Math.max(item.getMaxBid(), mBid.getBid());

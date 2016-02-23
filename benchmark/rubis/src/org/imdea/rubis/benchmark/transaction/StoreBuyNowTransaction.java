@@ -30,17 +30,17 @@ import org.imdea.rubis.benchmark.entity.ItemEntity;
 public class StoreBuyNowTransaction extends AbsRUBiSTransaction {
     private BuyNowEntity mBuyNow;
 
-    public StoreBuyNowTransaction(Jessy jessy, long id, String buyerKey, String itemKey, int qty, Date date)
+    public StoreBuyNowTransaction(Jessy jessy, long id, long buyerId, long itemId, int qty, Date date)
             throws Exception {
         super(jessy);
-        mBuyNow = new BuyNowEntity(id, buyerKey, itemKey, qty, date);
+        mBuyNow = new BuyNowEntity(id, buyerId, itemId, qty, date);
     }
 
     @Override
     public ExecutionHistory execute() {
         try {
             // Select the data item we are buying.
-            ItemEntity item = read(ItemEntity.class, mBuyNow.getItemKey());
+            ItemEntity item = read(ItemEntity.class, mBuyNow.getItemId());
             int quantityLeft = item.getQuantity() - mBuyNow.getQty();
 
             if (quantityLeft >= 0) {

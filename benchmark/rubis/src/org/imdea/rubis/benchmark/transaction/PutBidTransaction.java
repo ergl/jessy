@@ -28,13 +28,13 @@ import org.imdea.rubis.benchmark.entity.ItemEntity;
 import org.imdea.rubis.benchmark.entity.UserEntity;
 
 public class PutBidTransaction extends AbsRUBiSTransaction {
-    private String mItemKey;
+    private long mItemId;
     private String mNickname;
     private String mPassword;
 
-    public PutBidTransaction(Jessy jessy, String itemKey, String nickname, String password) throws Exception {
+    public PutBidTransaction(Jessy jessy, long itemId, String nickname, String password) throws Exception {
         super(jessy);
-        mItemKey = itemKey;
+        mItemId = itemId;
         mNickname = nickname;
         mPassword = password;
     }
@@ -45,13 +45,15 @@ public class PutBidTransaction extends AbsRUBiSTransaction {
             long userId = authenticate(mNickname, mPassword);
 
             if (userId != -1) {
-                ItemEntity item = read(ItemEntity.class, mItemKey);
-                UserEntity seller = read(UserEntity.class, item.getSellerKey());
-                Collection<BidEntity> bids = readBySecondary(BidEntity.class, "mItemKey", mItemKey);
+                ItemEntity item = read(ItemEntity.class, mItemId);
+                UserEntity seller = read(UserEntity.class, item.getSeller());
+                Collection<BidEntity.ItemIdIndex> pointers = readIndex(BidEntity.ItemIdIndex.class, "mItemId", item
+                        .getId());
                 int count = 0;
                 float max = 0.0f;
 
-                for (BidEntity bid : bids) {
+                for (BidEntity.ItemIdIndex pointer : pointers) {
+                    BidEntity bid = read(BidEntity.class, pointer.getBidId());
                     max = Math.max(max, bid.getBid());
                     count++;
                 }

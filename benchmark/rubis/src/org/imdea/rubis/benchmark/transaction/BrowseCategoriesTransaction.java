@@ -65,13 +65,20 @@ public class BrowseCategoriesTransaction extends AbsRUBiSTransaction {
             }
 
             if (!TextUtils.isEmpty(mRegionName)) {
-                Collection<RegionEntity> regions = readBySecondary(RegionEntity.class, "mName", mRegionName);
+                Collection<RegionEntity.NameIndex> pointers = readIndex(RegionEntity.NameIndex.class, "mName",
+                        mRegionName);
 
-                if (regions == null || regions.size() == 0)
+                if (pointers.size() == 0)
                     return commitTransaction();
             }
 
-            Collection<CategoryEntity> categories = readBySecondary(CategoryEntity.class, "mDummy", "");
+
+            Collection<CategoryEntity.Scanner> pointers = readIndex(CategoryEntity.Scanner.class, "mDummy",
+                    (String) null);
+
+            for (CategoryEntity.Scanner pointer : pointers) {
+                CategoryEntity category = read(CategoryEntity.class, pointer.getCategoryId());
+            }
 
             return commitTransaction();
         } catch (Exception e) {

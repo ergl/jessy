@@ -215,7 +215,7 @@ public class BidEntity extends JessyEntity implements Externalizable {
     }
 
     public BidEntity(long id, long userId, long itemId, int qty, float bid, float maxBid, Date date) {
-        super("@bids~id#" + id);
+        super(Long.toString(id));
         mId = id;
         mUserId = userId;
         mItemId = itemId;

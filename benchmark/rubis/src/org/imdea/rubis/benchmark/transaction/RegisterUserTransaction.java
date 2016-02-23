@@ -41,7 +41,7 @@ public class RegisterUserTransaction extends AbsRUBiSTransaction {
     private String mPassword;
     private int mRating;
     private String mRegion;
-    private String mRegionKey;
+    private long mRegionId;
 
     public RegisterUserTransaction(Jessy jessy, long id, String firstname, String lastname, String nickname, String
             password, String email, String region) throws Exception {
@@ -70,19 +70,20 @@ public class RegisterUserTransaction extends AbsRUBiSTransaction {
     @Override
     public ExecutionHistory execute() {
         try {
-            mRegionKey = null;
+            mRegionId = -1;
 
-            Collection<RegionEntity> regions = readBySecondary(RegionEntity.class, "mName", mRegion);
+            Collection<RegionEntity.NameIndex> pointers = readIndex(RegionEntity.NameIndex.class, "mName", mRegion);
 
-            if (regions != null && regions.size() > 0)
-                mRegionKey = regions.iterator().next().getKey();
+            if (pointers.size() > 0)
+                mRegionId = pointers.iterator().next().getRegionId();
 
-            if (TextUtils.isEmpty(mRegionKey)) {
-                Collection<UserEntity> users = readBySecondary(UserEntity.class, "mNickname", mNickname);
+            if (mRegionId != -1) {
+                Collection<UserEntity.NicknameIndex> nicknames = readIndex(UserEntity.NicknameIndex.class,
+                        "mNickname", mNickname);
 
-                if (users == null || users.size() == 0) {
+                if (nicknames.size() == 0) {
                     UserEntity user = new UserEntity(mId, mFirstname, mLastname, mNickname, mPassword, mEmail, mRating,
-                            mBalance, mCreationDate, mRegionKey);
+                            mBalance, mCreationDate, mRegionId);
                     create(user);
                 }
             }

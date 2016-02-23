@@ -22,29 +22,31 @@ package org.imdea.rubis.benchmark.transaction;
 import fr.inria.jessy.Jessy;
 import fr.inria.jessy.transaction.ExecutionHistory;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
+import java.util.List;
 import org.imdea.rubis.benchmark.entity.ItemEntity;
 import org.imdea.rubis.benchmark.entity.UserEntity;
 
 public class SearchItemsByRegionTransaction extends AbsRUBiSTransaction {
     private static final int DEFAULT_ITEMS_PER_PAGE = 25;
 
-    private String mCategoryId;
+    private long mCategoryId;
     private int mNbOfItems;
     private int mPage;
-    private String mRegionId;
+    private long mRegionId;
 
-    public SearchItemsByRegionTransaction(Jessy jessy, String regionKey, String categoryKey) throws
+    public SearchItemsByRegionTransaction(Jessy jessy, long regionId, long categoryId) throws
             Exception {
-        this(jessy, regionKey, categoryKey, 0, DEFAULT_ITEMS_PER_PAGE);
+        this(jessy, regionId, categoryId, 0, DEFAULT_ITEMS_PER_PAGE);
     }
 
-    public SearchItemsByRegionTransaction(Jessy jessy, String regionKey, String categoryKey, int page, int nbOfItems)
-            throws Exception {
+    public SearchItemsByRegionTransaction(Jessy jessy, long regionId, long categoryId, int page, int nbOfItems) throws
+            Exception {
         super(jessy);
-        mRegionId = regionKey;
-        mCategoryId = categoryKey;
+        mRegionId = regionId;
+        mCategoryId = categoryId;
         mPage = page;
         mNbOfItems = nbOfItems;
     }
@@ -52,12 +54,46 @@ public class SearchItemsByRegionTransaction extends AbsRUBiSTransaction {
     @Override
     public ExecutionHistory execute() {
         try {
-            Collection<ItemEntity> itemsInCategory = readBySecondary(ItemEntity.class, "mCategoryKey", mCategoryId);
-            Collection<UserEntity> usersInRegion = readBySecondary(UserEntity.class, "mRegionKey", mRegionId);
+            // This requires a little bit of explanation. The query selects all the items of a given category sold by
+            // users in a given region. First we get the ids of all the users in the given region (regionsIndex). For
+            // each of them we get the ids of all the items they sell (or sold). For each item we check if its
+            // category matches the given one (checking if categoryIndex contains the index of that item), if yes we
+            // read the corresponding ItemEntity.
+            Collection<ItemEntity.CategoryIdIndex> itemsInCategory = readIndex(ItemEntity.CategoryIdIndex.class,
+                    "mCategoryId", mCategoryId);
+            List<Long> pointersInCategory = new ArrayList<>();
 
-            // We actually read all the items. Sorry.
-            for (UserEntity seller : usersInRegion) {
-                Collection<ItemEntity> itemsOfSeller = readBySecondary(ItemEntity.class, "mSellerKey", seller.getKey());
+            for (ItemEntity.CategoryIdIndex pointer : itemsInCategory)
+                pointersInCategory.add(pointer.getItemId());
+
+            Collection<UserEntity.RegionIdIndex> usersInRegion = readIndex(UserEntity.RegionIdIndex.class,
+                    "mRegionId", mRegionId);
+            // We only want to read elements that are in the given page.
+            int current = 0;
+            int start = mPage * mNbOfItems;
+            int read = 0;
+
+            for (UserEntity.RegionIdIndex userId : usersInRegion) {
+                UserEntity seller = read(UserEntity.class, userId.getUserId());
+                Collection<ItemEntity.SellerIndex> itemsOfSeller = readIndex(ItemEntity.SellerIndex.class, "mSeller",
+                        seller.getId());
+
+                for (ItemEntity.SellerIndex pointer : itemsOfSeller) {
+                    // Only the items of the given category should be read. To do so we check the id of each item
+                    // against the ids contained in categoriesIndex. If categoriesIndex contains such an id we read
+                    // the corresponding ItemEntity.
+                    if (pointersInCategory.contains(pointer.getItemId())) {
+                        // Only read elements from start to start + mNbOfItems
+                        if (++current < start)
+                            continue;
+
+                        ItemEntity item = read(ItemEntity.class, pointer.getItemId());
+
+                        // Only read elements from start to start + mNbOfItems
+                        if (++read == mNbOfItems)
+                            return commitTransaction();
+                    }
+                }
             }
 
             return commitTransaction();
