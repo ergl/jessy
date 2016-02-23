@@ -22,7 +22,6 @@ package org.imdea.rubis.benchmark.cli;
 import static org.imdea.rubis.benchmark.cli.Constants.*;
 
 import edu.rice.rubis.client.ClientEmulator;
-import edu.rice.rubis.client.InitDB;
 
 import fr.inria.jessy.DistributedJessy;
 import fr.inria.jessy.Jessy;
@@ -49,6 +48,10 @@ public class CommandLineInterface {
 
     private void init() {
     	OptionGroup group = new OptionGroup();
+        Option client = Option.builder(OPT_CLIENT).longOpt(OPT_CLIENT_LONG).desc(OPT_CLIENT_DESC).build();
+        group.addOption(client);
+        Option server = Option.builder(OPT_SERVER).longOpt(OPT_SERVER_LONG).desc(OPT_SERVER_DESC).build();
+        group.addOption(server);
     	Option help = Option.builder(OPT_HELP).longOpt(OPT_HELP_LONG).desc(OPT_HELP_DESC).build();
     	group.addOption(help);
         mOptions.addOptionGroup(group);
@@ -66,9 +69,11 @@ public class CommandLineInterface {
 
             if (cmd.hasOption(OPT_HELP)) {
                 printHelp();
-            } else {
+            } else if (cmd.hasOption(OPT_CLIENT)) {
                 String propFileName = cmd.getOptionValue(OPT_PROPERTIES);
-                startEmulation(propFileName);
+                startClient(propFileName);
+            } else if (cmd.hasOption(OPT_SERVER)) {
+                startServer();
             }
         } catch (Exception e) {
             printHelp();
@@ -83,22 +88,24 @@ public class CommandLineInterface {
     private void setupJessyInstance(Jessy jessy) {
         try {
             jessy.addEntity(BidEntity.class);
-            jessy.addEntity(BuyNowEntity.class);
-            jessy.addEntity(CategoryEntity.class);
-            jessy.addEntity(CategoryEntity.class);
-            jessy.addEntity(CommentEntity.class);
-            jessy.addEntity(ItemEntity.class);
-            jessy.addEntity(RegionEntity.class);
-            jessy.addEntity(UserEntity.class);
             jessy.addSecondaryIndex(BidEntity.class, Long.class, "mItemId");
             jessy.addSecondaryIndex(BidEntity.class, Long.class, "mUserId");
+            jessy.addEntity(BuyNowEntity.class);
             jessy.addSecondaryIndex(BuyNowEntity.class, Long.class, "mBuyerId");
             jessy.addSecondaryIndex(BuyNowEntity.class, Long.class, "mItemId");
+            jessy.addEntity(CategoryEntity.class);
+            jessy.addSecondaryIndex(CategoryEntity.class, String.class, "mDummy");
+            jessy.addEntity(CommentEntity.class);
             jessy.addSecondaryIndex(CommentEntity.class, Long.class, "mFromUserId");
             jessy.addSecondaryIndex(CommentEntity.class, Long.class, "mItemId");
             jessy.addSecondaryIndex(CommentEntity.class, Long.class, "mToUserId");
+            jessy.addEntity(ItemEntity.class);
             jessy.addSecondaryIndex(ItemEntity.class, Long.class, "mCategory");
             jessy.addSecondaryIndex(ItemEntity.class, Long.class, "mSeller");
+            jessy.addEntity(RegionEntity.class);
+            jessy.addSecondaryIndex(RegionEntity.class, String.class, "mDummy");
+            jessy.addSecondaryIndex(RegionEntity.class, String.class, "mName");
+            jessy.addEntity(UserEntity.class);
             jessy.addSecondaryIndex(UserEntity.class, String.class, "mNickname");
             jessy.addSecondaryIndex(UserEntity.class, Long.class, "mRegion");
         } catch (Exception e) {
@@ -106,13 +113,22 @@ public class CommandLineInterface {
         }
     }
 
-    private void startEmulation(String propFileName) {
+    private void startClient(String propFileName) {
         try {
             Jessy jessy = DistributedJessy.getInstance();
             setupJessyInstance(jessy);
 
             ClientEmulator client = new ClientEmulator(jessy);
             client.start();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void startServer() {
+        try {
+            Jessy jessy = DistributedJessy.getInstance();
+            setupJessyInstance(jessy);
         } catch (Exception e) {
             e.printStackTrace();
         }

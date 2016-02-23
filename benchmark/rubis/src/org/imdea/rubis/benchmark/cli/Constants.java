@@ -20,6 +20,10 @@
 package org.imdea.rubis.benchmark.cli;
 
 class Constants {
+    static final String OPT_CLIENT = "c";
+    static final String OPT_CLIENT_DESC = "Launch a RUBiS client.";
+    static final String OPT_CLIENT_LONG = "client";
+
     static final String OPT_HELP = "h";
     static final String OPT_HELP_DESC = "Print this message.";
     static final String OPT_HELP_LONG = "help";
@@ -27,4 +31,8 @@ class Constants {
     static final String OPT_PROPERTIES = "p";
     static final String OPT_PROPERTIES_DESC = "The properties file.";
     static final String OPT_PROPERTIES_LONG = "properties";
+
+    static final String OPT_SERVER = "s";
+    static final String OPT_SERVER_DESC = "Launch a RUBiS server.";
+    static final String OPT_SERVER_LONG = "server";
 }
