@@ -19,20 +19,12 @@
 
 package org.imdea.rubis.benchmark.transaction;
 
-import static org.imdea.rubis.benchmark.table.Tables.*;
-
 import fr.inria.jessy.Jessy;
 import fr.inria.jessy.transaction.Transaction;
 
-import org.imdea.rubis.benchmark.entity.AbsRUBiSEntity;
-import org.imdea.rubis.benchmark.entity.IndexEntity;
-import org.imdea.rubis.benchmark.entity.ScannerEntity;
+import java.util.Collection;
+
 import org.imdea.rubis.benchmark.entity.UserEntity;
-import org.imdea.rubis.benchmark.util.EntityHelper;
-import org.imdea.rubis.benchmark.table.Index;
-import org.imdea.rubis.benchmark.table.AbsTable;
-import org.imdea.rubis.benchmark.util.IndexHelper;
-import org.imdea.rubis.benchmark.util.ScannerHelper;
 
 public abstract class AbsRUBiSTransaction extends Transaction {
     public static final String NAME = AbsRUBiSTransaction.class.getName() + "::NAME";
@@ -40,10 +32,6 @@ public abstract class AbsRUBiSTransaction extends Transaction {
     public enum Outcome {
         SUCCESS, FAILURE, ERROR
     }
-
-    private EntityHelper mEntityHelper = new EntityHelper(this);
-    private IndexHelper mIndexHelper = new IndexHelper(this);
-    private ScannerHelper mScannerHelper = new ScannerHelper(this);
 
     public AbsRUBiSTransaction(Jessy jessy) throws Exception {
         super(jessy);
@@ -56,41 +44,20 @@ public abstract class AbsRUBiSTransaction extends Transaction {
         init();
     }
 
-    protected long authenticate(String nickname, String password) {
-        IndexEntity nickIndex = readIndex(users.nickname).find(nickname);
+    protected long authenticate(String nickname, String password) throws Exception {
+        Collection<UserEntity> users = readBySecondary(UserEntity.class, "mNickname", nickname);
 
-        if (nickIndex != null && nickIndex.getPointers().size() > 0) {
-            long userId = nickIndex.getPointers().get(0);
-            UserEntity user = readEntityFrom(users).withKey(userId);
+        if (users != null && users.size() > 0) {
+            UserEntity user = users.iterator().next();
 
             if (user.getPassword().equals(password))
-                return userId;
+                return user.getId();
         }
 
         return -1;
     }
 
-    protected IndexHelper.Initializer createIndex(Index index) {
-        return mIndexHelper.createIndex(index);
-    }
-
-    protected <E extends AbsRUBiSEntity> void createScannerFor(AbsTable<E> table) {
-        mScannerHelper.createScannerFor(table);
-    }
-
     private void init() {
         putExtra(NAME, getClass().getSimpleName());
-    }
-
-    protected <E extends AbsRUBiSEntity> EntityHelper.Reader<E> readEntityFrom(AbsTable<E> table) {
-        return mEntityHelper.readEntityFrom(table);
-    }
-
-    protected IndexHelper.Reader readIndex(Index index) {
-        return mIndexHelper.readIndex(index);
-    }
-
-    protected <E extends AbsRUBiSEntity> ScannerEntity readScannerOf(AbsTable<E> table) {
-        return mScannerHelper.readScannerOf(table);
     }
 }

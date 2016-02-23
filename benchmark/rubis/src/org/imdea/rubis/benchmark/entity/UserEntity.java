@@ -23,23 +23,23 @@ import static com.sleepycat.persist.model.Relationship.*;
 
 import static fr.inria.jessy.ConstantPool.JESSY_MID;
 
-import static org.imdea.rubis.benchmark.table.Tables.*;
-
 import com.sleepycat.persist.model.Entity;
 import com.sleepycat.persist.model.SecondaryKey;
 
+import fr.inria.jessy.store.JessyEntity;
 import fr.inria.jessy.transaction.Transaction;
 
+import java.io.Externalizable;
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
 import java.util.Date;
 
 @Entity
-public class UserEntity extends AbsTableEntity {
+public class UserEntity extends JessyEntity implements Externalizable {
     private static final long serialVersionUID = JESSY_MID;
 
-    public static class Editor implements AbsRUBiSEntity.Editor {
+    public static class Editor {
         private float mBalance;
         private Date mCreationDate;
         private String mEmail;
@@ -139,11 +139,12 @@ public class UserEntity extends AbsTableEntity {
 
     @Deprecated
     public UserEntity() {
+        super("");
     }
 
     public UserEntity(long id, String firstname, String lastname, String nickname, String password, String email, int
             rating, float balance, Date creationDate, long region) {
-        super(users, id);
+        super(Long.toString(id));
 
         mId = id;
         mFirstname = firstname;
@@ -155,6 +156,11 @@ public class UserEntity extends AbsTableEntity {
         mBalance = balance;
         mCreationDate = creationDate;
         mRegion = region;
+    }
+
+    @Override
+    public void clearValue() {
+        throw new UnsupportedOperationException("This object is immutable.");
     }
 
     @Override

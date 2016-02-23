@@ -19,12 +19,10 @@
 
 package org.imdea.rubis.benchmark.transaction;
 
-import static org.imdea.rubis.benchmark.table.Tables.*;
-
 import fr.inria.jessy.Jessy;
 import fr.inria.jessy.transaction.ExecutionHistory;
 
-import org.imdea.rubis.benchmark.entity.IndexEntity;
+import java.util.Collection;
 import org.imdea.rubis.benchmark.entity.ItemEntity;
 
 public class SearchItemsByCategoryTransaction extends AbsRUBiSTransaction {
@@ -50,14 +48,11 @@ public class SearchItemsByCategoryTransaction extends AbsRUBiSTransaction {
     @Override
     public ExecutionHistory execute() {
         try {
-            IndexEntity itemsIndex = readIndex(items.category).find(mCategoryId);
             int start = mPage * mNbOfItems;
             int end = start + mNbOfItems;
 
-            for (int i = start; i < end; i++) {
-                long key = itemsIndex.getPointers().get(i);
-                ItemEntity item = readEntityFrom(items).withKey(key);
-            }
+            // It actually reads all the items in a given category, not only the ones in the current page
+            Collection<ItemEntity> items = readBySecondary(ItemEntity.class, "mCategory", mCategoryId);
 
             return commitTransaction();
         } catch (Exception e) {

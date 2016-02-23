@@ -23,11 +23,10 @@ import static com.sleepycat.persist.model.Relationship.*;
 
 import static fr.inria.jessy.ConstantPool.*;
 
-import static org.imdea.rubis.benchmark.table.Tables.*;
-
 import com.sleepycat.persist.model.Entity;
 import com.sleepycat.persist.model.SecondaryKey;
 
+import fr.inria.jessy.store.JessyEntity;
 import fr.inria.jessy.transaction.Transaction;
 
 import java.io.Externalizable;
@@ -37,10 +36,10 @@ import java.io.ObjectOutput;
 import java.util.Date;
 
 @Entity
-public class BidEntity extends AbsTableEntity implements Externalizable {
+public class BidEntity extends JessyEntity implements Externalizable {
     private static final long serialVersionUID = JESSY_MID;
 
-    public static class Editor implements AbsRUBiSEntity.Editor {
+    public static class Editor {
         private float mBid;
         private Date mDate;
         private long mId;
@@ -115,11 +114,11 @@ public class BidEntity extends AbsTableEntity implements Externalizable {
 
     @Deprecated
     public BidEntity() {
+        super("");
     }
 
     public BidEntity(long id, long userId, long itemId, int qty, float bid, float maxBid, Date date) {
-        super(bids, id);
-
+        super(Long.toString(id));
         mId = id;
         mUserId = userId;
         mItemId = itemId;
@@ -127,6 +126,11 @@ public class BidEntity extends AbsTableEntity implements Externalizable {
         mBid = bid;
         mMaxBid = maxBid;
         mDate = date;
+    }
+
+    @Override
+    public void clearValue() {
+        throw new UnsupportedOperationException("This object is immutable.");
     }
 
     @Override

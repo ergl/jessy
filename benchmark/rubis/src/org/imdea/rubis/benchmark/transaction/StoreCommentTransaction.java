@@ -19,15 +19,12 @@
 
 package org.imdea.rubis.benchmark.transaction;
 
-import static org.imdea.rubis.benchmark.table.Tables.*;
-
 import fr.inria.jessy.Jessy;
 import fr.inria.jessy.transaction.ExecutionHistory;
 
 import java.util.Date;
 
 import org.imdea.rubis.benchmark.entity.CommentEntity;
-import org.imdea.rubis.benchmark.entity.IndexEntity;
 import org.imdea.rubis.benchmark.entity.UserEntity;
 
 public class StoreCommentTransaction extends AbsRUBiSTransaction {
@@ -45,10 +42,8 @@ public class StoreCommentTransaction extends AbsRUBiSTransaction {
             // Insert the new comment in the data store.
             create(mComment);
             // Select the receiver from the data store and store the updated version of the user in the data store.
-            UserEntity receiver = readEntityFrom(users).withKey(mComment.getToUserId());
+            UserEntity receiver = read(UserEntity.class, Long.toString(mComment.getToUserId()));
             receiver.edit().setRating(receiver.getRating() + mComment.getRating()).write(this);
-
-            updateIndexes();
 
             return commitTransaction();
         } catch (Exception e) {
@@ -56,16 +51,5 @@ public class StoreCommentTransaction extends AbsRUBiSTransaction {
         }
 
         return null;
-    }
-
-    private void updateIndexes() {
-        IndexEntity fromIndex = readIndex(comments.from_user_id).find(mComment.getFromUserId());
-        fromIndex.edit().addPointer(mComment.getId()).write(this);
-
-        IndexEntity itemIndex = readIndex(comments.item_id).find(mComment.getItemId());
-        itemIndex.edit().addPointer(mComment.getId()).write(this);
-
-        IndexEntity toIndex = readIndex(comments.to_user_id).find(mComment.getToUserId());
-        toIndex.edit().addPointer(mComment.getId()).write(this);
     }
 }

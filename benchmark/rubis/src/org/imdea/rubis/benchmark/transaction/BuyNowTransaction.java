@@ -1,7 +1,5 @@
 package org.imdea.rubis.benchmark.transaction;
 
-import static org.imdea.rubis.benchmark.table.Tables.*;
-
 import fr.inria.jessy.Jessy;
 import fr.inria.jessy.transaction.ExecutionHistory;
 
@@ -25,7 +23,7 @@ public class BuyNowTransaction extends AbsRUBiSTransaction {
             long userId = authenticate(mNickname, mPassword);
 
             if (userId != -1) {
-                ItemEntity item = readEntityFrom(items).withKey(mItemId);
+                ItemEntity item = read(ItemEntity.class, Long.toString(mItemId));
             }
 
             return commitTransaction();

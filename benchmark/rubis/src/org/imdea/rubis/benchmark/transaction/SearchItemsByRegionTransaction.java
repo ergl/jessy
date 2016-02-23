@@ -19,12 +19,10 @@
 
 package org.imdea.rubis.benchmark.transaction;
 
-import static org.imdea.rubis.benchmark.table.Tables.*;
-
 import fr.inria.jessy.Jessy;
 import fr.inria.jessy.transaction.ExecutionHistory;
 
-import java.util.List;
+import java.util.Collection;
 
 import org.imdea.rubis.benchmark.entity.ItemEntity;
 import org.imdea.rubis.benchmark.entity.UserEntity;
@@ -54,38 +52,12 @@ public class SearchItemsByRegionTransaction extends AbsRUBiSTransaction {
     @Override
     public ExecutionHistory execute() {
         try {
-            // This requires a little bit of explanation. The query selects all the items of a given category sold by
-            // users in a given region. First we get the ids of all the users in the given region (regionsIndex). For
-            // each of them we get the ids of all the items they sell (or sold). For each item we check if its
-            // category matches the given one (checking if categoryIndex contains the index of that item), if yes we
-            // read the corresponding ItemEntity.
-            List<Long> itemsInCategory = readIndex(items.category).find(mCategoryId).getPointers();
-            List<Long> usersInRegion = readIndex(users.region).find(mRegionId).getPointers();
-            // We only want to read elements that are in the given page.
-            int current = 0;
-            int start = mPage * mNbOfItems;
-            int read = 0;
+            Collection<ItemEntity> itemsInCategory = readBySecondary(ItemEntity.class, "mCategory", mCategoryId);
+            Collection<UserEntity> usersInRegion = readBySecondary(UserEntity.class, "mRegion", mRegionId);
 
-            for (long userKey : usersInRegion) {
-                UserEntity seller = readEntityFrom(users).withKey(userKey);
-                List<Long> itemsOfSeller = readIndex(items.seller).find(seller.getId()).getPointers();
-
-                for (long itemKey : itemsOfSeller) {
-                    // Only the items of the given category should be read. To do so we check the id of each item
-                    // against the ids contained in categoriesIndex. If categoriesIndex contains such an id we read
-                    // the corresponding ItemEntity.
-                    if (itemsInCategory.contains(itemKey)) {
-                        // Only read elements from start to start + mNbOfItems
-                        if (++current < start)
-                            continue;
-
-                        ItemEntity item = readEntityFrom(items).withKey(itemKey);
-
-                        // Only read elements from start to start + mNbOfItems
-                        if (++read == mNbOfItems)
-                            return commitTransaction();
-                    }
-                }
+            // We actually read all the items. Sorry.
+            for (UserEntity seller : usersInRegion) {
+                Collection<ItemEntity> itemsOfSeller = readBySecondary(ItemEntity.class, "mSeller", seller.getId());
             }
 
             return commitTransaction();

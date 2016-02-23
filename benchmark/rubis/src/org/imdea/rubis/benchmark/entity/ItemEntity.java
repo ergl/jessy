@@ -23,23 +23,23 @@ import static com.sleepycat.persist.model.Relationship.*;
 
 import static fr.inria.jessy.ConstantPool.JESSY_MID;
 
-import static org.imdea.rubis.benchmark.table.Tables.*;
-
 import com.sleepycat.persist.model.Entity;
-
 import com.sleepycat.persist.model.SecondaryKey;
+
+import fr.inria.jessy.store.JessyEntity;
 import fr.inria.jessy.transaction.Transaction;
 
+import java.io.Externalizable;
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
 import java.util.Date;
 
 @Entity
-public class ItemEntity extends AbsTableEntity {
+public class ItemEntity extends JessyEntity implements Externalizable {
     private static final long serialVersionUID = JESSY_MID;
 
-    public static class Editor implements AbsRUBiSEntity.Editor {
+    public static class Editor {
         private float mBuyNow;
         private long mCategory;
         private String mDescription;
@@ -163,13 +163,13 @@ public class ItemEntity extends AbsTableEntity {
 
     @Deprecated
     public ItemEntity() {
+        super("");
     }
 
     public ItemEntity(long id, String name, String description, float initialPrice, int quantity, float reservePrice,
                       float buyNow, int nbOfBids, float maxBid, Date startDate, Date endDate, long seller, long
                               category) {
-        super(items, id);
-
+        super(Long.toString(id));
         mId = id;
         mName = name;
         mDescription = description;
@@ -184,6 +184,12 @@ public class ItemEntity extends AbsTableEntity {
         mSeller = seller;
         mCategory = category;
     }
+
+    @Override
+    public void clearValue() {
+        throw new UnsupportedOperationException("This object is immutable.");
+    }
+
 
     @Override
     public Object clone() {

@@ -19,8 +19,6 @@
 
 package org.imdea.rubis.benchmark.transaction;
 
-import static org.imdea.rubis.benchmark.table.Tables.*;
-
 import fr.inria.jessy.Jessy;
 import fr.inria.jessy.transaction.ExecutionHistory;
 
@@ -34,25 +32,15 @@ public class RegisterRegionTransaction extends AbsRUBiSTransaction {
         mRegion = new RegionEntity(id, name);
     }
 
-    private void createNeededIndexEntities() {
-        createIndex(users.region).justEmpty().forKey(mRegion.getId());
-    }
-
     @Override
     public ExecutionHistory execute() {
         try {
             create(mRegion);
-            createNeededIndexEntities();
-            updateScanner();
             return commitTransaction();
         } catch (Exception e) {
             e.printStackTrace();
         }
 
         return null;
-    }
-
-    private void updateScanner() {
-        readScannerOf(regions).edit().addPointer(mRegion.getId()).write(this);
     }
 }

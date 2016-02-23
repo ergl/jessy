@@ -19,18 +19,15 @@
 
 package org.imdea.rubis.benchmark.transaction;
 
-import static org.imdea.rubis.benchmark.table.Tables.*;
-
 import fr.inria.jessy.Jessy;
 import fr.inria.jessy.consistency.SPSI;
 import fr.inria.jessy.transaction.ExecutionHistory;
 
+import java.util.Collection;
 import java.util.Date;
 
-import org.imdea.rubis.benchmark.entity.IndexEntity;
 import org.imdea.rubis.benchmark.entity.RegionEntity;
 import org.imdea.rubis.benchmark.entity.UserEntity;
-import org.imdea.rubis.benchmark.exception.UnaccessibleIndexException;
 
 public class RegisterUserTransaction extends AbsRUBiSTransaction {
     private float mBalance;
@@ -69,43 +66,23 @@ public class RegisterUserTransaction extends AbsRUBiSTransaction {
         putExtra(SPSI.LEVEL, SPSI.SER);
     }
 
-    private void createNeededIndexeEntities() {
-        createIndex(bids.user_id).justEmpty().forKey(mId);
-        createIndex(buy_now.buyer_id).justEmpty().forKey(mId);
-        createIndex(comments.from_user_id).justEmpty().forKey(mId);
-        createIndex(comments.to_user_id).justEmpty().forKey(mId);
-        createIndex(items.seller).justEmpty().forKey(mId);
-        createIndex(users.nickname).withPointer(mId).forKey(mNickname);
-    }
-
     @Override
     public ExecutionHistory execute() {
         try {
             mRegionId = -1;
 
-            for (long regionId : readScannerOf(regions).getPointers()) {
-                RegionEntity region = readEntityFrom(regions).withKey(regionId);
+            Collection<RegionEntity> regions = readBySecondary(RegionEntity.class, "mName", mRegion);
 
-                if (region.getName().equals(mRegion))
-                    mRegionId = regionId;
-            }
+            if (regions != null && regions.size() > 0)
+                mRegionId = regions.iterator().next().getId();
 
             if (mRegionId != -1) {
-                IndexEntity nickIndex = null;
+                Collection<UserEntity> users = readBySecondary(UserEntity.class, "mNickname", mNickname);
 
-                try {
-                    nickIndex = readIndex(users.nickname).find(mNickname);
-                } catch (UnaccessibleIndexException ignored) {
-                    // In the actual implementation when the index does not exist (i.e. the nickname is not in the
-                    // database) an UnaccessibleIndexException is thrown. So nickIndex remains null.
-                }
-
-                if (nickIndex == null || nickIndex.getPointers().size() == 0) {
+                if (users == null || users.size() == 0) {
                     UserEntity user = new UserEntity(mId, mFirstname, mLastname, mNickname, mPassword, mEmail, mRating,
                             mBalance, mCreationDate, mRegionId);
                     create(user);
-                    createNeededIndexeEntities();
-                    updateIndexes();
                 }
             }
 
@@ -115,10 +92,5 @@ public class RegisterUserTransaction extends AbsRUBiSTransaction {
         }
 
         return null;
-    }
-
-    private void updateIndexes() {
-        IndexEntity regionIndex = readIndex(users.region).find(mRegionId);
-        regionIndex.edit().addPointer(mId).write(this);
     }
 }

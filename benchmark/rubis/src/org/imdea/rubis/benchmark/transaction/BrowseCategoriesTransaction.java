@@ -19,10 +19,10 @@
 
 package org.imdea.rubis.benchmark.transaction;
 
-import static org.imdea.rubis.benchmark.table.Tables.*;
-
 import fr.inria.jessy.Jessy;
 import fr.inria.jessy.transaction.ExecutionHistory;
+
+import java.util.Collection;
 
 import org.imdea.rubis.benchmark.entity.CategoryEntity;
 import org.imdea.rubis.benchmark.entity.RegionEntity;
@@ -65,24 +65,13 @@ public class BrowseCategoriesTransaction extends AbsRUBiSTransaction {
             }
 
             if (!TextUtils.isEmpty(mRegionName)) {
-                boolean found = false;
+                Collection<RegionEntity> regions = readBySecondary(RegionEntity.class, "mName", mRegionName);
 
-                for (long regionId : readScannerOf(regions).getPointers()) {
-                    RegionEntity region = readEntityFrom(regions).withKey(regionId);
-
-                    if (region.getName().equals(mRegionName)) {
-                        found = true;
-                        break;
-                    }
-                }
-
-                if (!found)
+                if (regions == null || regions.size() == 0)
                     return commitTransaction();
             }
 
-            for (long categoryId : readScannerOf(categories).getPointers()) {
-                CategoryEntity category = readEntityFrom(categories).withKey(categoryId);
-            }
+            Collection<CategoryEntity> categories = readBySecondary(CategoryEntity.class, "mDummy", "");
 
             return commitTransaction();
         } catch (Exception e) {

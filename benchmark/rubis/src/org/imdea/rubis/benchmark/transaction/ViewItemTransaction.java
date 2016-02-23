@@ -19,8 +19,6 @@
 
 package org.imdea.rubis.benchmark.transaction;
 
-import static org.imdea.rubis.benchmark.table.Tables.*;
-
 import fr.inria.jessy.Jessy;
 import fr.inria.jessy.transaction.ExecutionHistory;
 
@@ -38,10 +36,10 @@ public class ViewItemTransaction extends AbsRUBiSTransaction {
     @Override
     public ExecutionHistory execute() {
         try {
-            ItemEntity item = readEntityFrom(items).withKey(mItemId);
+            ItemEntity item = read(ItemEntity.class, Long.toString(mItemId));
 
             if (item != null) {
-                UserEntity seller = readEntityFrom(users).withKey(item.getSeller());
+                UserEntity seller = read(UserEntity.class, Long.toString(item.getSeller()));
             }
 
             return commitTransaction();

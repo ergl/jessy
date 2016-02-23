@@ -19,15 +19,12 @@
 
 package org.imdea.rubis.benchmark.transaction;
 
-import static org.imdea.rubis.benchmark.table.Tables.*;
-
 import fr.inria.jessy.Jessy;
 import fr.inria.jessy.transaction.ExecutionHistory;
 
 import java.util.Date;
 
 import org.imdea.rubis.benchmark.entity.BuyNowEntity;
-import org.imdea.rubis.benchmark.entity.IndexEntity;
 import org.imdea.rubis.benchmark.entity.ItemEntity;
 
 public class StoreBuyNowTransaction extends AbsRUBiSTransaction {
@@ -43,7 +40,7 @@ public class StoreBuyNowTransaction extends AbsRUBiSTransaction {
     public ExecutionHistory execute() {
         try {
             // Select the data item we are buying.
-            ItemEntity item = readEntityFrom(items).withKey(mBuyNow.getItemId());
+            ItemEntity item = read(ItemEntity.class, Long.toString(mBuyNow.getItemId()));
             int quantityLeft = item.getQuantity() - mBuyNow.getQty();
 
             if (quantityLeft >= 0) {
@@ -52,8 +49,6 @@ public class StoreBuyNowTransaction extends AbsRUBiSTransaction {
 
                 // Update item's quantity and end endDate.
                 item.edit().setQuantity(quantityLeft).setEndDate(endDate).write(this);
-
-                updateIndexes();
             }
 
             return commitTransaction();
@@ -62,13 +57,5 @@ public class StoreBuyNowTransaction extends AbsRUBiSTransaction {
         }
 
         return null;
-    }
-
-    private void updateIndexes() {
-        IndexEntity buyerIndex = readIndex(buy_now.buyer_id).find(mBuyNow.getBuyerId());
-        buyerIndex.edit().addPointer(mBuyNow.getId()).write(this);
-
-        IndexEntity itemIndex = readIndex(buy_now.item_id).find(mBuyNow.getItemId());
-        itemIndex.edit().addPointer(mBuyNow.getId()).write(this);
     }
 }

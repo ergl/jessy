@@ -19,14 +19,11 @@
 
 package org.imdea.rubis.benchmark.transaction;
 
-import static org.imdea.rubis.benchmark.table.Tables.*;
-
 import fr.inria.jessy.Jessy;
 import fr.inria.jessy.transaction.ExecutionHistory;
 
 import java.util.Date;
 
-import org.imdea.rubis.benchmark.entity.IndexEntity;
 import org.imdea.rubis.benchmark.entity.ItemEntity;
 
 public class RegisterItemTransaction extends AbsRUBiSTransaction {
@@ -40,31 +37,15 @@ public class RegisterItemTransaction extends AbsRUBiSTransaction {
                 startDate, endDate, seller, category);
     }
 
-    private void createNeededIndexEntitties() {
-        createIndex(bids.item_id).justEmpty().forKey(mItem.getId());
-        createIndex(buy_now.item_id).justEmpty().forKey(mItem.getId());
-        createIndex(comments.item_id).justEmpty().forKey(mItem.getId());
-    }
-
     @Override
     public ExecutionHistory execute() {
         try {
             create(mItem);
-            createNeededIndexEntitties();
-            updateIndexes();
             return commitTransaction();
         } catch (Exception e) {
             e.printStackTrace();
         }
 
         return null;
-    }
-
-    private void updateIndexes() {
-        IndexEntity categoryIndex = readIndex(items.category).find(mItem.getCategory());
-        categoryIndex.edit().addPointer(mItem.getId()).write(this);
-
-        IndexEntity sellerIndex = readIndex(items.seller).find(mItem.getSeller());
-        sellerIndex.edit().addPointer(mItem.getId()).write(this);
     }
 }

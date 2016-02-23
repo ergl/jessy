@@ -21,10 +21,11 @@ package org.imdea.rubis.benchmark.entity;
 
 import static fr.inria.jessy.ConstantPool.JESSY_MID;
 
-import static org.imdea.rubis.benchmark.table.Tables.*;
-
 import com.sleepycat.persist.model.Entity;
+import com.sleepycat.persist.model.Relationship;
+import com.sleepycat.persist.model.SecondaryKey;
 
+import fr.inria.jessy.store.JessyEntity;
 import fr.inria.jessy.transaction.Transaction;
 
 import java.io.Externalizable;
@@ -33,10 +34,10 @@ import java.io.ObjectInput;
 import java.io.ObjectOutput;
 
 @Entity
-public class RegionEntity extends AbsTableEntity implements Externalizable {
+public class RegionEntity extends JessyEntity implements Externalizable {
     private static final long serialVersionUID = JESSY_MID;
 
-    public static class Editor implements AbsRUBiSEntity.Editor {
+    public static class Editor {
         private long mId;
         private String mName;
 
@@ -64,17 +65,26 @@ public class RegionEntity extends AbsTableEntity implements Externalizable {
         }
     }
 
+    @SecondaryKey(relate = Relationship.MANY_TO_ONE)
+    private String mDummy = "";
     private long mId;
+    @SecondaryKey(relate = Relationship.ONE_TO_ONE)
     private String mName;
 
     @Deprecated
     public RegionEntity() {
+        super("");
     }
 
     public RegionEntity(long id, String name) {
-        super(regions, id);
+        super(Long.toString(id));
         mId = id;
         mName = name;
+    }
+
+    @Override
+    public void clearValue() {
+        throw new UnsupportedOperationException("This object is immutable.");
     }
 
     @Override
@@ -100,6 +110,7 @@ public class RegionEntity extends AbsTableEntity implements Externalizable {
     @Override
     public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
         super.readExternal(in);
+        mDummy = (String) in.readObject();
         mId = in.readLong();
         mName = (String) in.readObject();
     }
@@ -107,6 +118,7 @@ public class RegionEntity extends AbsTableEntity implements Externalizable {
     @Override
     public void writeExternal(ObjectOutput out) throws IOException {
         super.writeExternal(out);
+        out.writeObject(mDummy);
         out.writeLong(mId);
         out.writeObject(mName);
     }

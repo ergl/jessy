@@ -19,15 +19,12 @@
 
 package org.imdea.rubis.benchmark.transaction;
 
-import static org.imdea.rubis.benchmark.table.Tables.*;
-
 import fr.inria.jessy.Jessy;
 import fr.inria.jessy.transaction.ExecutionHistory;
 
 import java.util.Date;
 
 import org.imdea.rubis.benchmark.entity.BidEntity;
-import org.imdea.rubis.benchmark.entity.IndexEntity;
 import org.imdea.rubis.benchmark.entity.ItemEntity;
 
 public class StoreBidTransaction extends AbsRUBiSTransaction {
@@ -45,13 +42,11 @@ public class StoreBidTransaction extends AbsRUBiSTransaction {
             // Insert the new bid in the data store.
             create(mBid);
             // Select the respective item from the data store.
-            ItemEntity item = readEntityFrom(items).withKey(mBid.getItemId());
+            ItemEntity item = read(ItemEntity.class, Long.toString(mBid.getItemId()));
             // Update nbOfBids and maxBid fields.
             int nbOfBids = item.getNbOfBids() + 1;
             float maxBid = Math.max(item.getMaxBid(), mBid.getBid());
             item.edit().setNbOfBids(nbOfBids).setMaxBid(maxBid).write(this);
-
-            updateIndexes();
 
             return commitTransaction();
         } catch (Exception e) {
@@ -59,13 +54,5 @@ public class StoreBidTransaction extends AbsRUBiSTransaction {
         }
 
         return null;
-    }
-
-    private void updateIndexes() {
-        IndexEntity itemIndex = readIndex(bids.item_id).find(mBid.getItemId());
-        itemIndex.edit().addPointer(mBid.getId()).write(this);
-
-        IndexEntity userIndex = readIndex(bids.user_id).find(mBid.getUserId());
-        userIndex.edit().addPointer(mBid.getId()).write(this);
     }
 }

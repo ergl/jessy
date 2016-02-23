@@ -19,16 +19,13 @@
 
 package org.imdea.rubis.benchmark.transaction;
 
-import static org.imdea.rubis.benchmark.table.Tables.*;
-
 import fr.inria.jessy.Jessy;
 import fr.inria.jessy.consistency.SPSI;
 import fr.inria.jessy.transaction.ExecutionHistory;
 
-import org.imdea.rubis.benchmark.entity.CommentEntity;
-import org.imdea.rubis.benchmark.entity.IndexEntity;
-import org.imdea.rubis.benchmark.entity.ItemEntity;
-import org.imdea.rubis.benchmark.entity.UserEntity;
+import java.util.Collection;
+
+import org.imdea.rubis.benchmark.entity.*;
 
 public class AboutMeTransaction extends AbsRUBiSTransaction {
     private String mNickname;
@@ -49,7 +46,7 @@ public class AboutMeTransaction extends AbsRUBiSTransaction {
             long userId = authenticate(mNickname, mPassword);
 
             if (userId != -1) {
-                UserEntity user = readEntityFrom(users).withKey(mTargetUserId);
+                UserEntity user = read(UserEntity.class, Long.toString(mTargetUserId));
 
                 if (user != null) {
                     listBids();
@@ -68,47 +65,42 @@ public class AboutMeTransaction extends AbsRUBiSTransaction {
         return null;
     }
 
-    private void listBids() {
-        IndexEntity wonIndex = readIndex(bids.user_id).find(mTargetUserId);
+    private void listBids() throws Exception {
+        Collection<BidEntity> bids = readBySecondary(BidEntity.class, "mUserId", mTargetUserId);
 
-        for (long wonKey : wonIndex.getPointers()) {
-            ItemEntity item = readEntityFrom(items).withKey(wonKey);
-            UserEntity seller = readEntityFrom(users).withKey(item.getSeller());
+        for (BidEntity bid : bids) {
+            ItemEntity item = read(ItemEntity.class, Long.toString(bid.getItemId()));
+            UserEntity seller = read(UserEntity.class, Long.toString(item.getSeller()));
         }
     }
 
-    private void listBoughtItems() {
-        IndexEntity boughtsIndex = readIndex(buy_now.buyer_id).find(mTargetUserId);
+    private void listBoughtItems() throws Exception {
+        Collection<BuyNowEntity> buyNows = readBySecondary(BuyNowEntity.class, "mUserId", mTargetUserId);
 
-        for (long boughtsKey : boughtsIndex.getPointers()) {
-            ItemEntity boughtItem = readEntityFrom(items).withKey(boughtsKey);
-            UserEntity seller = readEntityFrom(users).withKey(boughtItem.getSeller());
+        for (BuyNowEntity buyNow : buyNows) {
+            ItemEntity item = read(ItemEntity.class, Long.toString(buyNow.getItemId()));
+            UserEntity seller = read(UserEntity.class, Long.toString(item.getSeller()));
         }
     }
 
-    private void listComments() {
-        IndexEntity commentsIndex = readIndex(comments.to_user_id).find(mTargetUserId);
+    private void listComments() throws Exception {
+        Collection<CommentEntity> comments = readBySecondary(CommentEntity.class, "mToUserId", mTargetUserId);
 
-        for (long commentKey : commentsIndex.getPointers()) {
-            CommentEntity comment = readEntityFrom(comments).withKey(commentKey);
-            UserEntity commenter = readEntityFrom(users).withKey(comment.getFromUserId());
+        for (CommentEntity comment : comments) {
+            UserEntity commenter = read(UserEntity.class, Long.toString(comment.getFromUserId()));
         }
     }
 
-    private void listItems() {
-        IndexEntity sellingIndex = readIndex(items.seller).find(mTargetUserId);
-
-        for (long sellingKey : sellingIndex.getPointers()) {
-            ItemEntity item = readEntityFrom(items).withKey(sellingKey);
-        }
+    private void listItems() throws Exception {
+        Collection<ItemEntity> sellings = readBySecondary(ItemEntity.class, "mSeller", mTargetUserId);
     }
 
-    private void listWonItems() {
-        IndexEntity wonIndex = readIndex(bids.user_id).find(mTargetUserId);
+    private void listWonItems() throws Exception {
+        Collection<BidEntity> wons = readBySecondary(BidEntity.class, "mUserId", mTargetUserId);
 
-        for (long wonKey : wonIndex.getPointers()) {
-            ItemEntity item = readEntityFrom(items).withKey(wonKey);
-            UserEntity seller = readEntityFrom(users).withKey(item.getSeller());
+        for (BidEntity won : wons) {
+            ItemEntity item = read(ItemEntity.class, Long.toString(won.getItemId()));
+            UserEntity seller = read(UserEntity.class, Long.toString(item.getSeller()));
         }
     }
 }

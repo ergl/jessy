@@ -19,13 +19,11 @@
 
 package org.imdea.rubis.benchmark.transaction;
 
-import static org.imdea.rubis.benchmark.table.Tables.*;
-
 import fr.inria.jessy.Jessy;
 import fr.inria.jessy.transaction.ExecutionHistory;
 
+import java.util.Collection;
 import org.imdea.rubis.benchmark.entity.BidEntity;
-import org.imdea.rubis.benchmark.entity.IndexEntity;
 import org.imdea.rubis.benchmark.entity.ItemEntity;
 import org.imdea.rubis.benchmark.entity.UserEntity;
 
@@ -47,14 +45,13 @@ public class PutBidTransaction extends AbsRUBiSTransaction {
             long userId = authenticate(mNickname, mPassword);
 
             if (userId != -1) {
-                ItemEntity item = readEntityFrom(items).withKey(mItemId);
-                UserEntity seller = readEntityFrom(users).withKey(item.getSeller());
-                IndexEntity bidsIndex = readIndex(bids.item_id).find(item.getId());
+                ItemEntity item = read(ItemEntity.class, Long.toString(mItemId));
+                UserEntity seller = read(UserEntity.class, Long.toString(item.getSeller()));
+                Collection<BidEntity> bids = readBySecondary(BidEntity.class, "mItemId", mItemId);
                 int count = 0;
                 float max = 0.0f;
 
-                for (long bidId : bidsIndex.getPointers()) {
-                    BidEntity bid = readEntityFrom(bids).withKey(bidId);
+                for (BidEntity bid : bids) {
                     max = Math.max(max, bid.getBid());
                     count++;
                 }

@@ -19,8 +19,6 @@
 
 package org.imdea.rubis.benchmark.transaction;
 
-import static org.imdea.rubis.benchmark.table.Tables.*;
-
 import fr.inria.jessy.Jessy;
 import fr.inria.jessy.transaction.ExecutionHistory;
 
@@ -47,8 +45,8 @@ public class PutComment extends AbsRUBiSTransaction {
             long userId = authenticate(mNickname, mPassword);
 
             if (userId != -1) {
-                UserEntity user = readEntityFrom(users).withKey(mToUserId);
-                ItemEntity item = readEntityFrom(items).withKey(mItemId);
+                UserEntity user = read(UserEntity.class, Long.toString(mToUserId));
+                ItemEntity item = read(ItemEntity.class, Long.toString(mItemId));
             }
 
             return commitTransaction();

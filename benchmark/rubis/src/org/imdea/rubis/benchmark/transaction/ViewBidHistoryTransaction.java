@@ -19,13 +19,12 @@
 
 package org.imdea.rubis.benchmark.transaction;
 
-import static org.imdea.rubis.benchmark.table.Tables.*;
-
 import fr.inria.jessy.Jessy;
 import fr.inria.jessy.transaction.ExecutionHistory;
 
+import java.util.Collection;
+
 import org.imdea.rubis.benchmark.entity.BidEntity;
-import org.imdea.rubis.benchmark.entity.IndexEntity;
 import org.imdea.rubis.benchmark.entity.ItemEntity;
 import org.imdea.rubis.benchmark.entity.UserEntity;
 
@@ -40,14 +39,13 @@ public class ViewBidHistoryTransaction extends AbsRUBiSTransaction {
     @Override
     public ExecutionHistory execute() {
         try {
-            ItemEntity item = readEntityFrom(items).withKey(mItemId);
+            ItemEntity item = read(ItemEntity.class, Long.toString(mItemId));
 
             if (item != null) {
-                IndexEntity bidsIndex = readIndex(bids.item_id).find(mItemId);
+                Collection<BidEntity> bids = readBySecondary(BidEntity.class, "mItemId", mItemId);
 
-                for (long key : bidsIndex.getPointers()) {
-                    BidEntity bid = readEntityFrom(bids).withKey(key);
-                    UserEntity bidder = readEntityFrom(users).withKey(bid.getUserId());
+                for (BidEntity bid : bids) {
+                    UserEntity bidder = read(UserEntity.class, Long.toString(bid.getUserId()));
                 }
             }
 

@@ -19,13 +19,12 @@
 
 package org.imdea.rubis.benchmark.transaction;
 
-import static org.imdea.rubis.benchmark.table.Tables.*;
-
 import fr.inria.jessy.Jessy;
 import fr.inria.jessy.transaction.ExecutionHistory;
 
+import java.util.Collection;
+
 import org.imdea.rubis.benchmark.entity.RegionEntity;
-import org.imdea.rubis.benchmark.entity.ScannerEntity;
 
 public class BrowseRegionsTransaction extends AbsRUBiSTransaction {
     public BrowseRegionsTransaction(Jessy jessy) throws Exception {
@@ -35,12 +34,7 @@ public class BrowseRegionsTransaction extends AbsRUBiSTransaction {
     @Override
     public ExecutionHistory execute() {
         try {
-            ScannerEntity scanner = readScannerOf(regions);
-
-            for (long regionId : scanner.getPointers()) {
-                RegionEntity region = readEntityFrom(regions).withKey(regionId);
-            }
-
+            Collection<RegionEntity> regions = readBySecondary(RegionEntity.class, "mDummy", "");
             return commitTransaction();
         } catch (Exception e) {
             e.printStackTrace();
