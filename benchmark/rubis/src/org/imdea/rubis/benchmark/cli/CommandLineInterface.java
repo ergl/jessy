@@ -49,10 +49,7 @@ public class CommandLineInterface {
 
     private void init() {
     	OptionGroup group = new OptionGroup();
-    	Option help = Option.builder(OPT_HELP)
-    			.longOpt(OPT_HELP_LONG)
-    			.desc(OPT_HELP_DESC)
-    			.build();
+    	Option help = Option.builder(OPT_HELP).longOpt(OPT_HELP_LONG).desc(OPT_HELP_DESC).build();
     	group.addOption(help);
         mOptions.addOptionGroup(group);
     }
@@ -90,10 +87,8 @@ public class CommandLineInterface {
             jessy.addEntity(CategoryEntity.class);
             jessy.addEntity(CategoryEntity.class);
             jessy.addEntity(CommentEntity.class);
-            jessy.addEntity(IndexEntity.class);
             jessy.addEntity(ItemEntity.class);
             jessy.addEntity(RegionEntity.class);
-            jessy.addEntity(ScannerEntity.class);
             jessy.addEntity(UserEntity.class);
             jessy.addSecondaryIndex(BidEntity.class, Long.class, "mItemId");
             jessy.addSecondaryIndex(BidEntity.class, Long.class, "mUserId");
