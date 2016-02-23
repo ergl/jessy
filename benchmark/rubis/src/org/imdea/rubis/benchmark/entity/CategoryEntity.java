@@ -32,6 +32,7 @@ import java.io.Externalizable;
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
+import java.util.concurrent.atomic.AtomicLong;
 
 @Entity
 public class CategoryEntity extends JessyEntity implements Externalizable {
@@ -65,8 +66,49 @@ public class CategoryEntity extends JessyEntity implements Externalizable {
         }
     }
 
-    @SecondaryKey(relate = Relationship.MANY_TO_ONE)
-    private String mDummy = "";
+    @Entity
+    public static class Scanner extends JessyEntity implements Externalizable {
+        private static final AtomicLong sSequence = new AtomicLong();
+
+        private long mCategoryId;
+        @SecondaryKey(relate = Relationship.MANY_TO_ONE)
+        @SuppressWarnings("unused")
+        private long mDummy;
+
+        @Deprecated
+        public Scanner() {
+            super("");
+        }
+
+        public Scanner(long categoryId) {
+            super("?categories~id#" + sSequence.incrementAndGet() + ":all#0");
+            mCategoryId = categoryId;
+        }
+
+        @Override
+        public void clearValue() {
+            throw new UnsupportedOperationException("This entity is immutable.");
+        }
+
+        public long getCategoryId() {
+            return mCategoryId;
+        }
+
+        @Override
+        public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
+            super.readExternal(in);
+            mCategoryId = in.readLong();
+            mDummy = in.readLong();
+        }
+
+        @Override
+        public void writeExternal(ObjectOutput out) throws IOException {
+            super.writeExternal(out);
+            out.writeLong(mCategoryId);
+            out.writeLong(mDummy);
+        }
+    }
+
     private long mId;
     private String mName;
 
@@ -76,7 +118,7 @@ public class CategoryEntity extends JessyEntity implements Externalizable {
     }
 
     public CategoryEntity(long id, String name) {
-        super("categories~id#" + id);
+        super("@categories~id#" + id);
         mId = id;
         mName = name;
     }
@@ -110,7 +152,6 @@ public class CategoryEntity extends JessyEntity implements Externalizable {
     @Override
     public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
         super.readExternal(in);
-        mDummy = (String) in.readObject();
         mId = in.readLong();
         mName = (String) in.readObject();
     }
@@ -118,7 +159,6 @@ public class CategoryEntity extends JessyEntity implements Externalizable {
     @Override
     public void writeExternal(ObjectOutput out) throws IOException {
         super.writeExternal(out);
-        out.writeObject(mDummy);
         out.writeLong(mId);
         out.writeObject(mName);
     }

@@ -19,11 +19,10 @@
 
 package org.imdea.rubis.benchmark.entity;
 
-import static com.sleepycat.persist.model.Relationship.*;
-
 import static fr.inria.jessy.ConstantPool.JESSY_MID;
 
 import com.sleepycat.persist.model.Entity;
+import com.sleepycat.persist.model.Relationship;
 import com.sleepycat.persist.model.SecondaryKey;
 
 import fr.inria.jessy.store.JessyEntity;
@@ -34,6 +33,7 @@ import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
 import java.util.Date;
+import java.util.concurrent.atomic.AtomicLong;
 
 @Entity
 public class ItemEntity extends JessyEntity implements Externalizable {
@@ -41,7 +41,7 @@ public class ItemEntity extends JessyEntity implements Externalizable {
 
     public static class Editor {
         private float mBuyNow;
-        private String mCategoryKey;
+        private long mCategoryId;
         private String mDescription;
         private Date mEndDate;
         private long mId;
@@ -51,12 +51,12 @@ public class ItemEntity extends JessyEntity implements Externalizable {
         private int mNbOfBids;
         private int mQuantity;
         private float mReservePrice;
-        private String mSeller;
+        private long mSeller;
         private Date mStartDate;
 
         Editor(ItemEntity source) {
             mBuyNow = source.getBuyNow();
-            mCategoryKey = source.getCategoryKey();
+            mCategoryId = source.getCategoryId();
             mDescription = source.getDescription();
             mEndDate = source.getEndDate();
             mId = source.getId();
@@ -66,13 +66,13 @@ public class ItemEntity extends JessyEntity implements Externalizable {
             mNbOfBids = source.getNbOfBids();
             mQuantity = source.getQuantity();
             mReservePrice = source.getReservePrice();
-            mSeller = source.getSellerKey();
+            mSeller = source.getSeller();
             mStartDate = source.getStartDate();
         }
 
         private ItemEntity done() {
             return new ItemEntity(mId, mName, mDescription, mInitialPrice, mQuantity, mReservePrice, mBuyNow,
-                    mNbOfBids, mMaxBid, mStartDate, mEndDate, mSeller, mCategoryKey);
+                    mNbOfBids, mMaxBid, mStartDate, mEndDate, mSeller, mCategoryId);
         }
 
         public Editor setBuyNow(float buyNow) {
@@ -80,8 +80,8 @@ public class ItemEntity extends JessyEntity implements Externalizable {
             return this;
         }
 
-        public Editor setCategoryKey(String categoryKey) {
-            mCategoryKey = categoryKey;
+        public Editor setCategoryId(long categoryId) {
+            mCategoryId = categoryId;
             return this;
         }
 
@@ -130,8 +130,8 @@ public class ItemEntity extends JessyEntity implements Externalizable {
             return this;
         }
 
-        public Editor setSellerKey(String sellerKey) {
-            mSeller = sellerKey;
+        public Editor setSeller(long seller) {
+            mSeller = seller;
             return this;
         }
 
@@ -145,9 +145,96 @@ public class ItemEntity extends JessyEntity implements Externalizable {
         }
     }
 
+    @Entity
+    public static class CategoryIdIndex extends JessyEntity implements Externalizable {
+        private static final AtomicLong sSequence = new AtomicLong();
+
+        @SecondaryKey(relate = Relationship.MANY_TO_ONE)
+        @SuppressWarnings("unused")
+        private long mCategoryId;
+        private long mItemId;
+
+        @Deprecated
+        public CategoryIdIndex() {
+            super("");
+        }
+
+        public CategoryIdIndex(long categoryId, long itemId) {
+            super("?items~id#" + sSequence.incrementAndGet() + ":category_id#" + categoryId);
+            mCategoryId = categoryId;
+            mItemId = itemId;
+        }
+
+        @Override
+        public void clearValue() {
+            throw new UnsupportedOperationException("This entity is immutable.");
+        }
+
+        public long getItemId() {
+            return mItemId;
+        }
+
+        @Override
+        public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
+            super.readExternal(in);
+            mItemId = in.readLong();
+            mCategoryId = in.readLong();
+        }
+
+        @Override
+        public void writeExternal(ObjectOutput out) throws IOException {
+            super.writeExternal(out);
+            out.writeLong(mItemId);
+            out.writeLong(mCategoryId);
+        }
+    }
+
+    @Entity
+    public static class SellerIndex extends JessyEntity implements Externalizable {
+        private static final AtomicLong sSequence = new AtomicLong();
+
+        private long mItemId;
+        @SecondaryKey(relate = Relationship.MANY_TO_ONE)
+        @SuppressWarnings("unused")
+        private long mSeller;
+
+        @Deprecated
+        public SellerIndex() {
+            super("");
+        }
+
+        public SellerIndex(long seller, long itemId) {
+            super("?items~id#" + sSequence.incrementAndGet() + ":seller#" + seller);
+            mSeller = seller;
+            mItemId = itemId;
+        }
+
+        @Override
+        public void clearValue() {
+            throw new UnsupportedOperationException("This entity is immutable.");
+        }
+
+        public long getItemId() {
+            return mItemId;
+        }
+
+        @Override
+        public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
+            super.readExternal(in);
+            mItemId = in.readLong();
+            mSeller = in.readLong();
+        }
+
+        @Override
+        public void writeExternal(ObjectOutput out) throws IOException {
+            super.writeExternal(out);
+            out.writeLong(mItemId);
+            out.writeLong(mSeller);
+        }
+    }
+
     private float mBuyNow;
-    @SecondaryKey(relate = MANY_TO_ONE)
-    private String mCategoryKey;
+    private long mCategoryId;
     private String mDescription;
     private Date mEndDate;
     private long mId;
@@ -157,8 +244,7 @@ public class ItemEntity extends JessyEntity implements Externalizable {
     private int mNbOfBids;
     private int mQuantity;
     private float mReservePrice;
-    @SecondaryKey(relate = MANY_TO_ONE)
-    private String mSellerKey;
+    private long mSeller;
     private Date mStartDate;
 
     @Deprecated
@@ -167,9 +253,9 @@ public class ItemEntity extends JessyEntity implements Externalizable {
     }
 
     public ItemEntity(long id, String name, String description, float initialPrice, int quantity, float reservePrice,
-                      float buyNow, int nbOfBids, float maxBid, Date startDate, Date endDate, String sellerKey, String
-                              categoryKey) {
-        super("items~id#" + id + "~category_key#" + categoryKey + "~seller_key#" + sellerKey);
+                      float buyNow, int nbOfBids, float maxBid, Date startDate, Date endDate, long seller, long
+                              categoryId) {
+        super("items~id#" + id);
         mId = id;
         mName = name;
         mDescription = description;
@@ -181,15 +267,14 @@ public class ItemEntity extends JessyEntity implements Externalizable {
         mMaxBid = maxBid;
         mStartDate = startDate;
         mEndDate = endDate;
-        mSellerKey = sellerKey;
-        mCategoryKey = categoryKey;
+        mSeller = seller;
+        mCategoryId = categoryId;
     }
 
     @Override
     public void clearValue() {
         throw new UnsupportedOperationException("This object is immutable.");
     }
-
 
     @Override
     public Object clone() {
@@ -205,8 +290,8 @@ public class ItemEntity extends JessyEntity implements Externalizable {
         entity.mMaxBid = mMaxBid;
         entity.mStartDate = (Date) mStartDate.clone();
         entity.mEndDate = (Date) mEndDate.clone();
-        entity.mSellerKey = mSellerKey;
-        entity.mCategoryKey = mCategoryKey;
+        entity.mSeller = mSeller;
+        entity.mCategoryId = mCategoryId;
         return entity;
     }
 
@@ -218,8 +303,8 @@ public class ItemEntity extends JessyEntity implements Externalizable {
         return mBuyNow;
     }
 
-    public String getCategoryKey() {
-        return mCategoryKey;
+    public long getCategoryId() {
+        return mCategoryId;
     }
 
     public String getDescription() {
@@ -258,8 +343,8 @@ public class ItemEntity extends JessyEntity implements Externalizable {
         return mReservePrice;
     }
 
-    public String getSellerKey() {
-        return mSellerKey;
+    public long getSeller() {
+        return mSeller;
     }
 
     public Date getStartDate() {
@@ -280,8 +365,8 @@ public class ItemEntity extends JessyEntity implements Externalizable {
         mMaxBid = in.readFloat();
         mStartDate = (Date) in.readObject();
         mEndDate = (Date) in.readObject();
-        mSellerKey = (String) in.readObject();
-        mCategoryKey = (String) in.readObject();
+        mSeller = in.readLong();
+        mCategoryId = in.readLong();
     }
 
     @Override
@@ -298,7 +383,7 @@ public class ItemEntity extends JessyEntity implements Externalizable {
         out.writeFloat(mMaxBid);
         out.writeObject(mStartDate);
         out.writeObject(mEndDate);
-        out.writeObject(mSellerKey);
-        out.writeObject(mCategoryKey);
+        out.writeLong(mSeller);
+        out.writeLong(mCategoryId);
     }
 }

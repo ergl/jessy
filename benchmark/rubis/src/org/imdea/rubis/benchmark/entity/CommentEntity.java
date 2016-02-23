@@ -19,12 +19,11 @@
 
 package org.imdea.rubis.benchmark.entity;
 
-import static com.sleepycat.persist.model.Relationship.*;
-
 import static fr.inria.jessy.ConstantPool.JESSY_MID;
 
+import com.sleepycat.persist.model.Entity;
+import com.sleepycat.persist.model.Relationship;
 import com.sleepycat.persist.model.SecondaryKey;
-
 import fr.inria.jessy.store.JessyEntity;
 import fr.inria.jessy.transaction.Transaction;
 
@@ -33,6 +32,7 @@ import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
 import java.util.Date;
+import java.util.concurrent.atomic.AtomicLong;
 
 public class CommentEntity extends JessyEntity implements Externalizable {
     private static final long serialVersionUID = JESSY_MID;
@@ -40,24 +40,24 @@ public class CommentEntity extends JessyEntity implements Externalizable {
     public static class Editor {
         private String mComment;
         private Date mDate;
-        private String mFromUserKey;
+        private long mFromUserId;
         private long mId;
-        private String mItemKey;
+        private long mItemId;
         private int mRating;
-        private String mToUserKey;
+        private long mToUserId;
 
         Editor(CommentEntity source) {
             mComment = source.getComment();
             mDate = source.getDate();
-            mFromUserKey = source.getFromUserKey();
+            mFromUserId = source.getFromUserId();
             mId = source.getId();
-            mItemKey = source.getItemKey();
+            mItemId = source.getItemId();
             mRating = source.getRating();
-            mToUserKey = source.getToUserKey();
+            mToUserId = source.getToUserId();
         }
 
         private CommentEntity done() {
-            return new CommentEntity(mId, mFromUserKey, mToUserKey, mItemKey, mRating, mDate, mComment);
+            return new CommentEntity(mId, mFromUserId, mToUserId, mItemId, mRating, mDate, mComment);
         }
 
         public Editor setComment(String comment) {
@@ -70,8 +70,8 @@ public class CommentEntity extends JessyEntity implements Externalizable {
             return this;
         }
 
-        public Editor setFromUserKey(String fromUserKey) {
-            mFromUserKey = fromUserKey;
+        public Editor setFromUserId(long fromUserId) {
+            mFromUserId = fromUserId;
             return this;
         }
 
@@ -80,8 +80,8 @@ public class CommentEntity extends JessyEntity implements Externalizable {
             return this;
         }
 
-        public Editor setItemKey(String itemKey) {
-            mItemKey = itemKey;
+        public Editor setItemId(long itemId) {
+            mItemId = itemId;
             return this;
         }
 
@@ -90,8 +90,8 @@ public class CommentEntity extends JessyEntity implements Externalizable {
             return this;
         }
 
-        public Editor setToUserKey(String toUserKey) {
-            mToUserKey = toUserKey;
+        public Editor setToUserId(long toUserId) {
+            mToUserId = toUserId;
             return this;
         }
 
@@ -100,30 +100,158 @@ public class CommentEntity extends JessyEntity implements Externalizable {
         }
     }
 
+    @Entity
+    public static class FromUserIdIndex extends JessyEntity implements Externalizable {
+        private static final AtomicLong sSequence = new AtomicLong();
+
+        private long mCommentId;
+        @SecondaryKey(relate = Relationship.MANY_TO_ONE)
+        @SuppressWarnings("unused")
+        private long mFromUserId;
+
+        @Deprecated
+        public FromUserIdIndex() {
+            super("");
+        }
+
+        public FromUserIdIndex(long fromUserId, long commentId) {
+            super("?comments~id#" + sSequence.incrementAndGet() + ":from_user_id#" + fromUserId);
+            mFromUserId = fromUserId;
+            mCommentId = commentId;
+        }
+
+        @Override
+        public void clearValue() {
+            throw new UnsupportedOperationException("This entity is immutable.");
+        }
+
+        public long getCommentId() {
+            return mCommentId;
+        }
+
+        @Override
+        public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
+            super.readExternal(in);
+            mCommentId = in.readLong();
+            mFromUserId = in.readLong();
+        }
+
+        @Override
+        public void writeExternal(ObjectOutput out) throws IOException {
+            super.writeExternal(out);
+            out.writeLong(mCommentId);
+            out.writeLong(mFromUserId);
+        }
+    }
+
+    @Entity
+    public static class ItemIdIndex extends JessyEntity implements Externalizable {
+        private static final AtomicLong sSequence = new AtomicLong();
+
+        private long mCommentId;
+        @SecondaryKey(relate = Relationship.MANY_TO_ONE)
+        @SuppressWarnings("unused")
+        private long mItemId;
+
+        @Deprecated
+        public ItemIdIndex() {
+            super("");
+        }
+
+        public ItemIdIndex(long itemId, long commentId) {
+            super("?comments~id#" + sSequence.incrementAndGet() + ":item_id#" + itemId);
+            mItemId = itemId;
+            mCommentId = commentId;
+        }
+
+        @Override
+        public void clearValue() {
+            throw new UnsupportedOperationException("This entity is immutable.");
+        }
+
+        public long getCommentId() {
+            return mCommentId;
+        }
+
+        @Override
+        public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
+            super.readExternal(in);
+            mCommentId = in.readLong();
+            mItemId = in.readLong();
+        }
+
+        @Override
+        public void writeExternal(ObjectOutput out) throws IOException {
+            super.writeExternal(out);
+            out.writeLong(mCommentId);
+            out.writeLong(mItemId);
+        }
+    }
+
+    @Entity
+    public static class ToUserIdIndex extends JessyEntity implements Externalizable {
+        private static final AtomicLong sSequence = new AtomicLong();
+
+        private long mCommentId;
+        @SecondaryKey(relate = Relationship.MANY_TO_ONE)
+        @SuppressWarnings("unused")
+        private long mToUserId;
+
+        @Deprecated
+        public ToUserIdIndex() {
+            super("");
+        }
+
+        public ToUserIdIndex(long toUserId, long commentId) {
+            super("?comments~id#" + sSequence.incrementAndGet() + ":to_user_id#" + toUserId);
+            mToUserId = toUserId;
+            mCommentId = commentId;
+        }
+
+        @Override
+        public void clearValue() {
+            throw new UnsupportedOperationException("This entity is immutable.");
+        }
+
+        public long getCommentId() {
+            return mCommentId;
+        }
+
+        @Override
+        public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
+            super.readExternal(in);
+            mCommentId = in.readLong();
+            mToUserId = in.readLong();
+        }
+
+        @Override
+        public void writeExternal(ObjectOutput out) throws IOException {
+            super.writeExternal(out);
+            out.writeLong(mCommentId);
+            out.writeLong(mToUserId);
+        }
+    }
+
     private String mComment;
     private Date mDate;
-    @SecondaryKey(relate = MANY_TO_ONE)
-    private String mFromUserKey;
+    private long mFromUserId;
     private long mId;
-    @SecondaryKey(relate = MANY_TO_ONE)
-    private String mItemKey;
+    private long mItemId;
     private int mRating;
-    @SecondaryKey(relate = MANY_TO_ONE)
-    private String mToUserKey;
+    private long mToUserId;
 
     @Deprecated
     public CommentEntity() {
         super("");
     }
 
-    public CommentEntity(long id, String fromUserKey, String toUserKey, String itemKey, int rating, Date date, String
+    public CommentEntity(long id, long fromUserId, long toUserId, long itemId, int rating, Date date, String
             comment) {
-        super("comments~id#" + id + "~from_user_key#" + fromUserKey + "~item_key#" + itemKey + "~to_user_key#"
-                + toUserKey);
+        super("comments~id#" + id);
         mId = id;
-        mFromUserKey = fromUserKey;
-        mToUserKey = toUserKey;
-        mItemKey = itemKey;
+        mFromUserId = fromUserId;
+        mToUserId = toUserId;
+        mItemId = itemId;
         mRating = rating;
         mDate = date;
         mComment = comment;
@@ -139,9 +267,9 @@ public class CommentEntity extends JessyEntity implements Externalizable {
     public Object clone() {
         CommentEntity entity = (CommentEntity) super.clone();
         entity.mId = mId;
-        entity.mFromUserKey = mFromUserKey;
-        entity.mToUserKey = mToUserKey;
-        entity.mItemKey = mItemKey;
+        entity.mFromUserId = mFromUserId;
+        entity.mToUserId = mToUserId;
+        entity.mItemId = mItemId;
         entity.mRating = mRating;
         entity.mDate = (Date) mDate.clone();
         entity.mComment = mComment;
@@ -160,33 +288,33 @@ public class CommentEntity extends JessyEntity implements Externalizable {
         return mDate;
     }
 
-    public String getFromUserKey() {
-        return mFromUserKey;
+    public long getFromUserId() {
+        return mFromUserId;
     }
 
     public long getId() {
         return mId;
     }
 
-    public String getItemKey() {
-        return mItemKey;
+    public long getItemId() {
+        return mItemId;
     }
 
     public int getRating() {
         return mRating;
     }
 
-    public String getToUserKey() {
-        return mToUserKey;
+    public long getToUserId() {
+        return mToUserId;
     }
 
     @Override
     public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
         super.readExternal(in);
         mId = in.readLong();
-        mFromUserKey = (String) in.readObject();
-        mToUserKey = (String) in.readObject();
-        mItemKey = (String) in.readObject();
+        mFromUserId = in.readLong();
+        mToUserId = in.readLong();
+        mItemId = in.readLong();
         mRating = in.readInt();
         mDate = (Date) in.readObject();
         mComment = (String) in.readObject();
@@ -196,9 +324,9 @@ public class CommentEntity extends JessyEntity implements Externalizable {
     public void writeExternal(ObjectOutput out) throws IOException {
         super.writeExternal(out);
         out.writeLong(mId);
-        out.writeObject(mFromUserKey);
-        out.writeObject(mToUserKey);
-        out.writeObject(mItemKey);
+        out.writeLong(mFromUserId);
+        out.writeLong(mToUserId);
+        out.writeLong(mItemId);
         out.writeInt(mRating);
         out.writeObject(mDate);
         out.writeObject(mComment);

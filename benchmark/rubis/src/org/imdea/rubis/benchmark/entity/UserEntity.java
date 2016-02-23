@@ -19,11 +19,10 @@
 
 package org.imdea.rubis.benchmark.entity;
 
-import static com.sleepycat.persist.model.Relationship.*;
-
 import static fr.inria.jessy.ConstantPool.JESSY_MID;
 
 import com.sleepycat.persist.model.Entity;
+import com.sleepycat.persist.model.Relationship;
 import com.sleepycat.persist.model.SecondaryKey;
 
 import fr.inria.jessy.store.JessyEntity;
@@ -34,6 +33,7 @@ import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
 import java.util.Date;
+import java.util.concurrent.atomic.AtomicLong;
 
 @Entity
 public class UserEntity extends JessyEntity implements Externalizable {
@@ -49,7 +49,7 @@ public class UserEntity extends JessyEntity implements Externalizable {
         private String mNickname;
         private String mPassword;
         private int mRating;
-        private String mRegionKey;
+        private long mRegionId;
 
         Editor(UserEntity source) {
             mBalance = source.getBalance();
@@ -61,12 +61,12 @@ public class UserEntity extends JessyEntity implements Externalizable {
             mNickname = source.getNickname();
             mPassword = source.getPassword();
             mRating = source.getRating();
-            mRegionKey = source.getRegionKey();
+            mRegionId = source.getRegionId();
         }
 
         private UserEntity done() {
             return new UserEntity(mId, mFirstname, mLastname, mNickname, mPassword, mEmail, mRating, mBalance,
-                    mCreationDate, mRegionKey);
+                    mCreationDate, mRegionId);
         }
 
         public Editor setBalance(float balance) {
@@ -114,13 +114,101 @@ public class UserEntity extends JessyEntity implements Externalizable {
             return this;
         }
 
-        public Editor setRegionKey(String regionKey) {
-            mRegionKey = regionKey;
+        public Editor setRegionId(long regionId) {
+            mRegionId = regionId;
             return this;
         }
 
         public void write(Transaction trans) {
             trans.write(done());
+        }
+    }
+
+    @Entity
+    public static class NicknameIndex extends JessyEntity implements Externalizable {
+        private static final AtomicLong sSequence = new AtomicLong();
+
+        @SecondaryKey(relate = Relationship.MANY_TO_ONE)
+        @SuppressWarnings("unused")
+        private String mNickname;
+        private long mUserId;
+
+        @Deprecated
+        public NicknameIndex() {
+            super("");
+        }
+
+        public NicknameIndex(String nickname, long itemId) {
+            super("?users~id#" + sSequence.incrementAndGet() + ":nickname#" + nickname);
+            mNickname = nickname;
+            mUserId = itemId;
+        }
+
+        @Override
+        public void clearValue() {
+            throw new UnsupportedOperationException("This entity is immutable.");
+        }
+
+        public long getUserId() {
+            return mUserId;
+        }
+
+        @Override
+        public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
+            super.readExternal(in);
+            mUserId = in.readLong();
+            mNickname = (String) in.readObject();
+        }
+
+        @Override
+        public void writeExternal(ObjectOutput out) throws IOException {
+            super.writeExternal(out);
+            out.writeLong(mUserId);
+            out.writeObject(mNickname);
+        }
+    }
+
+    @Entity
+    public static class RegionIdIndex extends JessyEntity implements Externalizable {
+        private static final AtomicLong sSequence = new AtomicLong();
+
+        @SecondaryKey(relate = Relationship.MANY_TO_ONE)
+        @SuppressWarnings("unused")
+        private long mRegionId;
+        private long mUserId;
+
+        @Deprecated
+        public RegionIdIndex() {
+            super("");
+        }
+
+        public RegionIdIndex(long regionId, long itemId) {
+            super("?users~id#" + sSequence.incrementAndGet() + ":region_id#" + regionId);
+            mRegionId = regionId;
+            mUserId = itemId;
+        }
+
+        @Override
+        public void clearValue() {
+            throw new UnsupportedOperationException("This entity is immutable.");
+        }
+
+        public long getUserId() {
+            return mUserId;
+        }
+
+        @Override
+        public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
+            super.readExternal(in);
+            mUserId = in.readLong();
+            mRegionId = in.readLong();
+        }
+
+        @Override
+        public void writeExternal(ObjectOutput out) throws IOException {
+            super.writeExternal(out);
+            out.writeLong(mUserId);
+            out.writeLong(mRegionId);
         }
     }
 
@@ -130,12 +218,10 @@ public class UserEntity extends JessyEntity implements Externalizable {
     private String mFirstname;
     private long mId;
     private String mLastname;
-    @SecondaryKey(relate = ONE_TO_ONE)
     private String mNickname;
     private String mPassword;
     private int mRating;
-    @SecondaryKey(relate = MANY_TO_ONE)
-    private String mRegionKey;
+    private long mRegionId;
 
     @Deprecated
     public UserEntity() {
@@ -143,8 +229,8 @@ public class UserEntity extends JessyEntity implements Externalizable {
     }
 
     public UserEntity(long id, String firstname, String lastname, String nickname, String password, String email, int
-            rating, float balance, Date creationDate, String regionKey) {
-        super("users~id#" + id + "~nickname#" + nickname + "~region_key#" + regionKey);
+            rating, float balance, Date creationDate, long regionId) {
+        super("users~id#" + id);
 
         mId = id;
         mFirstname = firstname;
@@ -155,7 +241,7 @@ public class UserEntity extends JessyEntity implements Externalizable {
         mRating = rating;
         mBalance = balance;
         mCreationDate = creationDate;
-        mRegionKey = regionKey;
+        mRegionId = regionId;
     }
 
     @Override
@@ -175,7 +261,7 @@ public class UserEntity extends JessyEntity implements Externalizable {
         entity.mRating = mRating;
         entity.mBalance = mBalance;
         entity.mCreationDate = (Date) mCreationDate.clone();
-        entity.mRegionKey = mRegionKey;
+        entity.mRegionId = mRegionId;
         return entity;
     }
 
@@ -219,8 +305,8 @@ public class UserEntity extends JessyEntity implements Externalizable {
         return mRating;
     }
 
-    public String getRegionKey() {
-        return mRegionKey;
+    public long getRegionId() {
+        return mRegionId;
     }
 
     @Override
@@ -235,7 +321,7 @@ public class UserEntity extends JessyEntity implements Externalizable {
         mRating = in.readInt();
         mBalance = in.readFloat();
         mCreationDate = (Date) in.readObject();
-        mRegionKey = (String) in.readObject();
+        mRegionId = in.readLong();
     }
 
     @Override
@@ -250,6 +336,6 @@ public class UserEntity extends JessyEntity implements Externalizable {
         out.writeInt(mRating);
         out.writeFloat(mBalance);
         out.writeObject(mCreationDate);
-        out.writeObject(mRegionKey);
+        out.writeLong(mRegionId);
     }
 }

@@ -19,11 +19,10 @@
 
 package org.imdea.rubis.benchmark.entity;
 
-import static com.sleepycat.persist.model.Relationship.*;
-
 import static fr.inria.jessy.ConstantPool.*;
 
 import com.sleepycat.persist.model.Entity;
+import com.sleepycat.persist.model.Relationship;
 import com.sleepycat.persist.model.SecondaryKey;
 
 import fr.inria.jessy.store.JessyEntity;
@@ -34,6 +33,7 @@ import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
 import java.util.Date;
+import java.util.concurrent.atomic.AtomicLong;
 
 @Entity
 public class BidEntity extends JessyEntity implements Externalizable {
@@ -43,57 +43,57 @@ public class BidEntity extends JessyEntity implements Externalizable {
         private float mBid;
         private Date mDate;
         private long mId;
-        private String mItemKey;
+        private long mItemId;
         private float mMaxBid;
         private int mQty;
-        private String mUserKey;
+        private long mUserId;
 
         Editor(BidEntity source) {
             mBid = source.getBid();
             mDate = source.getDate();
             mId = source.getId();
-            mItemKey = source.getItemKey();
+            mItemId = source.getItemId();
             mMaxBid = source.getMaxBid();
             mQty = source.getQty();
-            mUserKey = source.getUserKey();
+            mUserId = source.getUserId();
         }
 
         private BidEntity done() {
-            return new BidEntity(mId, mUserKey, mItemKey, mQty, mBid, mMaxBid, mDate);
+            return new BidEntity(mId, mUserId, mItemId, mQty, mBid, mMaxBid, mDate);
         }
 
         public Editor setBid(float bid) {
-            this.mBid = bid;
+            mBid = bid;
             return this;
         }
 
         public Editor setDate(Date date) {
-            this.mDate = date;
+            mDate = date;
             return this;
         }
 
         public Editor setId(long id) {
-            this.mId = id;
+            mId = id;
             return this;
         }
 
-        public Editor setItemKey(String itemKey) {
-            this.mItemKey = itemKey;
+        public Editor setItemKey(long itemId) {
+            mItemId = itemId;
             return this;
         }
 
         public Editor setMaxBid(float maxBid) {
-            this.mMaxBid = maxBid;
+            mMaxBid = maxBid;
             return this;
         }
 
         public Editor setQty(int qty) {
-            this.mQty = qty;
+            mQty = qty;
             return this;
         }
 
-        public Editor setUserKey(String userKey) {
-            this.mUserKey = userKey;
+        public Editor setUserKey(long userId) {
+            mUserId = userId;
             return this;
         }
 
@@ -102,26 +102,107 @@ public class BidEntity extends JessyEntity implements Externalizable {
         }
     }
 
+    @Entity
+    public static class ItemIdIndex extends JessyEntity implements Externalizable {
+        private static final AtomicLong sSequence = new AtomicLong();
+
+        private long mBidId;
+        @SecondaryKey(relate = Relationship.MANY_TO_ONE)
+        @SuppressWarnings("unused")
+        private long mItemId;
+
+        @Deprecated
+        public ItemIdIndex() {
+            super("");
+        }
+
+        public ItemIdIndex(long itemId, long bidId) {
+            super("?bids~id#" + sSequence.incrementAndGet() + ":item_id#" + itemId);
+            mItemId = itemId;
+            mBidId = bidId;
+        }
+
+        @Override
+        public void clearValue() {
+            throw new UnsupportedOperationException("This object is immutable.");
+        }
+
+        public long getBidId() {
+            return mBidId;
+        }
+
+        @Override
+        public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
+            super.readExternal(in);
+            mBidId = in.readLong();
+            mItemId = in.readLong();
+        }
+
+        @Override
+        public void writeExternal(ObjectOutput out) throws IOException {
+            super.writeExternal(out);
+            out.writeLong(mBidId);
+            out.writeLong(mItemId);
+        }
+    }
+
+    @Entity
+    public static class UserIdIndex extends JessyEntity implements Externalizable {
+        private static final AtomicLong sSequence = new AtomicLong();
+
+        private long mBidId;
+        @SecondaryKey(relate = Relationship.MANY_TO_ONE)
+        @SuppressWarnings("unused")
+        private long mUserId;
+
+        public UserIdIndex(long userId, long bidId) {
+            super("?bids~id#" + sSequence.incrementAndGet() + ":item_id#" + userId);
+            mUserId = userId;
+            mBidId = bidId;
+        }
+
+        @Override
+        public void clearValue() {
+            throw new UnsupportedOperationException("This object is immutable.");
+        }
+
+        public long getBidId() {
+            return mBidId;
+        }
+
+        @Override
+        public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
+            super.readExternal(in);
+            mBidId = in.readLong();
+            mUserId = in.readLong();
+        }
+
+        @Override
+        public void writeExternal(ObjectOutput out) throws IOException {
+            super.writeExternal(out);
+            out.writeLong(mBidId);
+            out.writeLong(mUserId);
+        }
+    }
+
     private float mBid;
     private Date mDate;
     private long mId;
-    @SecondaryKey(relate = MANY_TO_ONE)
-    private String mItemKey;
+    private long mItemId;
     private float mMaxBid;
     private int mQty;
-    @SecondaryKey(relate = MANY_TO_ONE)
-    private String mUserKey;
+    private long mUserId;
 
     @Deprecated
     public BidEntity() {
         super("");
     }
 
-    public BidEntity(long id, String userKey, String itemKey, int qty, float bid, float maxBid, Date date) {
-        super("bids~id#" + id + "~item_key#" + itemKey + "~user_key#" + userKey);
+    public BidEntity(long id, long userId, long itemId, int qty, float bid, float maxBid, Date date) {
+        super("@bids~id#" + id);
         mId = id;
-        mUserKey = userKey;
-        mItemKey = itemKey;
+        mUserId = userId;
+        mItemId = itemId;
         mQty = qty;
         mBid = bid;
         mMaxBid = maxBid;
@@ -137,8 +218,8 @@ public class BidEntity extends JessyEntity implements Externalizable {
     public Object clone() {
         BidEntity entity = (BidEntity) super.clone();
         entity.mId = mId;
-        entity.mUserKey = mUserKey;
-        entity.mItemKey = mItemKey;
+        entity.mUserId = mUserId;
+        entity.mItemId = mItemId;
         entity.mQty = mQty;
         entity.mBid = mBid;
         entity.mMaxBid = mMaxBid;
@@ -162,8 +243,8 @@ public class BidEntity extends JessyEntity implements Externalizable {
         return mId;
     }
 
-    public String getItemKey() {
-        return mItemKey;
+    public long getItemId() {
+        return mItemId;
     }
 
     public float getMaxBid() {
@@ -174,16 +255,16 @@ public class BidEntity extends JessyEntity implements Externalizable {
         return mQty;
     }
 
-    public String getUserKey() {
-        return mUserKey;
+    public long getUserId() {
+        return mUserId;
     }
 
     @Override
     public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
         super.readExternal(in);
         mId = in.readLong();
-        mUserKey = (String) in.readObject();
-        mItemKey = (String) in.readObject();
+        mUserId = in.readLong();
+        mItemId = in.readLong();
         mQty = in.readInt();
         mBid = in.readFloat();
         mMaxBid = in.readFloat();
@@ -194,8 +275,8 @@ public class BidEntity extends JessyEntity implements Externalizable {
     public void writeExternal(ObjectOutput out) throws IOException {
         super.writeExternal(out);
         out.writeLong(mId);
-        out.writeObject(mUserKey);
-        out.writeObject(mItemKey);
+        out.writeLong(mUserId);
+        out.writeLong(mItemId);
         out.writeInt(mQty);
         out.writeFloat(mBid);
         out.writeFloat(mMaxBid);

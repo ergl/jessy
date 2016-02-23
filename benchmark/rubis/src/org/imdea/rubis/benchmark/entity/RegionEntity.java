@@ -32,6 +32,7 @@ import java.io.Externalizable;
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
+import java.util.concurrent.atomic.AtomicLong;
 
 @Entity
 public class RegionEntity extends JessyEntity implements Externalizable {
@@ -65,10 +66,94 @@ public class RegionEntity extends JessyEntity implements Externalizable {
         }
     }
 
-    @SecondaryKey(relate = Relationship.MANY_TO_ONE)
-    private String mDummy = "";
+    @Entity
+    public static class NameIndex extends JessyEntity implements Externalizable {
+        private static final AtomicLong sSequence = new AtomicLong();
+
+        @SecondaryKey(relate = Relationship.ONE_TO_ONE)
+        @SuppressWarnings("unused")
+        private String mName;
+        private long mRegionId;
+
+        @Deprecated
+        public NameIndex() {
+            super("");
+        }
+
+        public NameIndex(String name, long regionId) {
+            super("?regions~id#" + sSequence.incrementAndGet() + ":name#" + name);
+            mName = name;
+            mRegionId = regionId;
+        }
+
+        @Override
+        public void clearValue() {
+            throw new UnsupportedOperationException("This entity is immutable.");
+        }
+
+        public long getRegionId() {
+            return mRegionId;
+        }
+
+        @Override
+        public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
+            super.readExternal(in);
+            mRegionId = in.readLong();
+            mName = (String) in.readObject();
+        }
+
+        @Override
+        public void writeExternal(ObjectOutput out) throws IOException {
+            super.writeExternal(out);
+            out.writeLong(mRegionId);
+            out.writeObject(mName);
+        }
+    }
+
+    @Entity
+    public static class Scanner extends JessyEntity implements Externalizable {
+        private static final AtomicLong sSequence = new AtomicLong();
+
+        @SecondaryKey(relate = Relationship.MANY_TO_ONE)
+        @SuppressWarnings("unused")
+        private long mDummy;
+        private long mRegionId;
+
+        @Deprecated
+        public Scanner() {
+            super("");
+        }
+
+        public Scanner(long regionId) {
+            super("?regions~id#" + sSequence.incrementAndGet() + ":all#0");
+            mRegionId = regionId;
+        }
+
+        @Override
+        public void clearValue() {
+            throw new UnsupportedOperationException("This entity is immutable.");
+        }
+
+        public long getRegionId() {
+            return mRegionId;
+        }
+
+        @Override
+        public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
+            super.readExternal(in);
+            mRegionId = in.readLong();
+            mDummy = in.readLong();
+        }
+
+        @Override
+        public void writeExternal(ObjectOutput out) throws IOException {
+            super.writeExternal(out);
+            out.writeLong(mRegionId);
+            out.writeLong(mDummy);
+        }
+    }
+
     private long mId;
-    @SecondaryKey(relate = Relationship.ONE_TO_ONE)
     private String mName;
 
     @Deprecated
@@ -77,7 +162,7 @@ public class RegionEntity extends JessyEntity implements Externalizable {
     }
 
     public RegionEntity(long id, String name) {
-        super("regions~id#" + id + "~name#" + name);
+        super("regions~id#" + id);
         mId = id;
         mName = name;
     }
@@ -110,7 +195,6 @@ public class RegionEntity extends JessyEntity implements Externalizable {
     @Override
     public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
         super.readExternal(in);
-        mDummy = (String) in.readObject();
         mId = in.readLong();
         mName = (String) in.readObject();
     }
@@ -118,7 +202,6 @@ public class RegionEntity extends JessyEntity implements Externalizable {
     @Override
     public void writeExternal(ObjectOutput out) throws IOException {
         super.writeExternal(out);
-        out.writeObject(mDummy);
         out.writeLong(mId);
         out.writeObject(mName);
     }

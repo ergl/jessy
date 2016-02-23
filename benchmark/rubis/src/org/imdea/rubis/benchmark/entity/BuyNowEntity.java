@@ -19,11 +19,10 @@
 
 package org.imdea.rubis.benchmark.entity;
 
-import static com.sleepycat.persist.model.Relationship.*;
-
 import static fr.inria.jessy.ConstantPool.JESSY_MID;
 
 import com.sleepycat.persist.model.Entity;
+import com.sleepycat.persist.model.Relationship;
 import com.sleepycat.persist.model.SecondaryKey;
 
 import fr.inria.jessy.store.JessyEntity;
@@ -34,32 +33,33 @@ import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
 import java.util.Date;
+import java.util.concurrent.atomic.AtomicLong;
 
 @Entity
 public class BuyNowEntity extends JessyEntity implements Externalizable {
     private static final long serialVersionUID = JESSY_MID;
 
     public static class Editor {
-        private String mBuyerKey;
+        private long mBuyerId;
         private Date mDate;
         private long mId;
-        private String mItemKey;
+        private long mItemId;
         private int mQty;
 
         Editor(BuyNowEntity source) {
-            mBuyerKey = source.getBuyerKey();
+            mBuyerId = source.getBuyerId();
             mDate = source.getDate();
             mId = source.getId();
-            mItemKey = source.getItemKey();
+            mItemId = source.getItemId();
             mQty = source.getQty();
         }
 
         private BuyNowEntity done() {
-            return new BuyNowEntity(mId, mBuyerKey, mItemKey, mQty, mDate);
+            return new BuyNowEntity(mId, mBuyerId, mItemId, mQty, mDate);
         }
 
-        public Editor setBuyerKey(String buyerKey) {
-            mBuyerKey = buyerKey;
+        public Editor setBuyerId(long buyerId) {
+            mBuyerId = buyerId;
             return this;
         }
 
@@ -73,8 +73,8 @@ public class BuyNowEntity extends JessyEntity implements Externalizable {
             return this;
         }
 
-        public Editor setItemKey(String itemKey) {
-            mItemKey = itemKey;
+        public Editor setItemId(long itemId) {
+            mItemId = itemId;
             return this;
         }
 
@@ -88,12 +88,98 @@ public class BuyNowEntity extends JessyEntity implements Externalizable {
         }
     }
 
-    @SecondaryKey(relate = MANY_TO_ONE)
-    private String mBuyerKey;
+    @Entity
+    public static class BuyerIdIndex extends JessyEntity implements Externalizable {
+        private static final AtomicLong sSequence = new AtomicLong();
+
+        @SecondaryKey(relate = Relationship.MANY_TO_ONE)
+        @SuppressWarnings("unused")
+        private long mBuyerId;
+        private long mBuyNowId;
+
+        @Deprecated
+        public BuyerIdIndex() {
+            super("");
+        }
+
+        public BuyerIdIndex(long buyNowId, long buyerId) {
+            super("?buy_now~id#" + sSequence.incrementAndGet() + ":buyer_id#" + buyerId);
+            mBuyNowId = buyNowId;
+            mBuyerId = buyerId;
+        }
+
+        @Override
+        public void clearValue() {
+            throw new UnsupportedOperationException("This entity is immutable.");
+        }
+
+        public long getBuyNowId() {
+            return mBuyNowId;
+        }
+
+        @Override
+        public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
+            super.readExternal(in);
+            mBuyerId = in.readLong();
+            mBuyNowId = in.readLong();
+        }
+
+        @Override
+        public void writeExternal(ObjectOutput out) throws IOException {
+            super.writeExternal(out);
+            out.writeLong(mBuyerId);
+            out.writeLong(mBuyNowId);
+        }
+    }
+
+    @Entity
+    public static class ItemIdIndex extends JessyEntity implements Externalizable {
+        private static final AtomicLong sSequence = new AtomicLong();
+
+        @SecondaryKey(relate = Relationship.MANY_TO_ONE)
+        @SuppressWarnings("unused")
+        private long mItemId;
+        private long mBuyNowId;
+
+        @Deprecated
+        public ItemIdIndex() {
+            super("");
+        }
+
+        public ItemIdIndex(long buyNowId, long itemId) {
+            super("?buy_now~id#" + sSequence.incrementAndGet() + ":item_id#" + itemId);
+            mBuyNowId = buyNowId;
+            mItemId = itemId;
+        }
+
+        @Override
+        public void clearValue() {
+            throw new UnsupportedOperationException("This entity is immutable.");
+        }
+
+        public long getBuyNowId() {
+            return mBuyNowId;
+        }
+
+        @Override
+        public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
+            super.readExternal(in);
+            mItemId = in.readLong();
+            mBuyNowId = in.readLong();
+        }
+
+        @Override
+        public void writeExternal(ObjectOutput out) throws IOException {
+            super.writeExternal(out);
+            out.writeLong(mItemId);
+            out.writeLong(mBuyNowId);
+        }
+    }
+
+    private long mBuyerId;
     private Date mDate;
     private long mId;
-    @SecondaryKey(relate = MANY_TO_ONE)
-    private String mItemKey;
+    private long mItemId;
     private int mQty;
 
     @Deprecated
@@ -101,11 +187,11 @@ public class BuyNowEntity extends JessyEntity implements Externalizable {
         super("");
     }
 
-    public BuyNowEntity(long id, String buyerKey, String itemKey, int qty, Date date) {
-        super("buy_now~id#" + id + "~buyer_key#" + buyerKey + "~item_key#" + itemKey);
+    public BuyNowEntity(long id, long buyerId, long itemId, int qty, Date date) {
+        super("@buy_now~id#" + id);
         mId = id;
-        mBuyerKey = buyerKey;
-        mItemKey = itemKey;
+        mBuyerId = buyerId;
+        mItemId = itemId;
         mQty = qty;
         mDate = date;
     }
@@ -119,8 +205,8 @@ public class BuyNowEntity extends JessyEntity implements Externalizable {
     public Object clone() {
         BuyNowEntity entity = (BuyNowEntity) super.clone();
         entity.mId = mId;
-        entity.mBuyerKey = mBuyerKey;
-        entity.mItemKey = mItemKey;
+        entity.mBuyerId = mBuyerId;
+        entity.mItemId = mItemId;
         entity.mQty = mQty;
         entity.mDate = (Date) mDate.clone();
         return entity;
@@ -130,8 +216,8 @@ public class BuyNowEntity extends JessyEntity implements Externalizable {
         return new Editor(this);
     }
 
-    public String getBuyerKey() {
-        return mBuyerKey;
+    public long getBuyerId() {
+        return mBuyerId;
     }
 
     public Date getDate() {
@@ -142,8 +228,8 @@ public class BuyNowEntity extends JessyEntity implements Externalizable {
         return mId;
     }
 
-    public String getItemKey() {
-        return mItemKey;
+    public long getItemId() {
+        return mItemId;
     }
 
     public int getQty() {
@@ -154,8 +240,8 @@ public class BuyNowEntity extends JessyEntity implements Externalizable {
     public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
         super.readExternal(in);
         mId = in.readLong();
-        mBuyerKey = (String) in.readObject();
-        mItemKey = (String) in.readObject();
+        mBuyerId = in.readLong();
+        mItemId = in.readLong();
         mQty = in.readInt();
         mDate = (Date) in.readObject();
     }
@@ -164,8 +250,8 @@ public class BuyNowEntity extends JessyEntity implements Externalizable {
     public void writeExternal(ObjectOutput out) throws IOException {
         super.writeExternal(out);
         out.writeLong(mId);
-        out.writeObject(mBuyerKey);
-        out.writeObject(mItemKey);
+        out.writeLong(mBuyerId);
+        out.writeLong(mItemId);
         out.writeInt(mQty);
         out.writeObject(mDate);
     }
