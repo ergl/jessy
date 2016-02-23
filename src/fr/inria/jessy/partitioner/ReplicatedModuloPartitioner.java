@@ -1,10 +1,6 @@
 package fr.inria.jessy.partitioner;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import net.sourceforge.fractal.membership.Group;
 import fr.inria.jessy.communication.JessyGroupManager;
@@ -55,6 +51,9 @@ public class ReplicatedModuloPartitioner extends Partitioner{
 
 		List<Group> tmp = new ArrayList<Group>();
 		Set<Group> ret= new HashSet<Group>();
+
+		if (readRequest.hasExplicitTarget())
+			return Collections.singleton(readRequest.getTarget());
 
 		if (readRequest.isOneKeyRequest()) {
 			tmp=resolveGroups(readRequest.getOneKey().getKeyValue().toString());

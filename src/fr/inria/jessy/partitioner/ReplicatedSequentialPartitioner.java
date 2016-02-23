@@ -3,12 +3,7 @@ package fr.inria.jessy.partitioner;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Properties;
-import java.util.Random;
-import java.util.Set;
+import java.util.*;
 
 import net.sourceforge.fractal.membership.Group;
 
@@ -70,6 +65,9 @@ public class ReplicatedSequentialPartitioner extends Partitioner {
 	@Override
 	public <E extends JessyEntity> Set<Group> resolve(ReadRequest<E> readRequest) {
 		Set<Group> ret = new HashSet<Group>();
+
+		if (readRequest.hasExplicitTarget())
+			return Collections.singleton(readRequest.getTarget());
 
 		if (readRequest.isOneKeyRequest()) {
 			ret.add(randomResolve(readRequest.getOneKey().getKeyValue().toString()));

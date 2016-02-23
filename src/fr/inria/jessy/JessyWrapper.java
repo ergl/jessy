@@ -317,6 +317,11 @@ return null;
 	}
 
 	@Override
+	protected <E extends JessyEntity> Collection<E> performReadBySecondary(Class<E> clazz, ReadRequestKey<?> key, ExecutionHistory history) throws InterruptedException, ExecutionException {
+		throw new UnsupportedOperationException("Not yet implemented.");
+	}
+
+	@Override
 	public <E extends JessyEntity> E read(
 			TransactionHandler transactionHandler, Class<E> entityClass,
 			String keyValue) throws Exception {

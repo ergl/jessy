@@ -77,9 +77,8 @@ public class RemoteReadFuture<E extends JessyEntity> implements
 					reply.mergeReply(r);
 				}
 
-				if (readRequest.isOneKeyRequest()
-						|| reply.getEntity().size() == readRequest
-								.getMultiKeys().size()) {
+				if (readRequest.isOneKeyRequest() || reply.getEntity().size() == readRequest.getMultiKeys().size()
+						|| readRequest.hasExplicitTarget()) {
 					done=true;
 					state.notifyAll();
 					

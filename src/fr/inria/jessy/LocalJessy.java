@@ -67,6 +67,13 @@ public class LocalJessy extends Jessy {
 	}
 
 	@Override
+	protected <E extends JessyEntity> Collection<E> performReadBySecondary(Class<E> clazz, ReadRequestKey<?> key,
+																		   ExecutionHistory history)
+			throws InterruptedException, ExecutionException {
+		throw new UnsupportedOperationException("Not yet implemented.");
+	}
+
+	@Override
 	public void applyModifiedEntities(ExecutionHistory executionHistory) {
 		Iterator<? extends JessyEntity> itr;
 

@@ -299,7 +299,31 @@ public abstract class Jessy {
 		}
 	}
 
-	/**
+    public <E extends JessyEntity> Collection<E> readBySecondary(TransactionHandler handler, Class<E> clazz,
+                                                                 ReadRequestKey<?> key) {
+        Collection<E> entities = null;
+
+        try {
+            ExecutionHistory history = handler2executionHistory.get(handler);
+
+            if (history == null)
+                throw new IllegalStateException("Transaction has not been started yet.");
+
+            entities = performReadBySecondary(clazz, key, history);
+
+            if (entities == null)
+                failedReadCount.incr();
+        } catch (Exception e) {
+            failedReadCount.incr();
+        }
+
+        return entities;
+    }
+
+    protected abstract <E extends JessyEntity> Collection<E> performReadBySecondary(Class<E> clazz, ReadRequestKey<?>
+            key, ExecutionHistory history) throws InterruptedException, ExecutionException;
+
+    /**
 	 * Performs a local or remote read operation depending on the specific
 	 * implementation of Jessy.
 	 * 

@@ -1,5 +1,6 @@
 package fr.inria.jessy.partitioner;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -34,6 +35,9 @@ public class ModuloPartitioner extends Partitioner {
 	@Override
 	public <E extends JessyEntity> Set<Group> resolve(ReadRequest<E> readRequest) {
 		Set<Group> ret = new HashSet<Group>();
+
+		if (readRequest.hasExplicitTarget())
+			return Collections.singleton(readRequest.getTarget());
 
 		if (readRequest.isOneKeyRequest()) {
 			ret.add(resolve(readRequest.getOneKey().getKeyValue().toString()));

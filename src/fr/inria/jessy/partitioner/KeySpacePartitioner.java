@@ -1,6 +1,7 @@
 package fr.inria.jessy.partitioner;
 
 import java.math.BigInteger;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.TreeMap;
@@ -143,6 +144,9 @@ public class KeySpacePartitioner  extends Partitioner{
 	public <E extends JessyEntity> Set<Group> resolve(ReadRequest<E> readRequest) {		
 		
 		Set<Group> ret = new HashSet<Group>();
+
+		if (readRequest.hasExplicitTarget())
+			return Collections.singleton(readRequest.getTarget());
 		
 		if( readRequest.isOneKeyRequest() ){
 			ret.add(rk2g.get(closestRootkeyOf(readRequest.getOneKey().getKeyValue().toString()))); // FIXME !!! what is this parametric type ....

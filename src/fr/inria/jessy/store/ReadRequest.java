@@ -11,6 +11,7 @@ import fr.inria.jessy.ConstantPool;
 import fr.inria.jessy.utils.Compress;
 import fr.inria.jessy.vector.CompactVector;
 import fr.inria.jessy.vector.Vector;
+import net.sourceforge.fractal.membership.Group;
 
 //TODO Comment me and all methods
 public class ReadRequest<E extends JessyEntity> implements Externalizable {
@@ -43,13 +44,15 @@ public class ReadRequest<E extends JessyEntity> implements Externalizable {
 
 	private int readRequestId;
 
-	public Vector<String> temporaryVector; 
+	public Vector<String> temporaryVector;
+
+	private Group mGroup;
+
 	/**
 	 * For externalizable interface
 	 */
 	@Deprecated
 	public ReadRequest() {
-
 	}
 
 	/**
@@ -61,7 +64,6 @@ public class ReadRequest<E extends JessyEntity> implements Externalizable {
 	 * @param keyName
 	 * @param keyValue
 	 * @param readSet
-	 * @param partitioningKey
 	 */
 	public <K> ReadRequest(Class<E> entityClass, String keyName, K keyValue,
 			CompactVector<String> readSet) {
@@ -80,21 +82,27 @@ public class ReadRequest<E extends JessyEntity> implements Externalizable {
 	 * @param entityClass
 	 * @param keys
 	 * @param readSet
-	 * @param partitioningKey
 	 */
 	public ReadRequest(Class<E> entityClass, List<ReadRequestKey<?>> keys,
 			CompactVector<String> readSet) {
-		this.entityClassName = Compress
-				.compressClassName(entityClass.getName());
+		this.entityClassName = Compress.compressClassName(entityClass.getName());
 		this.readSet = readSet;
-
 		isOneKeyRequest = false;
 		this.multiKeys = keys;
 		readRequestId = requestCounter.incrementAndGet();
 	}
 
+	public ReadRequest(Group group, Class<E> entityClass, List<ReadRequestKey<?>> keys, CompactVector<String> readSet) {
+		this(entityClass, keys, readSet);
+		mGroup = group;
+	}
+
 	public String getEntityClassName() {
 		return entityClassName;
+	}
+
+	public Group getTarget() {
+		return mGroup;
 	}
 
 	public CompactVector<String> getReadSet() {
@@ -130,6 +138,10 @@ public class ReadRequest<E extends JessyEntity> implements Externalizable {
 		}
 	}
 
+	public boolean hasExplicitTarget() {
+		return mGroup != null;
+	}
+
 	@Override
 	public String toString() {
 		return "RReQ" + getReadRequestId().toString();
@@ -146,7 +158,6 @@ public class ReadRequest<E extends JessyEntity> implements Externalizable {
 		} else {
 			out.writeObject(multiKeys);
 		}
-		
 	}
 
 	@Override
@@ -162,7 +173,6 @@ public class ReadRequest<E extends JessyEntity> implements Externalizable {
 		} else {
 			multiKeys = (List<ReadRequestKey<?>>) in.readObject();
 		}
-		
 	}
 
 	public boolean isOneKeyRequest() {

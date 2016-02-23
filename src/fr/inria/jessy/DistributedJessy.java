@@ -1,12 +1,13 @@
 package fr.inria.jessy;
 
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
+import static fr.inria.jessy.ConstantPool.*;
+
+import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeoutException;
 
+import net.sourceforge.fractal.membership.Group;
 import net.sourceforge.fractal.utils.PerformanceProbe;
 import net.sourceforge.fractal.utils.PerformanceProbe.FloatValueRecorder;
 import net.sourceforge.fractal.utils.PerformanceProbe.SimpleCounter;
@@ -331,7 +332,34 @@ public class DistributedJessy extends Jessy {
 		}
 	}
 
-	@Override
+    @Override
+    protected <E extends JessyEntity> Collection<E> performReadBySecondary(Class<E> clazz, ReadRequestKey<?> key,
+                                                                           ExecutionHistory history)
+            throws InterruptedException, ExecutionException {
+        List<Group> groups = manager.getReplicaGroups();
+        Collection<E> entities = new HashSet<E>();
+
+        for (Group group : groups) {
+            boolean done = false;
+
+            while (!done) {
+                try {
+                	List<ReadRequestKey<?>> keys = new ArrayList<>();
+                	keys.add(key);
+                    ReadRequest<E> readRequest = new ReadRequest<E>(group, clazz, keys, history.getReadSet().getCompactVector());
+                    Future<ReadReply<E>> future = remoteReader.remoteRead(readRequest);
+                    ReadReply<E> reply = future.get(JESSY_REMOTE_READER_TIMEOUT, JESSY_REMOTE_READER_TIMEOUT_TYPE);
+                    history.addReadEntity(reply.getEntity());
+                    entities.addAll(reply.getEntity());
+                    done = true;
+                } catch (TimeoutException ignored) { }
+            }
+        }
+
+        return entities;
+    }
+
+    @Override
 	public <E extends JessyEntity> void performNonTransactionalWrite(E entity)
 			throws InterruptedException, ExecutionException {
 

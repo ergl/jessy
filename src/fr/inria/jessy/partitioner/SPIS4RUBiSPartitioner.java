@@ -4,13 +4,9 @@ import fr.inria.jessy.communication.JessyGroupManager;
 import fr.inria.jessy.store.JessyEntity;
 import fr.inria.jessy.store.ReadRequest;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import net.sourceforge.fractal.membership.Group;
-
-import org.apache.log4j.Logger;
 
 public class SPIS4RUBiSPartitioner extends Partitioner {
     public SPIS4RUBiSPartitioner(JessyGroupManager m) {
@@ -39,6 +35,7 @@ public class SPIS4RUBiSPartitioner extends Partitioner {
                 return keys;
             }
         }
+
         return keys;
     }
 
@@ -49,16 +46,18 @@ public class SPIS4RUBiSPartitioner extends Partitioner {
 
     @Override
     public <E extends JessyEntity> Set<Group> resolve(ReadRequest<E> readRequest) {
-        Set<Group> value = new HashSet<Group>();
+        Set<Group> groups = new HashSet<Group>();
+
+        if (readRequest.hasExplicitTarget())
+            return Collections.singleton(readRequest.getTarget());
 
         if (readRequest.isOneKeyRequest()) {
-            value.add(resolve(readRequest.getOneKey().getKeyValue().toString()));
+            groups.add(resolve(readRequest.getOneKey().getKeyValue().toString()));
         } else {
-            //TODO
-            return null;
+            groups.addAll(manager.getReplicaGroups());
         }
 
-        return value;
+        return groups;
     }
 
     public Group resolve(String key) {
