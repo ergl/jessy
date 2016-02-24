@@ -123,7 +123,7 @@ public class InitDB {
                 int state = execTransaction(trans);
 
                 if (state == -1)
-                    System.err.println("Failed to add comment for item #" + (i + 1));
+                    System.err.println("Failed to add comment for item #" + i);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -137,7 +137,7 @@ public class InitDB {
     public void generateItems() {
         for (CategoryDef def : mProps.getCategories()) {
             for (int i = 0; i < def.nbOfItems; i++) {
-                String name = "RUBiS automatically generated item #" + (i + 1);
+                String name = "RUBiS automatically generated item #" + i;
                 String description = TextUtils.randomString(1, mProps.getCommentMaxLength());
                 float initialPrice = rand.nextFloat() * 5000 + 1;
                 int duration = rand.nextInt(7) + 1;
@@ -166,12 +166,12 @@ public class InitDB {
                 long sellerId = rand.nextInt(mProps.getNbOfUsers()) + 1;
 
                 try {
-                    Transaction trans = new RegisterItemTransaction(mJessy, i + 1, name, description, initialPrice,
+                    Transaction trans = new RegisterItemTransaction(mJessy, i, name, description, initialPrice,
                             quantity, reservePrice, buyNow, 0, 0.0f, new Date(), new Date(), sellerId, i);
                     int state = execTransaction(trans);
 
                     if (state == -1)
-                        System.err.println("Failed to add item " + name + " (" + (i + 1) + ")");
+                        System.err.println("Failed to add item " + name + " (" + i + ")");
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -210,15 +210,15 @@ public class InitDB {
         int nbOfRegions = mProps.getNbOfRegions();
 
         for (i = 0; i < nbOfUsers; i++) {
-            firstname = "Great" + (i + 1);
-            lastname = "User" + (i + 1);
-            nickname = "user" + (i + 1);
+            firstname = "Great" + i;
+            lastname = "User" + i;
+            nickname = "user" + i;
             email = firstname + "." + lastname + "@rubis.com";
-            password = "password" + (i + 1);
+            password = "password" + i;
             regionName = mProps.getRegions().get(i % nbOfRegions);
 
             try {
-                RegisterUserTransaction trans = new RegisterUserTransaction(mJessy, i + 1, firstname, lastname,
+                RegisterUserTransaction trans = new RegisterUserTransaction(mJessy, i, firstname, lastname,
                         nickname, password, email, regionName);
                 int state = execTransaction(trans);
 
@@ -233,7 +233,5 @@ public class InitDB {
             if (i % 100 == 0)
                 System.out.print(".");
         }
-
-        System.out.println(" Done!");
     }
 }
