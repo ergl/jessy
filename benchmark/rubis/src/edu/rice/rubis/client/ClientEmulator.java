@@ -25,6 +25,7 @@
 package edu.rice.rubis.client;
 
 import fr.inria.jessy.Jessy;
+import java.util.ArrayList;
 
 /**
  * RUBiS client emulator.
@@ -37,21 +38,15 @@ import fr.inria.jessy.Jessy;
 public class ClientEmulator {
     private static boolean endOfSimulation = false;
     private Jessy mJessy;
-    private RUBiSProperties rubis = null;
+    private RUBiSProperties mProps;
 
     /**
      * Creates a new <code>ClientEmulator</code> instance.
      * The program is stopped on any error reading the configuration files.
      */
-    public ClientEmulator(Jessy jessy) {
+    public ClientEmulator(RUBiSProperties props, Jessy jessy) {
+        mProps = props;
         mJessy = jessy;
-        rubis = new RUBiSProperties();
-        TransitionTable transition = new TransitionTable(rubis.getNbOfColumns(), rubis.getNbOfRows());
-
-        if (!transition.readExcelTextFile(rubis.getTransitionTable()))
-            Runtime.getRuntime().exit(1);
-        else
-            transition.displayMatrix();
     }
 
     /**
@@ -71,31 +66,32 @@ public class ClientEmulator {
     }
 
     public void start() {
-        rubis.checkPropertiesFileAndGetURLGenerator();
-
         System.out.println("Initializing DB...");
-        InitDB init = new InitDB(mJessy);
+        InitDB init = new InitDB(mProps, mJessy);
+        init.generateCategories();
+        init.generateRegions();
         init.generateUsers();
         init.generateItems();
+        init.generateBids();
+        init.generateComments();
         System.out.println("DB initialized...");
 
-        UserSession[] sessions = new UserSession[rubis.getNbOfClients()];
+        ArrayList<UserSession> sessions = new ArrayList<>();
 
-        for (int i = 0; i < rubis.getNbOfClients(); i++) {
-            sessions[i] = new UserSession(mJessy, "UserSession" + i, rubis);
-            sessions[i].start();
+        for (int i = 0; i < mProps.getNbOfClients(); i++) {
+            UserSession session = new UserSession(mJessy, "UserSession" + i, mProps);
+            session.start();
+            sessions.add(session);
         }
 
         setEndOfSimulation();
 
-        for (int i = 0; i < rubis.getNbOfClients(); i++) {
+        for (int i = 0; i < mProps.getNbOfClients(); i++) {
             try {
-                sessions[i].join(2000);
+                sessions.get(i).join();
             } catch (InterruptedException ie) {
                 System.err.println("ClientEmulator: Thread " + i + " has been interrupted.");
             }
         }
-
-        Runtime.getRuntime().exit(0);
     }
 }
