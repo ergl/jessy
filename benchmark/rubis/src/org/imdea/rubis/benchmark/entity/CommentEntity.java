@@ -35,6 +35,7 @@ import java.io.ObjectOutput;
 import java.util.Date;
 import java.util.concurrent.atomic.AtomicLong;
 
+@Entity
 public class CommentEntity extends JessyEntity implements Externalizable {
     private static final long serialVersionUID = JESSY_MID;
 
