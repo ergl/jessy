@@ -22,6 +22,7 @@ package org.imdea.rubis.benchmark.cli;
 import static org.imdea.rubis.benchmark.cli.Constants.*;
 
 import edu.rice.rubis.client.ClientEmulator;
+import edu.rice.rubis.client.RUBiSProperties;
 
 import fr.inria.jessy.DistributedJessy;
 import fr.inria.jessy.Jessy;
@@ -54,7 +55,9 @@ public class CommandLineInterface {
         group.addOption(server);
     	Option help = Option.builder(OPT_HELP).longOpt(OPT_HELP_LONG).desc(OPT_HELP_DESC).build();
     	group.addOption(help);
+        group.setRequired(true);
         mOptions.addOptionGroup(group);
+        mOptions.addOption(OPT_PROPERTIES, OPT_PROPERTIES_LONG, true, OPT_PROPERTIES_DESC);
     }
 
     public static void main(String... args) {
@@ -70,7 +73,7 @@ public class CommandLineInterface {
             if (cmd.hasOption(OPT_HELP)) {
                 printHelp();
             } else if (cmd.hasOption(OPT_CLIENT)) {
-                String propFileName = cmd.getOptionValue(OPT_PROPERTIES);
+                String propFileName = cmd.getOptionValue(OPT_PROPERTIES, OPT_PROPERTIES_DEFAULT);
                 startClient(propFileName);
             } else if (cmd.hasOption(OPT_SERVER)) {
                 startServer();
@@ -132,7 +135,8 @@ public class CommandLineInterface {
             Jessy jessy = DistributedJessy.getInstance();
             setupJessyInstance(jessy);
 
-            ClientEmulator client = new ClientEmulator(jessy);
+            RUBiSProperties properties = new RUBiSProperties(propFileName);
+            ClientEmulator client = new ClientEmulator(properties, jessy);
             client.start();
         } catch (Exception e) {
             e.printStackTrace();

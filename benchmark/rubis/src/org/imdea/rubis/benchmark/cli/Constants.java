@@ -29,6 +29,7 @@ class Constants {
     static final String OPT_HELP_LONG = "help";
 
     static final String OPT_PROPERTIES = "p";
+    static final String OPT_PROPERTIES_DEFAULT = "rubis.properties";
     static final String OPT_PROPERTIES_DESC = "The properties file.";
     static final String OPT_PROPERTIES_LONG = "properties";
 
