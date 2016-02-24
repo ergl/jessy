@@ -82,6 +82,6 @@ public abstract class AbsRUBiSTransaction extends Transaction {
         List<ReadRequestKey<?>> requestKeys = new ArrayList<ReadRequestKey<?>>();
         requestKeys.add(requestKey);
         Collection<E> entities = read(clazz, requestKeys);
-        return entities != null ? entities : new ArrayList<>();
+        return entities != null ? entities : new ArrayList<E>();
     }
 }
