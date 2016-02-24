@@ -163,6 +163,11 @@ public class BidEntity extends JessyEntity implements Externalizable {
         @SuppressWarnings("unused")
         private long mUserId;
 
+        @Deprecated
+        public UserIdIndex() {
+            super("");
+        }
+
         public UserIdIndex(long userId, long bidId) {
             super("?bids~id#" + sSequence.incrementAndGet() + ":item_id#" + userId);
             mUserId = userId;
