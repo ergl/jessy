@@ -44,6 +44,7 @@ public class StoreCommentTransaction extends AbsRUBiSTransaction {
             // Select the receiver from the data store and store the updated version of the user in the data store.
             UserEntity receiver = read(UserEntity.class, mComment.getToUserId());
             receiver.edit().setRating(receiver.getRating() + mComment.getRating()).write(this);
+            updateIndexes();
 
             return commitTransaction();
         } catch (Exception e) {
@@ -51,5 +52,11 @@ public class StoreCommentTransaction extends AbsRUBiSTransaction {
         }
 
         return null;
+    }
+
+    private void updateIndexes() {
+        create(new CommentEntity.FromUserIdIndex(mComment.getFromUserId(), mComment.getId()));
+        create(new CommentEntity.ItemIdIndex(mComment.getItemId(), mComment.getId()));
+        create(new CommentEntity.ToUserIdIndex(mComment.getToUserId(), mComment.getId()));
     }
 }

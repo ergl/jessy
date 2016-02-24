@@ -28,7 +28,6 @@ import java.util.Date;
 
 import org.imdea.rubis.benchmark.entity.RegionEntity;
 import org.imdea.rubis.benchmark.entity.UserEntity;
-import org.imdea.rubis.benchmark.util.TextUtils;
 
 public class RegisterUserTransaction extends AbsRUBiSTransaction {
     private float mBalance;
@@ -42,6 +41,7 @@ public class RegisterUserTransaction extends AbsRUBiSTransaction {
     private int mRating;
     private String mRegion;
     private long mRegionId;
+    private UserEntity mUser;
 
     public RegisterUserTransaction(Jessy jessy, long id, String firstname, String lastname, String nickname, String
             password, String email, String region) throws Exception {
@@ -82,9 +82,10 @@ public class RegisterUserTransaction extends AbsRUBiSTransaction {
                         "mNickname", mNickname);
 
                 if (nicknames.size() == 0) {
-                    UserEntity user = new UserEntity(mId, mFirstname, mLastname, mNickname, mPassword, mEmail, mRating,
+                    mUser = new UserEntity(mId, mFirstname, mLastname, mNickname, mPassword, mEmail, mRating,
                             mBalance, mCreationDate, mRegionId);
-                    create(user);
+                    create(mUser);
+                    updateIndexes();
                 }
             }
 
@@ -94,5 +95,10 @@ public class RegisterUserTransaction extends AbsRUBiSTransaction {
         }
 
         return null;
+    }
+
+    private void updateIndexes() {
+        create(new UserEntity.NicknameIndex(mUser.getNickname(), mUser.getId()));
+        create(new UserEntity.RegionIdIndex(mUser.getRegionId(), mUser.getId()));
     }
 }

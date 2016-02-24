@@ -47,6 +47,7 @@ public class StoreBidTransaction extends AbsRUBiSTransaction {
             int nbOfBids = item.getNbOfBids() + 1;
             float maxBid = Math.max(item.getMaxBid(), mBid.getBid());
             item.edit().setNbOfBids(nbOfBids).setMaxBid(maxBid).write(this);
+            updateIndexes();
 
             return commitTransaction();
         } catch (Exception e) {
@@ -54,5 +55,10 @@ public class StoreBidTransaction extends AbsRUBiSTransaction {
         }
 
         return null;
+    }
+
+    private void updateIndexes() {
+        create(new BidEntity.ItemIdIndex(mBid.getItemId(), mBid.getId()));
+        create(new BidEntity.UserIdIndex(mBid.getUserId(), mBid.getId()));
     }
 }

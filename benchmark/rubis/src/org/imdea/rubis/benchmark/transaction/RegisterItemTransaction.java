@@ -41,11 +41,17 @@ public class RegisterItemTransaction extends AbsRUBiSTransaction {
     public ExecutionHistory execute() {
         try {
             create(mItem);
+            updateIndexes();
             return commitTransaction();
         } catch (Exception e) {
             e.printStackTrace();
         }
 
         return null;
+    }
+
+    private void updateIndexes() {
+        create(new ItemEntity.CategoryIdIndex(mItem.getCategoryId(), mItem.getId()));
+        create(new ItemEntity.SellerIndex(mItem.getSeller(), mItem.getId()));
     }
 }

@@ -36,11 +36,16 @@ public class RegisterCategoryTransaction extends AbsRUBiSTransaction {
     public ExecutionHistory execute() {
         try {
             create(mCategory);
+            updateIndexes();
             return commitTransaction();
         } catch (Exception e) {
             e.printStackTrace();
         }
 
         return null;
+    }
+
+    private void updateIndexes() {
+        create(new CategoryEntity.Scanner(mCategory.getId()));
     }
 }

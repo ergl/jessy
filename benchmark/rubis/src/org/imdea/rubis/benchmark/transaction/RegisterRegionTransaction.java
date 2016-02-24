@@ -36,11 +36,17 @@ public class RegisterRegionTransaction extends AbsRUBiSTransaction {
     public ExecutionHistory execute() {
         try {
             create(mRegion);
+            updateIndexes();
             return commitTransaction();
         } catch (Exception e) {
             e.printStackTrace();
         }
 
         return null;
+    }
+
+    private void updateIndexes() {
+        create(new RegionEntity.NameIndex(mRegion.getName(), mRegion.getId()));
+        create(new RegionEntity.Scanner(mRegion.getId()));
     }
 }

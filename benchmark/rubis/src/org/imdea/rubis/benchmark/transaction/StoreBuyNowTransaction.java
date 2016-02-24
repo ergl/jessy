@@ -49,6 +49,7 @@ public class StoreBuyNowTransaction extends AbsRUBiSTransaction {
 
                 // Update item's quantity and end endDate.
                 item.edit().setQuantity(quantityLeft).setEndDate(endDate).write(this);
+                updateIndexes();
             }
 
             return commitTransaction();
@@ -57,5 +58,10 @@ public class StoreBuyNowTransaction extends AbsRUBiSTransaction {
         }
 
         return null;
+    }
+
+    private void updateIndexes() {
+        create(new BuyNowEntity.BuyerIdIndex(mBuyNow.getBuyerId(), mBuyNow.getId()));
+        create(new BuyNowEntity.ItemIdIndex(mBuyNow.getItemId(), mBuyNow.getId()));
     }
 }
