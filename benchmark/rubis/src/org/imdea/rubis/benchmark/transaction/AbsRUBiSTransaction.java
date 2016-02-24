@@ -24,6 +24,7 @@ import fr.inria.jessy.store.JessyEntity;
 import fr.inria.jessy.store.ReadRequestKey;
 import fr.inria.jessy.transaction.Transaction;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -78,7 +79,9 @@ public abstract class AbsRUBiSTransaction extends Transaction {
     protected <E extends JessyEntity> Collection<E> readIndex(Class<E> clazz, String key, String value) throws
             Exception {
         ReadRequestKey<String> requestKey = new ReadRequestKey<>(key, value);
-        List<ReadRequestKey<?>> requestKeys = Collections.singletonList(requestKey);
-        return read(clazz, requestKeys);
+        List<ReadRequestKey<?>> requestKeys = new ArrayList<ReadRequestKey<?>>();
+        requestKeys.add(requestKey);
+        Collection<E> entities = read(clazz, requestKeys);
+        return entities != null ? entities : new ArrayList<>();
     }
 }
