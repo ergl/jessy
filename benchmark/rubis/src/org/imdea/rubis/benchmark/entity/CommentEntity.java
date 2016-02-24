@@ -124,7 +124,6 @@ public class CommentEntity extends JessyEntity implements Externalizable {
 
         @Override
         public void clearValue() {
-            throw new UnsupportedOperationException("This entity is immutable.");
         }
 
         @Override
@@ -176,7 +175,6 @@ public class CommentEntity extends JessyEntity implements Externalizable {
 
         @Override
         public void clearValue() {
-            throw new UnsupportedOperationException("This entity is immutable.");
         }
 
         @Override
@@ -228,7 +226,6 @@ public class CommentEntity extends JessyEntity implements Externalizable {
 
         @Override
         public void clearValue() {
-            throw new UnsupportedOperationException("This entity is immutable.");
         }
 
         @Override
@@ -285,7 +282,6 @@ public class CommentEntity extends JessyEntity implements Externalizable {
 
     @Override
     public void clearValue() {
-        throw new UnsupportedOperationException("This object is immutable.");
     }
 
 

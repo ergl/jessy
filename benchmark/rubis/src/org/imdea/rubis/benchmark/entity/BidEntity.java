@@ -124,7 +124,6 @@ public class BidEntity extends JessyEntity implements Externalizable {
 
         @Override
         public void clearValue() {
-            throw new UnsupportedOperationException("This object is immutable.");
         }
 
         @Override
@@ -176,7 +175,6 @@ public class BidEntity extends JessyEntity implements Externalizable {
 
         @Override
         public void clearValue() {
-            throw new UnsupportedOperationException("This object is immutable.");
         }
 
         @Override
@@ -232,7 +230,6 @@ public class BidEntity extends JessyEntity implements Externalizable {
 
     @Override
     public void clearValue() {
-        throw new UnsupportedOperationException("This object is immutable.");
     }
 
     @Override
