@@ -39,9 +39,7 @@ public class StoreCommentTransaction extends AbsRUBiSTransaction {
     @Override
     public ExecutionHistory execute() {
         try {
-            // Insert the new comment in the data store.
             create(mComment);
-            // Select the receiver from the data store and store the updated version of the user in the data store.
             UserEntity receiver = read(UserEntity.class, mComment.getToUserId());
             receiver.edit().setRating(receiver.getRating() + mComment.getRating()).write(this);
             updateIndexes();
