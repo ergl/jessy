@@ -102,7 +102,7 @@ public class CommandLineInterface {
             jessy.addSecondaryIndex(BuyNowEntity.ItemIdIndex.class, Long.class, "mItemId");
             jessy.addEntity(CategoryEntity.class);
             jessy.addEntity(CategoryEntity.Scanner.class);
-            jessy.addSecondaryIndex(CategoryEntity.Scanner.class, String.class, "mDummy");
+            jessy.addSecondaryIndex(CategoryEntity.Scanner.class, Long.class, "mDummy");
             jessy.addEntity(CommentEntity.class);
             jessy.addEntity(CommentEntity.FromUserIdIndex.class);
             jessy.addSecondaryIndex(CommentEntity.FromUserIdIndex.class, Long.class, "mFromUserId");
@@ -119,7 +119,7 @@ public class CommandLineInterface {
             jessy.addEntity(RegionEntity.NameIndex.class);
             jessy.addSecondaryIndex(RegionEntity.NameIndex.class, String.class, "mName");
             jessy.addEntity(RegionEntity.Scanner.class);
-            jessy.addSecondaryIndex(RegionEntity.Scanner.class, String.class, "mDummy");
+            jessy.addSecondaryIndex(RegionEntity.Scanner.class, Long.class, "mDummy");
             jessy.addEntity(UserEntity.class);
             jessy.addEntity(UserEntity.NicknameIndex.class);
             jessy.addSecondaryIndex(UserEntity.NicknameIndex.class, String.class, "mNickname");
