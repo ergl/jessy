@@ -40,7 +40,6 @@ public class RegisterUserTransaction extends AbsRUBiSTransaction {
     private String mPassword;
     private int mRating;
     private String mRegion;
-    private long mRegionId;
     private UserEntity mUser;
 
     public RegisterUserTransaction(Jessy jessy, long id, String firstname, String lastname, String nickname, String
@@ -70,20 +69,18 @@ public class RegisterUserTransaction extends AbsRUBiSTransaction {
     @Override
     public ExecutionHistory execute() {
         try {
-            mRegionId = -1;
-
             Collection<RegionEntity.NameIndex> pointers = readIndex(RegionEntity.NameIndex.class, "mName", mRegion);
 
-            if (pointers.size() > 0)
-                mRegionId = pointers.iterator().next().getRegionId();
+            if (pointers.size() > 0) {
+                long regionId = pointers.iterator().next().getRegionId();
 
-            if (mRegionId != -1) {
                 Collection<UserEntity.NicknameIndex> nicknames = readIndex(UserEntity.NicknameIndex.class,
                         "mNickname", mNickname);
 
                 if (nicknames.size() == 0) {
                     mUser = new UserEntity(mId, mFirstname, mLastname, mNickname, mPassword, mEmail, mRating,
-                            mBalance, mCreationDate, mRegionId);
+                            mBalance, mCreationDate, regionId);
+
                     create(mUser);
                     updateIndexes();
                 }
