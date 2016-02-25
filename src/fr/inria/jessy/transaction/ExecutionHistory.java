@@ -166,7 +166,7 @@ public class ExecutionHistory extends ExecutionHistoryMeasurements implements Me
 			transactionType= TransactionType.INIT_TRANSACTION;
 		else if (writeSet.size() > 0 && readSet.size() == 0)
 			transactionType= TransactionType.BLIND_WRITE;
-		else if (writeSet.size() == 0)
+		else if (createSet.size() == 0 && writeSet.size() == 0)
 			transactionType= TransactionType.READONLY_TRANSACTION;
 		else
 			transactionType= TransactionType.UPDATE_TRANSACTION;
