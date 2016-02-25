@@ -128,7 +128,7 @@ public class UserEntity extends JessyEntity implements Externalizable {
     public static class NicknameIndex extends JessyEntity implements Externalizable {
         private static final AtomicLong sSequence = new AtomicLong();
 
-        @SecondaryKey(relate = Relationship.MANY_TO_ONE)
+        @SecondaryKey(relate = Relationship.ONE_TO_ONE)
         @SuppressWarnings("unused")
         private String mNickname;
         private long mUserId;
@@ -138,10 +138,10 @@ public class UserEntity extends JessyEntity implements Externalizable {
             super("");
         }
 
-        public NicknameIndex(String nickname, long itemId) {
-            super("?users~id#" + sSequence.incrementAndGet() + ":nickname#" + nickname);
+        public NicknameIndex(String nickname, long userId) {
+            super(sSequence.incrementAndGet() + "#" + nickname);
             mNickname = nickname;
-            mUserId = itemId;
+            mUserId = userId;
         }
 
         @Override
@@ -163,15 +163,15 @@ public class UserEntity extends JessyEntity implements Externalizable {
         @Override
         public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
             super.readExternal(in);
-            mUserId = in.readLong();
             mNickname = (String) in.readObject();
+            mUserId = in.readLong();
         }
 
         @Override
         public void writeExternal(ObjectOutput out) throws IOException {
             super.writeExternal(out);
-            out.writeLong(mUserId);
             out.writeObject(mNickname);
+            out.writeLong(mUserId);
         }
     }
 
@@ -189,10 +189,10 @@ public class UserEntity extends JessyEntity implements Externalizable {
             super("");
         }
 
-        public RegionIdIndex(long regionId, long itemId) {
-            super("?users~id#" + sSequence.incrementAndGet() + ":region_id#" + regionId);
+        public RegionIdIndex(long regionId, long userId) {
+            super(sSequence.incrementAndGet() + "#" + regionId);
             mRegionId = regionId;
-            mUserId = itemId;
+            mUserId = userId;
         }
 
         @Override
@@ -214,15 +214,15 @@ public class UserEntity extends JessyEntity implements Externalizable {
         @Override
         public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
             super.readExternal(in);
-            mUserId = in.readLong();
             mRegionId = in.readLong();
+            mUserId = in.readLong();
         }
 
         @Override
         public void writeExternal(ObjectOutput out) throws IOException {
             super.writeExternal(out);
-            out.writeLong(mUserId);
             out.writeLong(mRegionId);
+            out.writeLong(mUserId);
         }
     }
 
