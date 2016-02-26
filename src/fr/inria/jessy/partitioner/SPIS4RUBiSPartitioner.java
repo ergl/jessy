@@ -51,33 +51,23 @@ public class SPIS4RUBiSPartitioner extends Partitioner {
         if (readRequest.hasExplicitTarget())
             return Collections.singleton(readRequest.getTarget());
 
-        if (readRequest.isOneKeyRequest()) {
-            groups.add(resolve(readRequest.getOneKey().getKeyValue().toString()));
-        } else {
-            groups.addAll(manager.getReplicaGroups());
-        }
+        groups.add(resolve(readRequest.getOneKey().getKeyValue().toString()));
 
         return groups;
     }
 
     public Group resolve(String key) {
-        String id = key;
         long value;
 
-        try {
-            id = key.split("#")[1];
+        // It's an entity
+        if (key.startsWith("@")) {
+            String id = key.split("#")[1];
             value = Long.valueOf(id);
-        } catch (Exception e) {
-            // Here in two circumstances: (1) key.split("#")[1] throws an ArrayIndexOutOfBoundException meaning that
-            // there was no '#' character in the key; in this case we take the entire key (say, "xxyyzz") and get its
-            // hash value. (2) Long.valueOf(id) throws a NumberFormatException, meaning that the part of the key
-            // after '#' was not a number. So we take the part after '#' (say, the original key "xxyy#zz", then we take
-            // "zz") and get its hash code.
-            value = id.hashCode();
+        } else { // If it starts with "?" it's an index
+            String id = key.split(":")[1].split("#")[1];
+            value = Long.valueOf(id);
         }
 
-        // Turns out that the hash code is negative sometimes.
-        value = Math.abs(value);
         List<Group> groups = manager.getReplicaGroups();
 
         return groups.get((int) (value % groups.size()));
