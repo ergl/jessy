@@ -42,15 +42,15 @@ import org.imdea.rubis.benchmark.util.TextUtils;
  * This program initializes the RUBiS database according to the rubis.properties file
  * found in the classpath.
  *
- * @author
- * <a href="mailto:cecchet@rice.edu">Emmanuel Cecchet</a> and <a href="mailto:julie.marguerite@inrialpes.fr">Julie Marguerite</a>
+ * @author <a href="mailto:cecchet@rice.edu">Emmanuel Cecchet</a>
+ * @author <a href="mailto:julie.marguerite@inrialpes.fr">Julie Marguerite</a>
  * @version 1.0
  */
 
 public class InitDB {
     private Jessy mJessy;
-    private Random rand = new Random();
     private RUBiSProperties mProps;
+    private Random rand = new Random();
 
     public InitDB(RUBiSProperties props, Jessy jessy) {
         mJessy = jessy;
@@ -73,22 +73,22 @@ public class InitDB {
     }
 
     public void generateBids() {
-        for (int i = 0; i < mProps.getTotalItems(); i++) {
-            float bid = 1.0f;
+        float bid = 1.0f;
 
-            for (int j = 0; j < mProps.getMaxBidsPerItem(); j++) {
-                try {
-                    StoreBidTransaction trans = new StoreBidTransaction(mJessy, j, rand.nextInt(mProps.getNbOfUsers()),
-                            i, 1, bid, bid + 1.0f, new Date());
-                    int state = execTransaction(trans);
+        for (int i = 0; i < mProps.getNbOfBids(); i++) {
+            try {
+                long itemId = rand.nextInt(mProps.getTotalItems());
+                long userId = rand.nextInt(mProps.getNbOfUsers());
 
-                    if (state == -1)
-                        System.err.println("Failed to bid " + j + " on item " + i);
+                StoreBidTransaction trans = new StoreBidTransaction(mJessy, i, userId, itemId, 1, bid, bid + 1.0f, new
+                        Date());
 
-                    bid += 2.0f;
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+                if (execTransaction(trans) == -1)
+                    System.err.println("Failed to bid " + i + " on item " + itemId);
+
+                bid += 1.0f;
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
     }
@@ -120,9 +120,8 @@ public class InitDB {
             try {
                 StoreCommentTransaction trans = new StoreCommentTransaction(mJessy, i, fromId, toId, itemId, rating,
                         new Date(), comment);
-                int state = execTransaction(trans);
 
-                if (state == -1)
+                if (execTransaction(trans) == -1)
                     System.err.println("Failed to add comment for item #" + i);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -135,43 +134,28 @@ public class InitDB {
      * given in the database.properties file.
      */
     public void generateItems() {
-        for (CategoryDef def : mProps.getCategories()) {
-            for (int i = 0; i < def.nbOfItems; i++) {
-                String name = "RUBiS automatically generated item #" + i;
+        long itemId = 0;
+
+        for (int i = 0; i < mProps.getCategories().size(); i++) {
+            CategoryDef def = mProps.getCategories().get(i);
+
+            for (int j = 0; j < def.nbOfItems; j++) {
+                String name = "RUBiS automatically generated item #" + j;
                 String description = TextUtils.randomString(1, mProps.getCommentMaxLength());
                 float initialPrice = rand.nextFloat() * 5000 + 1;
                 int duration = rand.nextInt(7) + 1;
-
-                float reservePrice;
-
-                if (i < mProps.getPercentReservePrice() * mProps.getTotalItems() / 100)
-                    reservePrice = rand.nextInt(1000) + initialPrice;
-                else
-                    reservePrice = 0;
-
-                float buyNow;
-
-                if (i < mProps.getPercentBuyNow() * mProps.getTotalItems() / 100)
-                    buyNow = rand.nextInt(1000) + initialPrice + reservePrice;
-                else
-                    buyNow = 0;
-
-                int quantity;
-
-                if (i < mProps.getPercentUniqueItems() * mProps.getTotalItems() / 100)
-                    quantity = 1;
-                else
-                    quantity = rand.nextInt(mProps.getMaxItemQty()) + 1;
+                float reservePrice = initialPrice + rand.nextFloat() * 1000;
+                float buyNow = rand.nextFloat() * 1000;
+                int quantity = rand.nextInt(100) + 100;
 
                 long sellerId = rand.nextInt(mProps.getNbOfUsers()) + 1;
 
                 try {
-                    Transaction trans = new RegisterItemTransaction(mJessy, i, name, description, initialPrice,
-                            quantity, reservePrice, buyNow, 0, 0.0f, new Date(), new Date(), sellerId, i);
-                    int state = execTransaction(trans);
+                    Transaction trans = new RegisterItemTransaction(mJessy, itemId++, name, description, initialPrice,
+                            quantity, reservePrice, buyNow, 0, 0.0f, new Date(), new Date(), sellerId, j);
 
-                    if (state == -1)
-                        System.err.println("Failed to add item " + name + " (" + i + ")");
+                    if (execTransaction(trans) == -1)
+                        System.err.println("Failed to add item " + name + " (" + j + ")");
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -198,40 +182,28 @@ public class InitDB {
      * given in the database.properties file.
      */
     public void generateUsers() {
-        String firstname;
-        String lastname;
-        String nickname;
-        String email;
-        String password;
-        String regionName;
-        int i;
-
         int nbOfUsers = mProps.getNbOfUsers();
         int nbOfRegions = mProps.getNbOfRegions();
 
-        for (i = 0; i < nbOfUsers; i++) {
-            firstname = "Great" + i;
-            lastname = "User" + i;
-            nickname = "user" + i;
-            email = firstname + "." + lastname + "@rubis.com";
-            password = "password" + i;
-            regionName = mProps.getRegions().get(i % nbOfRegions);
+        for (int i = 0; i < nbOfUsers; i++) {
+            String firstname = "Great" + i;
+            String lastname = "User" + i;
+            String nickname = "user" + i;
+            String email = firstname + "." + lastname + "@rubis.com";
+            String password = "password" + i;
+            String regionName = mProps.getRegions().get(i % nbOfRegions);
 
             try {
                 RegisterUserTransaction trans = new RegisterUserTransaction(mJessy, i, firstname, lastname,
                         nickname, password, email, regionName);
-                int state = execTransaction(trans);
 
-                if (state == -1) {
+                if (execTransaction(trans) == -1) {
                     System.err.println("Failed to add user " + firstname + "|" + lastname + "|" + nickname + "|" +
                             email + "|" + password + "|" + regionName);
                 }
             } catch (Exception e) {
                 e.printStackTrace();
             }
-
-            if (i % 100 == 0)
-                System.out.print(".");
         }
     }
 }

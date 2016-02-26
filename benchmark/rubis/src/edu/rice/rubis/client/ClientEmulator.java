@@ -25,6 +25,7 @@
 package edu.rice.rubis.client;
 
 import fr.inria.jessy.Jessy;
+
 import java.util.ArrayList;
 
 /**
@@ -68,11 +69,17 @@ public class ClientEmulator {
     public void start() {
         System.out.println("Initializing DB...");
         InitDB init = new InitDB(mProps, mJessy);
+        System.out.println("Initializing categories");
         init.generateCategories();
+        System.out.println("Initializing regions");
         init.generateRegions();
+        System.out.println("Initializing users");
         init.generateUsers();
+        System.out.println("Initializing items");
         init.generateItems();
+        System.out.println("Initializing bids");
         init.generateBids();
+        System.out.println("Initializing comments");
         init.generateComments();
         System.out.println("DB initialized...");
 
@@ -84,8 +91,6 @@ public class ClientEmulator {
             sessions.add(session);
         }
 
-        setEndOfSimulation();
-
         for (int i = 0; i < mProps.getNbOfClients(); i++) {
             try {
                 sessions.get(i).join();
@@ -93,5 +98,7 @@ public class ClientEmulator {
                 System.err.println("ClientEmulator: Thread " + i + " has been interrupted.");
             }
         }
+
+        System.out.println("End of emulation");
     }
 }

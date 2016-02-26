@@ -154,7 +154,7 @@ public class UserSession extends Thread {
                 case 14: // Store Buy Now in the database
                 {
                     int itemId = mRand.nextInt(mProps.getTotalItems()) + 1;
-                    int maxQty = mProps.getMaxItemQty();
+                    int maxQty = 100;
                     int qty = mRand.nextInt(maxQty) + 1;
                     trans = new StoreBuyNowTransaction(mJessy, mRand.nextInt(), mUserId, itemId, qty, new Date());
                     break;
@@ -169,7 +169,7 @@ public class UserSession extends Thread {
                 case 17: // Store Bid in the database
                 {
                     int itemId = mRand.nextInt(mProps.getTotalItems()) + 1;
-                    int maxQty = mProps.getMaxItemQty();
+                    int maxQty = 100;
                     int qty = mRand.nextInt(maxQty) + 1;
                     float minBid = 0.01f;
                     float addBid = mRand.nextInt(10) + 1;
@@ -204,10 +204,10 @@ public class UserSession extends Thread {
                     String name;
                     String description;
                     float initialPrice;
-                    float reservePrice;
-                    float buyNow;
+                    float reservePrice = 1000;
+                    float buyNow = 1000;
                     int duration;
-                    int quantity;
+                    int quantity = 100;
                     int categoryId;
                     int totalItems = mProps.getTotalItems();
                     int i = totalItems + mRand.nextInt(1000000) + 1;
@@ -216,25 +216,9 @@ public class UserSession extends Thread {
                     int descriptionLength = mRand.nextInt(mProps.getItemDescriptionLength()) + 1;
                     description = TextUtils.randomString(descriptionLength);
                     initialPrice = mRand.nextInt(5000) + 1;
-
-                    if (mRand.nextInt(totalItems) < mProps.getPercentReservePrice() * totalItems / 100)
-                        reservePrice = mRand.nextInt(1000) + initialPrice;
-                    else
-                        reservePrice = 0;
-
-                    if (mRand.nextInt(totalItems) < mProps.getPercentBuyNow() * totalItems / 100)
-                        buyNow = mRand.nextInt(1000) + initialPrice + reservePrice;
-                    else
-                        buyNow = 0;
-
                     duration = mRand.nextInt(7) + 1;
                     Date startDate = new Date();
                     Date endDate = new Date(startDate.getTime() + duration * 1000 * 60 * 60 * 24);
-
-                    if (mRand.nextInt(totalItems) < mProps.getPercentUniqueItems() * totalItems / 100)
-                        quantity = 1;
-                    else
-                        quantity = mRand.nextInt(mProps.getMaxItemQty()) + 1;
 
                     categoryId = mRand.nextInt(mProps.getNbOfCategories());
 
@@ -261,37 +245,40 @@ public class UserSession extends Thread {
         int nbOfItems = mProps.getNbOfItemsPerPage();
         int nextTransition;
         int page = 0;
-        int transactionsLeft;
+        int transitionsLeft = mProps.getMaxNbOfTransitions();
 
-        while (!ClientEmulator.isEndOfSimulation()) {
+        while (transitionsLeft > 0) {
             mUserId = mRand.nextInt(mProps.getNbOfUsers());
             mUsername = "user" + (mUserId + 1);
             mPassword = "password" + (mUserId + 1);
-            transactionsLeft = mProps.getMaxNbOfTransitions();
             mTable.resetToInitialState();
             nextTransition = mTable.getCurrentState();
 
-            while (!ClientEmulator.isEndOfSimulation() && !mTable.isEndOfSession() && (transactionsLeft > 0)) {
+            while (!mTable.isEndOfSession() && (transitionsLeft > 0)) {
                 Transaction trans = nextTransaction(nextTransition, page, nbOfItems);
                 ExecutionHistory h = null;
 
                 if (trans != null) {
                     try {
+                        System.out.println("Executing " + trans.getClass().getSimpleName());
                         h = trans.execute();
                     } catch (Exception e) {
                         e.printStackTrace();
                     } finally {
                         lastTransition = nextTransition;
 
-                        if (h != null && h.getTransactionState() == COMMITTED)
+                        if (h != null && h.getTransactionState() == COMMITTED) {
                             mTable.nextState();
-                        else
+                        } else {
+                            System.err.println("Failed to execute transaction " + trans.getClass().getSimpleName());
                             mTable.resetToInitialState();
+                        }
                     }
 
-                    transactionsLeft--;
+                    transitionsLeft--;
                 }
 
+                mTable.nextState();
                 nextTransition = mTable.getCurrentState();
                 page = lastTransition == nextTransition ? page + 1 : 0;
             }

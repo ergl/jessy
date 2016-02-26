@@ -33,9 +33,9 @@ import java.util.regex.Pattern;
  * This program check and get all information for the rubis.properties file
  * found in the classpath.
  *
- * @author
- * <a href="mailto:cecchet@rice.edu">Emmanuel Cecchet</a> and <a href="mailto:julie.marguerite@inrialpes.fr">Julie Marguerite</a>
- * @version 1.0
+ * @author <a href="mailto:cecchet@rice.edu">Emmanuel Cecchet</a>
+ * @author <a href="mailto:julie.marguerite@inrialpes.fr">Julie Marguerite</a>
+ * @author <a href="mailto:hello@mneri.me">Massimo Neri</a>
  */
 
 public class RUBiSProperties {
@@ -52,22 +52,17 @@ public class RUBiSProperties {
     private List<CategoryDef> mCategories;
     private int mCommentMaxLength;
     private int mItemDescriptionLength;
-    private int mMaxBidsPerItem;
-    private int mMaxItemQty;
     private int mMaxNbOfTransitions;
+    private int mNbOfBids;
     private int mNbOfClients;
     private int mNbOfComments;
+    private int mNbOfItems;
     private int mNbOfItemsPerPage;
-    private int mNbOfRegions;
     private int mNbOfUsers;
-    private float mPercentBuyNow;
-    private float mPercentReservePrice;
-    private float mPercentUniqueItems;
     private List<String> mRegions;
     private int mTableColumns;
     private String mTableName;
     private int mTableRows;
-    private int mTotalActiveItems;
 
     public RUBiSProperties(String filename) throws IOException {
         Properties props = new Properties();
@@ -87,16 +82,12 @@ public class RUBiSProperties {
         return mItemDescriptionLength;
     }
 
-    public int getMaxBidsPerItem() {
-        return mMaxBidsPerItem;
-    }
-
-    public int getMaxItemQty() {
-        return mMaxItemQty;
-    }
-
     public int getMaxNbOfTransitions() {
         return mMaxNbOfTransitions;
+    }
+
+    public int getNbOfBids() {
+        return mNbOfBids;
     }
 
     public int getNbOfCategories() {
@@ -116,23 +107,11 @@ public class RUBiSProperties {
     }
 
     public int getNbOfRegions() {
-        return mNbOfRegions;
+        return mRegions.size();
     }
 
     public int getNbOfUsers() {
         return mNbOfUsers;
-    }
-
-    public float getPercentBuyNow() {
-        return mPercentBuyNow;
-    }
-
-    public float getPercentReservePrice() {
-        return mPercentReservePrice;
-    }
-
-    public float getPercentUniqueItems() {
-        return mPercentUniqueItems;
     }
 
     public List<String> getRegions() {
@@ -140,23 +119,19 @@ public class RUBiSProperties {
     }
 
     public int getTotalItems() {
-        return mTotalActiveItems;
+        return mNbOfItems;
     }
 
     private void init(Properties props) {
         try {
-            mNbOfClients = Integer.valueOf(props.getProperty("clients_per_node"));
-            mNbOfComments = Integer.valueOf(props.getProperty("number_of_comments"));
-            mMaxNbOfTransitions = Integer.valueOf(props.getProperty("number_of_transitions"));
+            mNbOfClients = Integer.valueOf(props.getProperty("clients"));
+            mNbOfComments = Integer.valueOf(props.getProperty("comments"));
+            mMaxNbOfTransitions = Integer.valueOf(props.getProperty("transitions"));
             mNbOfItemsPerPage = Integer.valueOf(props.getProperty("items_per_page"));
-            mNbOfUsers = Integer.valueOf(props.getProperty("number_of_users"));
-            mPercentUniqueItems = Float.valueOf(props.getProperty("percentage_of_unique_items"));
-            mPercentReservePrice = Float.valueOf(props.getProperty("percentage_of_items_with_reserve_price"));
-            mPercentBuyNow = Float.valueOf(props.getProperty("percentage_of_buy_now_items"));
-            mMaxItemQty = Integer.valueOf(props.getProperty("max_quantity"));
-            mItemDescriptionLength = Integer.valueOf(props.getProperty("item_description_length"));
-            mMaxBidsPerItem = Integer.valueOf(props.getProperty("max_bids_per_item"));
-            mCommentMaxLength = Integer.valueOf(props.getProperty("comment_max_length"));
+            mNbOfUsers = Integer.valueOf(props.getProperty("users"));
+            mItemDescriptionLength = Integer.valueOf(props.getProperty("items_description_length"));
+            mNbOfBids = Integer.valueOf(props.getProperty("bids"));
+            mCommentMaxLength = Integer.valueOf(props.getProperty("comments_max_length"));
 
             String regionsFile = props.getProperty("regions_file");
             readRegionsFile(regionsFile);
@@ -164,9 +139,9 @@ public class RUBiSProperties {
             String categoriesFile = props.getProperty("categories_file");
             readCategoriesFile(categoriesFile);
 
-            mTableName = props.getProperty("transition_table");
-            mTableColumns = Integer.valueOf(props.getProperty("number_of_columns"));
-            mTableRows = Integer.valueOf(props.getProperty("number_of_rows"));
+            mTableName = props.getProperty("transitions_file");
+            mTableColumns = Integer.valueOf(props.getProperty("transitions_file_columns"));
+            mTableRows = Integer.valueOf(props.getProperty("transitions_file_rows"));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -194,9 +169,9 @@ public class RUBiSProperties {
                 String category = matcher.group(1);
                 int num = Integer.valueOf(matcher.group(2));
                 categories.add(new CategoryDef(category, num));
-                mTotalActiveItems += num;
+                mNbOfItems += num;
             } else {
-                System.err.println("Regions: skipped \"" + line + "\"");
+                System.err.println("Regions: invalid format, skipped: \"" + line + "\"");
             }
         }
 
@@ -210,10 +185,8 @@ public class RUBiSProperties {
         ArrayList<String> regions = new ArrayList<>();
         String line;
 
-        while ((line = reader.readLine()) != null) {
+        while ((line = reader.readLine()) != null)
             regions.add(line);
-            mNbOfRegions++;
-        }
 
         regions.trimToSize();
         mRegions = Collections.unmodifiableList(regions);
