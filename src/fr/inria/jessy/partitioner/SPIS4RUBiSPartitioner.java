@@ -4,6 +4,7 @@ import fr.inria.jessy.communication.JessyGroupManager;
 import fr.inria.jessy.store.JessyEntity;
 import fr.inria.jessy.store.ReadRequest;
 
+import fr.inria.jessy.store.ReadRequestKey;
 import java.util.*;
 
 import net.sourceforge.fractal.membership.Group;
@@ -48,24 +49,33 @@ public class SPIS4RUBiSPartitioner extends Partitioner {
     public <E extends JessyEntity> Set<Group> resolve(ReadRequest<E> readRequest) {
         Set<Group> groups = new HashSet<Group>();
 
-        if (readRequest.hasExplicitTarget())
-            return Collections.singleton(readRequest.getTarget());
-
-        groups.add(resolve(readRequest.getOneKey().getKeyValue().toString()));
+        if (readRequest.isOneKeyRequest()) {
+            groups.add(resolve(readRequest.getOneKey().getKeyValue().toString()));
+        } else {
+            for (ReadRequestKey key : readRequest.getMultiKeys()) {
+                groups.add(resolve(key.getKeyValue().toString()));
+            }
+        }
 
         return groups;
     }
 
     public Group resolve(String key) {
+        String id;
         long value;
 
         // It's an entity
-        if (key.startsWith("@")) {
-            String id = key.split("#")[1];
+        if (key.startsWith("@"))
+            id = key.split("#")[1];
+        else if (key.startsWith("?")) // If it starts with "?" it's an index
+            id = key.split(":")[1].split("#")[1];
+        else // This is the case of index lookup ("only the stuff after "#"")
+            id = key;
+
+        try {
             value = Long.valueOf(id);
-        } else { // If it starts with "?" it's an index
-            String id = key.split(":")[1].split("#")[1];
-            value = Long.valueOf(id);
+        } catch (NumberFormatException ignored) {
+            value = Math.abs(id.hashCode());
         }
 
         List<Group> groups = manager.getReplicaGroups();
