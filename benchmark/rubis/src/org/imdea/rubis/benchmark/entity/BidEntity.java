@@ -134,8 +134,8 @@ public class BidEntity extends JessyEntity implements Externalizable {
             return entity;
         }
 
-        public long getBidId() {
-            return mBidId;
+        public String getBidKey() {
+            return "@bids~id#" + mBidId;
         }
 
         @Override
@@ -185,8 +185,8 @@ public class BidEntity extends JessyEntity implements Externalizable {
             return entity;
         }
 
-        public long getBidId() {
-            return mBidId;
+        public String getBidKey() {
+            return "@bids~id#" + mBidId;
         }
 
         @Override
@@ -218,7 +218,7 @@ public class BidEntity extends JessyEntity implements Externalizable {
     }
 
     public BidEntity(long id, long userId, long itemId, int qty, float bid, float maxBid, Date date) {
-        super("@bids~id#" + Long.toString(id));
+        super("@bids~id#" + id);
         mId = id;
         mUserId = userId;
         mItemId = itemId;

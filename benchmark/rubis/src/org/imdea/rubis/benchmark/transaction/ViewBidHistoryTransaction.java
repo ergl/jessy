@@ -45,7 +45,7 @@ public class ViewBidHistoryTransaction extends AbsRUBiSTransaction {
                 Collection<BidEntity.ItemIdIndex> pointers = readIndex(BidEntity.ItemIdIndex.class, "mItemId", mItemId);
 
                 for (BidEntity.ItemIdIndex pointer : pointers) {
-                    BidEntity bid = read(BidEntity.class, pointer.getBidId());
+                    BidEntity bid = read(BidEntity.class, pointer.getBidKey());
                     UserEntity bidder = read(UserEntity.class, bid.getUserId());
                 }
             }

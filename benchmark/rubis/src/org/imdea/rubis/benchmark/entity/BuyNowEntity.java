@@ -120,8 +120,8 @@ public class BuyNowEntity extends JessyEntity implements Externalizable {
             return entity;
         }
 
-        public long getBuyNowId() {
-            return mBuyNowId;
+        public String getBuyNowKey() {
+            return "@buy_now~id#" + mBuyNowId;
         }
 
         @Override
@@ -171,8 +171,8 @@ public class BuyNowEntity extends JessyEntity implements Externalizable {
             return entity;
         }
 
-        public long getBuyNowId() {
-            return mBuyNowId;
+        public String getBuyNowKey() {
+            return "@buy_now~id#" + mBuyNowId;
         }
 
         @Override
@@ -202,7 +202,7 @@ public class BuyNowEntity extends JessyEntity implements Externalizable {
     }
 
     public BuyNowEntity(long id, long buyerId, long itemId, int qty, Date date) {
-        super("@buy_now~id#" + Long.toString(id));
+        super("@buy_now~id#" + id);
         mId = id;
         mBuyerId = buyerId;
         mItemId = itemId;

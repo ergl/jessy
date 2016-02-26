@@ -97,8 +97,8 @@ public class CategoryEntity extends JessyEntity implements Externalizable {
             return entity;
         }
 
-        public long getCategoryId() {
-            return mCategoryId;
+        public String getCategoryKey() {
+            return "@categories~id#" + mCategoryId;
         }
 
         @Override
@@ -125,7 +125,7 @@ public class CategoryEntity extends JessyEntity implements Externalizable {
     }
 
     public CategoryEntity(long id, String name) {
-        super("@categories~id#" + Long.toString(id));
+        super("@categories~id#" + id);
         mId = id;
         mName = name;
     }

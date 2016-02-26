@@ -98,8 +98,8 @@ public class RegionEntity extends JessyEntity implements Externalizable {
             return entity;
         }
 
-        public long getRegionId() {
-            return mRegionId;
+        public String getRegionKey() {
+            return "@regions~id#" + mRegionId;
         }
 
         @Override
@@ -148,8 +148,8 @@ public class RegionEntity extends JessyEntity implements Externalizable {
             return entity;
         }
 
-        public long getRegionId() {
-            return mRegionId;
+        public String getRegionKey() {
+            return "@regions~id#" + mRegionId;
         }
 
         @Override
@@ -176,7 +176,7 @@ public class RegionEntity extends JessyEntity implements Externalizable {
     }
 
     public RegionEntity(long id, String name) {
-        super("@regions~id#" + Long.toString(id));
+        super("@regions~id#" + id);
         mId = id;
         mName = name;
     }

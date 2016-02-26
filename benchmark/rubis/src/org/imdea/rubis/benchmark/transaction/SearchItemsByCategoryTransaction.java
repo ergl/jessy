@@ -56,7 +56,7 @@ public class SearchItemsByCategoryTransaction extends AbsRUBiSTransaction {
             int end = start + mNbOfItems;
 
             for (int i = start; i < end && iterator.hasNext(); i++) {
-                long itemId = iterator.next().getItemId();
+                long itemId = iterator.next().getItemKey();
                 ItemEntity item = read(ItemEntity.class, itemId);
             }
 

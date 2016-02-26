@@ -37,7 +37,7 @@ public class BrowseRegionsTransaction extends AbsRUBiSTransaction {
             Collection<RegionEntity.Scanner> pointers = readIndex(RegionEntity.Scanner.class, "mDummy", 0L);
 
             for (RegionEntity.Scanner pointer : pointers) {
-                RegionEntity region = read(RegionEntity.class, pointer.getRegionId());
+                RegionEntity region = read(RegionEntity.class, pointer.getRegionKey());
             }
 
             return commitTransaction();

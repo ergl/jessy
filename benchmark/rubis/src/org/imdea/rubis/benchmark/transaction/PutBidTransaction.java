@@ -53,7 +53,7 @@ public class PutBidTransaction extends AbsRUBiSTransaction {
                 float max = 0.0f;
 
                 for (BidEntity.ItemIdIndex pointer : pointers) {
-                    BidEntity bid = read(BidEntity.class, pointer.getBidId());
+                    BidEntity bid = read(BidEntity.class, pointer.getBidKey());
                     max = Math.max(max, bid.getBid());
                     count++;
                 }

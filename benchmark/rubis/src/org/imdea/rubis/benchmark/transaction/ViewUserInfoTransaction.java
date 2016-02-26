@@ -45,7 +45,7 @@ public class ViewUserInfoTransaction extends AbsRUBiSTransaction {
                         "mToUserId", mUserId);
 
                 for (CommentEntity.ToUserIdIndex pointer : pointers) {
-                    CommentEntity comment = read(CommentEntity.class, pointer.getCommentId());
+                    CommentEntity comment = read(CommentEntity.class, pointer.getCommentKey());
                     UserEntity author = read(UserEntity.class, comment.getFromUserId());
                 }
             }

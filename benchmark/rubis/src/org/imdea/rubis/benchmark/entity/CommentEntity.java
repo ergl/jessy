@@ -134,8 +134,8 @@ public class CommentEntity extends JessyEntity implements Externalizable {
             return entity;
         }
 
-        public long getCommentId() {
-            return mCommentId;
+        public String getCommentKey() {
+            return "@comments~id#" + mCommentId;
         }
 
         @Override
@@ -185,8 +185,8 @@ public class CommentEntity extends JessyEntity implements Externalizable {
             return entity;
         }
 
-        public long getCommentId() {
-            return mCommentId;
+        public String getCommentKey() {
+            return "@comments~id#" + mCommentId;
         }
 
         @Override
@@ -236,8 +236,8 @@ public class CommentEntity extends JessyEntity implements Externalizable {
             return entity;
         }
 
-        public long getCommentId() {
-            return mCommentId;
+        public String getCommentKey() {
+            return "@comments~id#" + mCommentId;
         }
 
         @Override
@@ -270,7 +270,7 @@ public class CommentEntity extends JessyEntity implements Externalizable {
 
     public CommentEntity(long id, long fromUserId, long toUserId, long itemId, int rating, Date date, String
             comment) {
-        super("@comments~id#" + Long.toString(id));
+        super("@comments~id#" + id);
         mId = id;
         mFromUserId = fromUserId;
         mToUserId = toUserId;

@@ -26,7 +26,6 @@ import fr.inria.jessy.transaction.Transaction;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 import org.imdea.rubis.benchmark.entity.UserEntity;
@@ -54,7 +53,7 @@ public abstract class AbsRUBiSTransaction extends Transaction {
 
         if (pointers.size() > 0) {
             UserEntity.NicknameIndex pointer = pointers.iterator().next();
-            UserEntity user = read(UserEntity.class, pointer.getUserId());
+            UserEntity user = read(UserEntity.class, pointer.getUserKey());
 
             if (user.getPassword().equals(password))
                 return user.getId();

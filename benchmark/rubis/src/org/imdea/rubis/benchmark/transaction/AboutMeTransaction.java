@@ -69,7 +69,7 @@ public class AboutMeTransaction extends AbsRUBiSTransaction {
         Collection<BidEntity.UserIdIndex> pointers = readIndex(BidEntity.UserIdIndex.class, "mUserId", mTargetUserId);
 
         for (BidEntity.UserIdIndex pointer : pointers) {
-            BidEntity bid = read(BidEntity.class, pointer.getBidId());
+            BidEntity bid = read(BidEntity.class, pointer.getBidKey());
             ItemEntity item = read(ItemEntity.class, bid.getItemId());
             UserEntity seller = read(UserEntity.class, item.getSeller());
         }
@@ -80,7 +80,7 @@ public class AboutMeTransaction extends AbsRUBiSTransaction {
                 mTargetUserId);
 
         for (BuyNowEntity.BuyerIdIndex pointer : pointers) {
-            BuyNowEntity buyNow = read(BuyNowEntity.class, pointer.getBuyNowId());
+            BuyNowEntity buyNow = read(BuyNowEntity.class, pointer.getBuyNowKey());
             ItemEntity item = read(ItemEntity.class, Long.toString(buyNow.getItemId()));
             UserEntity seller = read(UserEntity.class, Long.toString(item.getSeller()));
         }
@@ -91,7 +91,7 @@ public class AboutMeTransaction extends AbsRUBiSTransaction {
                 mTargetUserId);
 
         for (CommentEntity.ToUserIdIndex pointer : pointers) {
-            CommentEntity comment = read(CommentEntity.class, pointer.getCommentId());
+            CommentEntity comment = read(CommentEntity.class, pointer.getCommentKey());
             UserEntity commenter = read(UserEntity.class, comment.getFromUserId());
         }
     }
@@ -100,7 +100,7 @@ public class AboutMeTransaction extends AbsRUBiSTransaction {
         Collection<ItemEntity.SellerIndex> pointers = readIndex(ItemEntity.SellerIndex.class, "mSeller", mTargetUserId);
 
         for (ItemEntity.SellerIndex pointer : pointers) {
-            ItemEntity item = read(ItemEntity.class, pointer.getItemId());
+            ItemEntity item = read(ItemEntity.class, pointer.getItemKey());
         }
     }
 
@@ -108,7 +108,7 @@ public class AboutMeTransaction extends AbsRUBiSTransaction {
         Collection<BidEntity.UserIdIndex> pointers = readIndex(BidEntity.UserIdIndex.class, "mUserId", mTargetUserId);
 
         for (BidEntity.UserIdIndex pointer : pointers) {
-            BidEntity bid = read(BidEntity.class, pointer.getBidId());
+            BidEntity bid = read(BidEntity.class, pointer.getBidKey());
             ItemEntity item = read(ItemEntity.class, bid.getItemId());
             UserEntity seller = read(UserEntity.class, item.getSeller());
         }

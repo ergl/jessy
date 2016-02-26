@@ -64,7 +64,7 @@ public class SearchItemsByRegionTransaction extends AbsRUBiSTransaction {
             List<Long> pointersInCategory = new ArrayList<>();
 
             for (ItemEntity.CategoryIdIndex pointer : itemsInCategory)
-                pointersInCategory.add(pointer.getItemId());
+                pointersInCategory.add(pointer.getItemKey());
 
             Collection<UserEntity.RegionIdIndex> usersInRegion = readIndex(UserEntity.RegionIdIndex.class,
                     "mRegionId", mRegionId);
@@ -74,7 +74,7 @@ public class SearchItemsByRegionTransaction extends AbsRUBiSTransaction {
             int read = 0;
 
             for (UserEntity.RegionIdIndex userId : usersInRegion) {
-                UserEntity seller = read(UserEntity.class, userId.getUserId());
+                UserEntity seller = read(UserEntity.class, userId.getUserKey());
                 Collection<ItemEntity.SellerIndex> itemsOfSeller = readIndex(ItemEntity.SellerIndex.class, "mSeller",
                         seller.getId());
 
@@ -82,12 +82,12 @@ public class SearchItemsByRegionTransaction extends AbsRUBiSTransaction {
                     // Only the items of the given category should be read. To do so we check the id of each item
                     // against the ids contained in categoriesIndex. If categoriesIndex contains such an id we read
                     // the corresponding ItemEntity.
-                    if (pointersInCategory.contains(pointer.getItemId())) {
+                    if (pointersInCategory.contains(pointer.getItemKey())) {
                         // Only read elements from start to start + mNbOfItems
                         if (++current < start)
                             continue;
 
-                        ItemEntity item = read(ItemEntity.class, pointer.getItemId());
+                        ItemEntity item = read(ItemEntity.class, pointer.getItemKey());
 
                         // Only read elements from start to start + mNbOfItems
                         if (++read == mNbOfItems)
