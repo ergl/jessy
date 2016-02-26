@@ -69,19 +69,15 @@ public class ClientEmulator {
     public void start() {
         System.out.println("Initializing DB...");
         InitDB init = new InitDB(mProps, mJessy);
-        System.out.println("Initializing categories");
         init.generateCategories();
-        System.out.println("Initializing regions");
         init.generateRegions();
-        System.out.println("Initializing users");
         init.generateUsers();
-        System.out.println("Initializing items");
         init.generateItems();
-        System.out.println("Initializing bids");
         init.generateBids();
-        System.out.println("Initializing comments");
         init.generateComments();
-        System.out.println("DB initialized...");
+        System.out.println("DB initialized");
+        System.out.println("Start emulation...");
+        long start = System.currentTimeMillis();
 
         ArrayList<UserSession> sessions = new ArrayList<>();
 
@@ -99,6 +95,8 @@ public class ClientEmulator {
             }
         }
 
+        long end = System.currentTimeMillis();
         System.out.println("End of emulation");
+        System.out.println("Total emulation time (millis): " + (end - start));
     }
 }
