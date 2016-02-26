@@ -73,8 +73,7 @@ public class BrowseCategoriesTransaction extends AbsRUBiSTransaction {
             }
 
 
-            Collection<CategoryEntity.Scanner> pointers = readIndex(CategoryEntity.Scanner.class, "mDummy",
-                    (String) null);
+            Collection<CategoryEntity.Scanner> pointers = readIndex(CategoryEntity.Scanner.class, "mDummy", 0L);
 
             for (CategoryEntity.Scanner pointer : pointers) {
                 CategoryEntity category = read(CategoryEntity.class, pointer.getCategoryId());

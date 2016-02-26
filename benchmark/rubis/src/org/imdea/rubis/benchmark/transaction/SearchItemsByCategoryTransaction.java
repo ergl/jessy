@@ -34,7 +34,6 @@ public class SearchItemsByCategoryTransaction extends AbsRUBiSTransaction {
     private int mNbOfItems;
     private int mPage;
 
-
     public SearchItemsByCategoryTransaction(Jessy jessy, long categoryId) throws Exception {
         this(jessy, categoryId, 0, DEFAULT_ITEMS_PER_PAGE);
     }
@@ -56,7 +55,7 @@ public class SearchItemsByCategoryTransaction extends AbsRUBiSTransaction {
             int start = mPage * mNbOfItems;
             int end = start + mNbOfItems;
 
-            for (int i = start; i < end; i++) {
+            for (int i = start; i < end && iterator.hasNext(); i++) {
                 long itemId = iterator.next().getItemId();
                 ItemEntity item = read(ItemEntity.class, itemId);
             }
