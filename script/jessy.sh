@@ -1,6 +1,6 @@
 #!/bin/bash
 
-source /home/msaeida/jessy_script/configuration.sh
+source /home/mneri/Progetti/jessy/script/configuration.sh
 hostname=`hostname`;
 
 if [[ ${workloadType} == "-load"  ]];

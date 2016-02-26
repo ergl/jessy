@@ -2,16 +2,16 @@
 #the hooks are defined in ConstantPool.java!!!
 
 # datastore_type: "hashmap" | "berkeleydb"
-datastore_type = hashmap
+datastore_type = berkeleydb
 
 #consistency type: "nmsi" | "si" | "ser" | "rc" | "psi" | "us" | 
 #"si2" snapshot isolation with Atomic-Multicast to every group
 #"nmsi2" non-monotonic snapshot isolation with GMUVector from [Peluso2012] 
 #"us2" Update serializability with GMUVector from [Peluso2012]
-consistency_type = nmsi2
+consistency_type = spsi_pdv_gc
 
 #partitioner type: "keyspace" | "modulo" | "replicatedModulo" | "sequential"
-partitioner_type = sequential
+partitioner_type = spsi4rubis
 
 #replication factor
 replication_factor = 1

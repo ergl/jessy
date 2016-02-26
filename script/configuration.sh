@@ -13,7 +13,7 @@ SSHCMD="oarsh" # ssh or oarsh for oar equiped cluster
 bc="/home/psutra/utils/bin/bc"
 
 #The location of all the scripts.
-scriptdir="/home/msaeida/jessy_script"
+scriptdir="/home/mneri/Progetti/jessy/script"
 
 #The location where all the databases will be created.
 workingdir="/tmp/jessy_exec"
@@ -65,5 +65,5 @@ fi;
 if [[ ${system} == "jessy"  ]];
 then
     clientclass=com.yahoo.ycsb.JessyDBClient;
-    classpath=${scriptdir}/commons-lang.jar:${scriptdir}/log4j.jar:${scriptdir}/jessy.jar:${scriptdir}/fractal.jar:${scriptdir}/je.jar:${scriptdir}/concurrentlinkedhashmap.jar:${scriptdir}/netty.jar:${scriptdir}/high-scale-lib.jar:${scriptdir}/db.jar;
+    classpath=${scriptdir}/commons-lang.jar:${scriptdir}/log4j.jar:${scriptdir}/jessy.jar:${scriptdir}/fractal.jar:${scriptdir}/je.jar:${scriptdir}/concurrentlinkedhashmap.jar:${scriptdir}/netty.jar:${scriptdir}/high-scale-lib.jar:${scriptdir}/db.jar:${scriptdir}/commons-cli-1.3.1.jar;
 fi;

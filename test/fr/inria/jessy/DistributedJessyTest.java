@@ -33,7 +33,7 @@ import fr.inria.jessy.store.ReadRequest;
 import fr.inria.jessy.store.ReadRequestKey;
 import fr.inria.jessy.transaction.ExecutionHistory;
 import fr.inria.jessy.transaction.TransactionHandler;
-import fr.inria.jessy.transaction.termination.Vote;
+//import fr.inria.jessy.transaction.termination.Vote;
 import fr.inria.jessy.vector.CompactVector;
 import fr.inria.jessy.vector.ConcurrentVersionVector;
 import fr.inria.jessy.vector.DependenceVector;
@@ -70,7 +70,7 @@ public class DistributedJessyTest {
 		MessageStream.addClass(ParallelSnapshotIsolationPropagateMessage.class.getName());
 		
 		MessageStream.addClass(VoteMessage.class.getName());
-		MessageStream.addClass(Vote.class.getName());
+//		MessageStream.addClass(Vote.class.getName());
 		
 		MessageStream.addClass(TerminateTransactionRequestMessage.class.getName());
 		
