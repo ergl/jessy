@@ -45,8 +45,8 @@ public class PutBidTransaction extends AbsRUBiSTransaction {
             long userId = authenticate(mNickname, mPassword);
 
             if (userId != -1) {
-                ItemEntity item = read(ItemEntity.class, mItemId);
-                UserEntity seller = read(UserEntity.class, item.getSeller());
+                ItemEntity item = read(ItemEntity.class, ItemEntity.getKeyFromId(mItemId));
+                UserEntity seller = read(UserEntity.class, UserEntity.getKeyFromId(item.getSeller()));
                 Collection<BidEntity.ItemIdIndex> pointers = readIndex(BidEntity.ItemIdIndex.class, "mItemId", item
                         .getId());
                 int count = 0;

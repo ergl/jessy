@@ -45,8 +45,8 @@ public class PutComment extends AbsRUBiSTransaction {
             long userId = authenticate(mNickname, mPassword);
 
             if (userId != -1) {
-                UserEntity user = read(UserEntity.class, mToUserKey);
-                ItemEntity item = read(ItemEntity.class, mItemKey);
+                UserEntity user = read(UserEntity.class, UserEntity.getKeyFromId(mToUserKey));
+                ItemEntity item = read(ItemEntity.class, ItemEntity.getKeyFromId(mItemKey));
             }
 
             return commitTransaction();

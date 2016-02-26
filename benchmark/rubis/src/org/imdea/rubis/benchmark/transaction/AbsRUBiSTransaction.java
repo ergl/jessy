@@ -66,10 +66,6 @@ public abstract class AbsRUBiSTransaction extends Transaction {
         putExtra(NAME, getClass().getSimpleName());
     }
 
-    public <E extends JessyEntity> E read(Class<E> clazz, long value) throws Exception {
-        return read(clazz, Long.toString(value));
-    }
-
     protected <E extends JessyEntity, SK> Collection<E> readIndex(Class<E> clazz, String key, SK value) throws
             Exception {
         ReadRequestKey<SK> requestKey = new ReadRequestKey<>(key, value);

@@ -40,7 +40,7 @@ public class StoreBuyNowTransaction extends AbsRUBiSTransaction {
     public ExecutionHistory execute() {
         try {
             // Select the data item we are buying.
-            ItemEntity item = read(ItemEntity.class, mBuyNow.getItemId());
+            ItemEntity item = read(ItemEntity.class, ItemEntity.getKeyFromId(mBuyNow.getItemId()));
             int quantityLeft = item.getQuantity() - mBuyNow.getQty();
 
             if (quantityLeft >= 0) {

@@ -40,7 +40,7 @@ public class StoreCommentTransaction extends AbsRUBiSTransaction {
     public ExecutionHistory execute() {
         try {
             create(mComment);
-            UserEntity receiver = read(UserEntity.class, mComment.getToUserId());
+            UserEntity receiver = read(UserEntity.class, UserEntity.getKeyFromId(mComment.getToUserId()));
             receiver.edit().setRating(receiver.getRating() + mComment.getRating()).write(this);
             updateIndexes();
 

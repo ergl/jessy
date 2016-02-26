@@ -23,7 +23,7 @@ public class BuyNowTransaction extends AbsRUBiSTransaction {
             long userId = authenticate(mNickname, mPassword);
 
             if (userId != -1) {
-                ItemEntity item = read(ItemEntity.class, mItemId);
+                ItemEntity item = read(ItemEntity.class, ItemEntity.getKeyFromId(mItemId));
             }
 
             return commitTransaction();

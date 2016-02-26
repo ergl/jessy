@@ -157,7 +157,7 @@ public class UserEntity extends JessyEntity implements Externalizable {
         }
 
         public String getUserKey() {
-            return "@users~id#" + mUserId;
+            return getKeyFromId(mUserId);
         }
 
         @Override
@@ -208,7 +208,7 @@ public class UserEntity extends JessyEntity implements Externalizable {
         }
 
         public String getUserKey() {
-            return "@users~id#" + mUserId;
+            return getKeyFromId(mUserId);
         }
 
         @Override
@@ -244,7 +244,7 @@ public class UserEntity extends JessyEntity implements Externalizable {
 
     public UserEntity(long id, String firstname, String lastname, String nickname, String password, String email, int
             rating, float balance, Date creationDate, long regionId) {
-        super("@user~id#" + id);
+        super(getKeyFromId(id));
 
         mId = id;
         mFirstname = firstname;
@@ -300,6 +300,10 @@ public class UserEntity extends JessyEntity implements Externalizable {
 
     public long getId() {
         return mId;
+    }
+
+    public static String getKeyFromId(long id) {
+        return "@user~id#" + id;
     }
 
     public String getLastname() {

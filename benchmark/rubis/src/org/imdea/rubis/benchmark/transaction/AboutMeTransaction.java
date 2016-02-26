@@ -46,7 +46,7 @@ public class AboutMeTransaction extends AbsRUBiSTransaction {
             long userId = authenticate(mNickname, mPassword);
 
             if (userId != -1) {
-                UserEntity user = read(UserEntity.class, mTargetUserId);
+                UserEntity user = read(UserEntity.class, UserEntity.getKeyFromId(mTargetUserId));
 
                 if (user != null) {
                     listBids();
@@ -70,8 +70,8 @@ public class AboutMeTransaction extends AbsRUBiSTransaction {
 
         for (BidEntity.UserIdIndex pointer : pointers) {
             BidEntity bid = read(BidEntity.class, pointer.getBidKey());
-            ItemEntity item = read(ItemEntity.class, bid.getItemId());
-            UserEntity seller = read(UserEntity.class, item.getSeller());
+            ItemEntity item = read(ItemEntity.class, ItemEntity.getKeyFromId(bid.getItemId()));
+            UserEntity seller = read(UserEntity.class, UserEntity.getKeyFromId(item.getSeller()));
         }
     }
 
@@ -92,7 +92,7 @@ public class AboutMeTransaction extends AbsRUBiSTransaction {
 
         for (CommentEntity.ToUserIdIndex pointer : pointers) {
             CommentEntity comment = read(CommentEntity.class, pointer.getCommentKey());
-            UserEntity commenter = read(UserEntity.class, comment.getFromUserId());
+            UserEntity commenter = read(UserEntity.class, UserEntity.getKeyFromId(comment.getFromUserId()));
         }
     }
 
@@ -109,8 +109,8 @@ public class AboutMeTransaction extends AbsRUBiSTransaction {
 
         for (BidEntity.UserIdIndex pointer : pointers) {
             BidEntity bid = read(BidEntity.class, pointer.getBidKey());
-            ItemEntity item = read(ItemEntity.class, bid.getItemId());
-            UserEntity seller = read(UserEntity.class, item.getSeller());
+            ItemEntity item = read(ItemEntity.class, ItemEntity.getKeyFromId(bid.getItemId()));
+            UserEntity seller = read(UserEntity.class, UserEntity.getKeyFromId(item.getSeller()));
         }
     }
 }

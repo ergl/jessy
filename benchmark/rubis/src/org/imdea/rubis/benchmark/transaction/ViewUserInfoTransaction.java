@@ -38,7 +38,7 @@ public class ViewUserInfoTransaction extends AbsRUBiSTransaction {
     @Override
     public ExecutionHistory execute() {
         try {
-            UserEntity user = read(UserEntity.class, mUserId);
+            UserEntity user = read(UserEntity.class, UserEntity.getKeyFromId(mUserId));
 
             if (user != null) {
                 Collection<CommentEntity.ToUserIdIndex> pointers = readIndex(CommentEntity.ToUserIdIndex.class,
@@ -46,7 +46,7 @@ public class ViewUserInfoTransaction extends AbsRUBiSTransaction {
 
                 for (CommentEntity.ToUserIdIndex pointer : pointers) {
                     CommentEntity comment = read(CommentEntity.class, pointer.getCommentKey());
-                    UserEntity author = read(UserEntity.class, comment.getFromUserId());
+                    UserEntity author = read(UserEntity.class, UserEntity.getKeyFromId(comment.getFromUserId()));
                 }
             }
 

@@ -178,7 +178,7 @@ public class ItemEntity extends JessyEntity implements Externalizable {
         }
 
         public String getItemKey() {
-            return "@items~id#" + mItemId;
+            return getKeyFromId(mItemId);
         }
 
         @Override
@@ -229,7 +229,7 @@ public class ItemEntity extends JessyEntity implements Externalizable {
         }
 
         public String getItemKey() {
-            return "@items~id#" + mItemId;
+            return getKeyFromId(mItemId);
         }
 
         @Override
@@ -269,7 +269,7 @@ public class ItemEntity extends JessyEntity implements Externalizable {
     public ItemEntity(long id, String name, String description, float initialPrice, int quantity, float reservePrice,
                       float buyNow, int nbOfBids, float maxBid, Date startDate, Date endDate, long seller, long
                               categoryId) {
-        super("@items~id#" + id);
+        super(getKeyFromId(id));
         mId = id;
         mName = name;
         mDescription = description;
@@ -334,6 +334,10 @@ public class ItemEntity extends JessyEntity implements Externalizable {
 
     public float getInitialPrice() {
         return mInitialPrice;
+    }
+
+    public static String getKeyFromId(long id) {
+        return "@items~id#" + id;
     }
 
     public float getMaxBid() {

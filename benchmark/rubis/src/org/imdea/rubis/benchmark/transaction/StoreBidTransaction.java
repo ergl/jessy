@@ -42,7 +42,7 @@ public class StoreBidTransaction extends AbsRUBiSTransaction {
             // Insert the new bid in the data store.
             create(mBid);
             // Select the respective item from the data store.
-            ItemEntity item = read(ItemEntity.class, mBid.getItemId());
+            ItemEntity item = read(ItemEntity.class, ItemEntity.getKeyFromId(mBid.getItemId()));
             // Update nbOfBids and maxBid fields.
             int nbOfBids = item.getNbOfBids() + 1;
             float maxBid = Math.max(item.getMaxBid(), mBid.getBid());

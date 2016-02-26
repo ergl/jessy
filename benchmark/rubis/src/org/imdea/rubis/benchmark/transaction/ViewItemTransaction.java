@@ -36,10 +36,10 @@ public class ViewItemTransaction extends AbsRUBiSTransaction {
     @Override
     public ExecutionHistory execute() {
         try {
-            ItemEntity item = read(ItemEntity.class, mItemId);
+            ItemEntity item = read(ItemEntity.class, ItemEntity.getKeyFromId(mItemId));
 
             if (item != null) {
-                UserEntity seller = read(UserEntity.class, item.getSeller());
+                UserEntity seller = read(UserEntity.class, UserEntity.getKeyFromId(item.getSeller()));
             }
 
             return commitTransaction();
