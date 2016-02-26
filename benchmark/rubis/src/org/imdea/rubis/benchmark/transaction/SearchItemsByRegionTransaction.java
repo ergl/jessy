@@ -61,7 +61,7 @@ public class SearchItemsByRegionTransaction extends AbsRUBiSTransaction {
             // read the corresponding ItemEntity.
             Collection<ItemEntity.CategoryIdIndex> itemsInCategory = readIndex(ItemEntity.CategoryIdIndex.class,
                     "mCategoryId", mCategoryId);
-            List<Long> pointersInCategory = new ArrayList<>();
+            List<String> pointersInCategory = new ArrayList<>();
 
             for (ItemEntity.CategoryIdIndex pointer : itemsInCategory)
                 pointersInCategory.add(pointer.getItemKey());

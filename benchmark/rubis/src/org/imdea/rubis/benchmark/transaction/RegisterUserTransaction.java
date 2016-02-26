@@ -72,14 +72,15 @@ public class RegisterUserTransaction extends AbsRUBiSTransaction {
             Collection<RegionEntity.NameIndex> pointers = readIndex(RegionEntity.NameIndex.class, "mName", mRegion);
 
             if (pointers.size() > 0) {
-                long regionId = pointers.iterator().next().getRegionKey();
+                String regionKey = pointers.iterator().next().getRegionKey();
+                RegionEntity region = read(RegionEntity.class, regionKey);
 
                 Collection<UserEntity.NicknameIndex> nicknames = readIndex(UserEntity.NicknameIndex.class,
                         "mNickname", mNickname);
 
                 if (nicknames.size() == 0) {
                     mUser = new UserEntity(mId, mFirstname, mLastname, mNickname, mPassword, mEmail, mRating,
-                            mBalance, mCreationDate, regionId);
+                            mBalance, mCreationDate, region.getId());
 
                     create(mUser);
                     updateIndexes();
