@@ -202,7 +202,7 @@ public class BuyNowEntity extends JessyEntity implements Externalizable {
     }
 
     public BuyNowEntity(long id, long buyerId, long itemId, int qty, Date date) {
-        super(Long.toString(id));
+        super("@buy_now~id#" + Long.toString(id));
         mId = id;
         mBuyerId = buyerId;
         mItemId = itemId;

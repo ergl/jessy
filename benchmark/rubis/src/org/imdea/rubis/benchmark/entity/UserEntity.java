@@ -139,7 +139,7 @@ public class UserEntity extends JessyEntity implements Externalizable {
         }
 
         public NicknameIndex(String nickname, long userId) {
-            super(sSequence.incrementAndGet() + "#" + nickname);
+            super("?users~id#" + sSequence.incrementAndGet() + ":nickname#" + nickname);
             mNickname = nickname;
             mUserId = userId;
         }
@@ -190,7 +190,7 @@ public class UserEntity extends JessyEntity implements Externalizable {
         }
 
         public RegionIdIndex(long regionId, long userId) {
-            super(sSequence.incrementAndGet() + "#" + regionId);
+            super("?users~id#" + sSequence.incrementAndGet() + ":region_id#" + regionId);
             mRegionId = regionId;
             mUserId = userId;
         }
@@ -244,7 +244,7 @@ public class UserEntity extends JessyEntity implements Externalizable {
 
     public UserEntity(long id, String firstname, String lastname, String nickname, String password, String email, int
             rating, float balance, Date creationDate, long regionId) {
-        super(Long.toString(id));
+        super("@user~id#" + Long.toString(id));
 
         mId = id;
         mFirstname = firstname;
