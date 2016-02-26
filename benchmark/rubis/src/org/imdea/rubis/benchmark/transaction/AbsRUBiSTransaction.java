@@ -71,14 +71,9 @@ public abstract class AbsRUBiSTransaction extends Transaction {
         return read(clazz, Long.toString(value));
     }
 
-    protected <E extends JessyEntity> Collection<E> readIndex(Class<E> clazz, String key, Long value) throws
+    protected <E extends JessyEntity, SK> Collection<E> readIndex(Class<E> clazz, String key, SK value) throws
             Exception {
-        return readIndex(clazz, key, Long.toString(value));
-    }
-
-    protected <E extends JessyEntity> Collection<E> readIndex(Class<E> clazz, String key, String value) throws
-            Exception {
-        ReadRequestKey<String> requestKey = new ReadRequestKey<>(key, value);
+        ReadRequestKey<SK> requestKey = new ReadRequestKey<>(key, value);
         List<ReadRequestKey<?>> requestKeys = new ArrayList<ReadRequestKey<?>>();
         requestKeys.add(requestKey);
         Collection<E> entities = read(clazz, requestKeys);
