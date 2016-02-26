@@ -260,7 +260,6 @@ public class UserSession extends Thread {
 
                 if (trans != null) {
                     try {
-                        System.out.println("Executing " + trans.getClass().getSimpleName());
                         h = trans.execute();
                     } catch (Exception e) {
                         e.printStackTrace();
