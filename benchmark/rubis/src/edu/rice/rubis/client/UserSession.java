@@ -277,8 +277,7 @@ public class UserSession extends Thread {
                     transitionsLeft--;
                 }
 
-                mTable.nextState();
-                nextTransition = mTable.getCurrentState();
+                nextTransition = mTable.nextState();
                 page = lastTransition == nextTransition ? page + 1 : 0;
             }
         }

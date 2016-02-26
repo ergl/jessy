@@ -235,19 +235,6 @@ public class TransitionTable {
         return currentState == (nbRows - 1);
     }
 
-    public static void main(String... args) {
-        int nbOfRows = 29;
-        int nbOfColumns = 27;
-
-        try {
-            TransitionTable tt = new TransitionTable(nbOfColumns, nbOfRows);
-            tt.readExcelTextFile(args[0]);
-            tt.displayMatrix();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
     /**
      * Compute a next state from current state according to transition matrix.
      *
