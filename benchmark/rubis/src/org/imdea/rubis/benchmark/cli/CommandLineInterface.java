@@ -22,6 +22,7 @@ package org.imdea.rubis.benchmark.cli;
 import static org.imdea.rubis.benchmark.cli.Constants.*;
 
 import edu.rice.rubis.client.ClientEmulator;
+import edu.rice.rubis.client.InitDB;
 import edu.rice.rubis.client.RUBiSProperties;
 
 import fr.inria.jessy.DistributedJessy;
@@ -55,6 +56,8 @@ public class CommandLineInterface {
         group.addOption(server);
     	Option help = Option.builder(OPT_HELP).longOpt(OPT_HELP_LONG).desc(OPT_HELP_DESC).build();
     	group.addOption(help);
+        Option init = Option.builder(OPT_INIT).longOpt(OPT_INIT_LONG).desc(OPT_INIT_DESC).build();
+        group.addOption(init);
         group.setRequired(true);
         mOptions.addOptionGroup(group);
         mOptions.addOption(OPT_PROPERTIES, OPT_PROPERTIES_LONG, true, OPT_PROPERTIES_DESC);
@@ -69,15 +72,16 @@ public class CommandLineInterface {
         try {
             CommandLineParser cmdParser = new DefaultParser();
             CommandLine cmd = cmdParser.parse(mOptions, mArgs);
+            String propFileName = cmd.getOptionValue(OPT_PROPERTIES, OPT_PROPERTIES_DEFAULT);
 
-            if (cmd.hasOption(OPT_HELP)) {
+            if (cmd.hasOption(OPT_HELP))
                 printHelp();
-            } else if (cmd.hasOption(OPT_CLIENT)) {
-                String propFileName = cmd.getOptionValue(OPT_PROPERTIES, OPT_PROPERTIES_DEFAULT);
+            else if (cmd.hasOption(OPT_INIT))
+                startInit(propFileName);
+            else if (cmd.hasOption(OPT_CLIENT))
                 startClient(propFileName);
-            } else if (cmd.hasOption(OPT_SERVER)) {
+            else if (cmd.hasOption(OPT_SERVER))
                 startServer();
-            }
         } catch (Exception e) {
             printHelp();
         }
@@ -138,6 +142,19 @@ public class CommandLineInterface {
             RUBiSProperties properties = new RUBiSProperties(propFileName);
             ClientEmulator client = new ClientEmulator(properties, jessy);
             client.start();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void startInit(String propFileName) {
+        try {
+            Jessy jessy = DistributedJessy.getInstance();
+            setupJessyInstance(jessy);
+
+            RUBiSProperties properties = new RUBiSProperties(propFileName);
+            InitDB init = new InitDB(properties, jessy);
+            init.start();
         } catch (Exception e) {
             e.printStackTrace();
         }

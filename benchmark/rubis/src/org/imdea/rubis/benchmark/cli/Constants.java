@@ -28,6 +28,10 @@ class Constants {
     static final String OPT_HELP_DESC = "Print this message.";
     static final String OPT_HELP_LONG = "help";
 
+    static final String OPT_INIT = "i";
+    static final String OPT_INIT_DESC = "Launch a client that initializes the database.";
+    static final String OPT_INIT_LONG = "init";
+
     static final String OPT_PROPERTIES = "p";
     static final String OPT_PROPERTIES_DEFAULT = "./rubis.properties";
     static final String OPT_PROPERTIES_DESC = "The properties file.";

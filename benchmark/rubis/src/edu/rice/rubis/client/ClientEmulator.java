@@ -67,15 +67,6 @@ public class ClientEmulator {
     }
 
     public void start() {
-        System.out.println("Initializing DB...");
-        InitDB init = new InitDB(mProps, mJessy);
-        init.generateCategories();
-        init.generateRegions();
-        init.generateUsers();
-        init.generateItems();
-        init.generateBids();
-        init.generateComments();
-        System.out.println("DB initialized");
         System.out.println("Start emulation...");
         long start = System.currentTimeMillis();
 

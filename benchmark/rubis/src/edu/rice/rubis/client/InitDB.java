@@ -72,7 +72,7 @@ public class InitDB {
         return 0;
     }
 
-    public void generateBids() {
+    private void generateBids() {
         float bid = 1.0f;
 
         for (int i = 0; i < mProps.getNbOfBids(); i++) {
@@ -93,7 +93,7 @@ public class InitDB {
         }
     }
 
-    public void generateCategories() {
+    private void generateCategories() {
         for (int i = 0; i < mProps.getCategories().size(); i++) {
             try {
                 String name = mProps.getCategories().get(i).name;
@@ -107,7 +107,7 @@ public class InitDB {
         }
     }
 
-    public void generateComments() {
+    private void generateComments() {
         int[] values = {-5, -3, 0, 3, 5};
         int rating = values[rand.nextInt(5)];
 
@@ -133,7 +133,7 @@ public class InitDB {
      * This method add items to the database according to the parameters
      * given in the database.properties file.
      */
-    public void generateItems() {
+    private void generateItems() {
         long itemId = 0;
 
         for (int i = 0; i < mProps.getCategories().size(); i++) {
@@ -163,7 +163,7 @@ public class InitDB {
         }
     }
 
-    public void generateRegions() {
+    private void generateRegions() {
         for (int i = 0; i < mProps.getRegions().size(); i++) {
             try {
                 String name = mProps.getRegions().get(i);
@@ -181,7 +181,7 @@ public class InitDB {
      * This method add users to the database according to the parameters
      * given in the database.properties file.
      */
-    public void generateUsers() {
+    private void generateUsers() {
         int nbOfUsers = mProps.getNbOfUsers();
         int nbOfRegions = mProps.getNbOfRegions();
 
@@ -205,5 +205,14 @@ public class InitDB {
                 e.printStackTrace();
             }
         }
+    }
+
+    public void start() {
+        generateCategories();
+        generateRegions();
+        generateUsers();
+        generateItems();
+        generateBids();
+        generateComments();
     }
 }
