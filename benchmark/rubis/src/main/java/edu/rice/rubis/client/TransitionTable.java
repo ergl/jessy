@@ -246,13 +246,16 @@ public class TransitionTable {
         float cumulative = 0;
         int i;
 
-        for (i = 0; i < nbRows; i++) {
-            cumulative = cumulative + transitions[currentState][i];
+        try {
+            for (i = 0; i < nbRows; i++) {
+                cumulative = cumulative + transitions[currentState][i];
 
-            if (step < cumulative) {
-                currentState = i;
-                break;
+                if (step < cumulative) {
+                    currentState = i;
+                    break;
+                }
             }
+        } catch (ArrayIndexOutOfBoundsException ignored) {
         }
 
         // Deal with Back to previous state
