@@ -89,5 +89,6 @@ public class ClientEmulator {
         long end = System.currentTimeMillis();
         System.out.println("End of emulation");
         System.out.println("Total emulation time (millis): " + (end - start));
+        Runtime.getRuntime().exit(0);
     }
 }
