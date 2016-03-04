@@ -94,7 +94,7 @@ public class UserSession extends Thread {
                 case 2: // Register the user in the database
                 {
                     // Choose a random nb over already known attributed ids
-                    int i = mProps.getNbOfUsers() + mRand.nextInt(1000000) + 1;
+                    int i = mProps.getNbOfUsers() + mRand.nextInt(1000000);
                     String firstname = "Great" + i;
                     String lastname = "User" + i;
                     String nickname = "user" + i;
@@ -132,7 +132,7 @@ public class UserSession extends Thread {
                 }
                 case 9: // View an item
                 {
-                    int itemId = mRand.nextInt(mProps.getTotalItems()) + 1;
+                    int itemId = mRand.nextInt(mProps.getTotalItems());
                     trans = new ViewItemTransaction(mJessy, itemId);
                     break;
                 }
@@ -147,13 +147,13 @@ public class UserSession extends Thread {
                 }
                 case 13: // Buy Now confirmation page
                 {
-                    int itemId = mRand.nextInt(mProps.getTotalItems()) + 1;
+                    int itemId = mRand.nextInt(mProps.getTotalItems());
                     trans = new BuyNowTransaction(mJessy, itemId, mUsername, mPassword);
                     break;
                 }
                 case 14: // Store Buy Now in the database
                 {
-                    int itemId = mRand.nextInt(mProps.getTotalItems()) + 1;
+                    int itemId = mRand.nextInt(mProps.getTotalItems());
                     int maxQty = 100;
                     int qty = mRand.nextInt(maxQty) + 1;
                     trans = new StoreBuyNowTransaction(mJessy, mRand.nextInt(), mUserId, itemId, qty, new Date());
@@ -162,40 +162,42 @@ public class UserSession extends Thread {
                 case 15: // Put Bid Auth
                 case 16: // Bid Authentication
                 {
-                    int itemId = mRand.nextInt(mProps.getTotalItems()) + 1;
+                    int itemId = mRand.nextInt(mProps.getTotalItems());
                     trans = new PutBidTransaction(mJessy, itemId, mUsername, mPassword);
                     break;
                 }
                 case 17: // Store Bid in the database
                 {
-                    int itemId = mRand.nextInt(mProps.getTotalItems()) + 1;
+                    int bidId = mProps.getNbOfBids() + mRand.nextInt(1000000);
+                    int itemId = mRand.nextInt(mProps.getTotalItems());
                     int maxQty = 100;
                     int qty = mRand.nextInt(maxQty) + 1;
                     float minBid = 0.01f;
                     float addBid = mRand.nextInt(10) + 1;
                     float bid = minBid + addBid;
                     float maxBid = minBid + addBid * 2;
-                    trans = new StoreBidTransaction(mJessy, mRand.nextInt(), mUserId, itemId, qty, bid, maxBid, new
+                    trans = new StoreBidTransaction(mJessy, bidId, mUserId, itemId, qty, bid, maxBid, new
                             Date());
                     break;
                 }
                 case 18: // Comment Authentication page
                 case 19: // Comment confirmation page
                 {
-                    int itemId = mRand.nextInt(mProps.getTotalItems()) + 1;
+                    int itemId = mRand.nextInt(mProps.getTotalItems());
                     trans = new PutComment(mJessy, mUserId, itemId, mUsername, mPassword);
                     break;
                 }
                 case 20: // Store Comment in the database
                 {
-                    int itemId = mRand.nextInt(mProps.getTotalItems()) + 1;
-                    int targetId = mRand.nextInt(mProps.getNbOfUsers()) + 1;
+                    int commentId = mProps.getNbOfComments() + mRand.nextInt(1000000);
+                    int itemId = mRand.nextInt(mProps.getTotalItems());
+                    int targetId = mRand.nextInt(mProps.getNbOfUsers());
                     int[] ratingValue = {-5, -3, 0, 3, 5};
                     int rating = mRand.nextInt(5);
                     int commentLength = mRand.nextInt(mProps.getCommentMaxLength()) + 1;
                     String comment = TextUtils.randomString(commentLength);
 
-                    trans = new StoreCommentTransaction(mJessy, mRand.nextInt(), mUserId, targetId, itemId,
+                    trans = new StoreCommentTransaction(mJessy, commentId, mUserId, targetId, itemId,
                             ratingValue[rating], new Date(), comment);
                     break;
                 }
@@ -210,7 +212,7 @@ public class UserSession extends Thread {
                     int quantity = 100;
                     int categoryId;
                     int totalItems = mProps.getTotalItems();
-                    int i = totalItems + mRand.nextInt(1000000) + 1;
+                    int i = totalItems + mRand.nextInt(1000000);
 
                     name = "RUBiS automatically generated item " + i;
                     int descriptionLength = mRand.nextInt(mProps.getItemDescriptionLength()) + 1;
@@ -249,8 +251,8 @@ public class UserSession extends Thread {
 
         while (transitionsLeft > 0) {
             mUserId = mRand.nextInt(mProps.getNbOfUsers());
-            mUsername = "user" + (mUserId + 1);
-            mPassword = "password" + (mUserId + 1);
+            mUsername = "user" + (mUserId);
+            mPassword = "password" + (mUserId);
             mTable.resetToInitialState();
             nextTransition = mTable.getCurrentState();
 
