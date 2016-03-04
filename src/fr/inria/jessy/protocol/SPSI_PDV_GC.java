@@ -3,7 +3,6 @@ package fr.inria.jessy.protocol;
 import static fr.inria.jessy.ConstantPool.*;
 import static fr.inria.jessy.transaction.ExecutionHistory.TransactionType;
 import static fr.inria.jessy.transaction.ExecutionHistory.TransactionType.*;
-import static fr.inria.jessy.vector.Vector.CompatibleResult;
 
 import com.googlecode.concurrentlinkedhashmap.ConcurrentLinkedHashMap;
 
@@ -21,7 +20,6 @@ import fr.inria.jessy.transaction.termination.vote.VotePiggyback;
 import fr.inria.jessy.transaction.termination.vote.VotingQuorum;
 import fr.inria.jessy.vector.PartitionDependenceVector;
 
-import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -80,12 +78,10 @@ public class SPSI_PDV_GC extends SPSI {
         if (type == TransactionType.READONLY_TRANSACTION)
             return true;
 
-        Set<JessyEntity> checkEntities = new HashSet<>();
-        checkEntities.addAll(history.getReadSet().getEntities());
+        if (history.getCreateSet() != null && history.getCreateSet().size() > 0)
+            history.getWriteSet().addEntity(history.getCreateSet());
 
-        for (JessyEntity e : checkEntities) {
-            // Check only for local entities. read-write conflicts and write-write conflicts should be checked
-            // locally, according to SPSI consistency.
+        for (JessyEntity e : history.getReadSet().getEntities()) {
             if (manager.getPartitioner().isLocal(e.getKey())) {
                 // The write set of all transaction Tj that committed before Ti (that is, this transaction) is the
                 // set of entities in the data store.
@@ -100,15 +96,8 @@ public class SPSI_PDV_GC extends SPSI {
                 if (reply.getEntity() != null) {
                     JessyEntity last = reply.getEntity().iterator().next();
 
-                    if (isMarkedSerializable(history)) {
-                        if (last.getLocalVector().getSelfValue() > e.getLocalVector().getSelfValue())
-                            return false;
-                    } else {
-                        // We check if e and the value stored in the database are compatible. If not, we reject
-                        // certification. Two PDVs are compatible they are equal.
-                        if (last.getLocalVector().isCompatible(e.getLocalVector()) != CompatibleResult.COMPATIBLE)
-                            return false;
-                    }
+                    if (last.getLocalVector().getSelfValue() > e.getLocalVector().getSelfValue())
+                        return false;
                 }
             }
         }
@@ -145,6 +134,21 @@ public class SPSI_PDV_GC extends SPSI {
         // Garbage collect the received vectors.
         if (receivedVectors.containsKey(history.getTransactionHandler().getId()))
             receivedVectors.remove(history.getTransactionHandler().getId());
+    }
+
+    @Override
+    public Set<String> getVotersToJessyProxy(
+            Set<String> termincationRequestReceivers,
+            ExecutionHistory executionHistory) {
+        /*
+		 * if there is a readonly transaction who touches only one replica, then we return right away without waiting
+		 * for votes from replica groups.
+		 */
+        if (termincationRequestReceivers.size() == 1 && executionHistory.getTransactionType() == TransactionType
+                .READONLY_TRANSACTION) {
+            termincationRequestReceivers.clear();
+        }
+        return termincationRequestReceivers;
     }
 
     /**
@@ -197,10 +201,10 @@ public class SPSI_PDV_GC extends SPSI {
                 for (JessyEntity entity : msg.getExecutionHistory().getReadSet().getEntities())
                     vector.update(entity.getLocalVector());
 
-                vector.update(PartitionDependenceVector.lastCommit.clone());
+                vector.update(PartitionDependenceVector.lastCommit);
                 vector.setSelfKey(manager.getMyGroup().name());
                 vector.setValue(vector.getSelfKey(), seqNo);
-                msg.setComputedObjectUponDelivery(vector.clone());
+                msg.setComputedObjectUponDelivery(vector);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -216,8 +220,8 @@ public class SPSI_PDV_GC extends SPSI {
             return;
 
         try {
-            PartitionDependenceVector<String> comVec = (PartitionDependenceVector<String>) vote
-                    .getVotePiggyBack().getPiggyback();
+            @SuppressWarnings("unchecked")
+            PartitionDependenceVector<String> comVec = (PartitionDependenceVector<String>) vote.getVotePiggyBack().getPiggyback();
             PartitionDependenceVector<String> recVec = receivedVectors.putIfAbsent(vote.getTransactionHandler().getId(),
                     comVec);
 

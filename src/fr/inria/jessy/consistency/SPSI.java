@@ -70,20 +70,22 @@ public abstract class SPSI extends Consistency {
      */
     @Override
     public boolean certificationCommute(ExecutionHistory h1, ExecutionHistory h2) {
-        // Check h1's read set against h2's write set.
-        if (h1.getReadSet() != null && h2.getWriteSet() != null) {
-            if (CollectionUtils.isIntersectingWith(h1.getReadSet().getKeys(), h2.getWriteSet().getKeys()))
+        // Check h1's write set against h2's read set.
+        if (h1.getWriteSet() != null && h2.getReadSet() != null) {
+            // Usually the read set of a transaction is far bigger than its write set. Passing the write set as first
+            // argument to the method isIntersectingWith() gives a huge boost in performances: the implementation
+            // checks if every element of the first set is contained in the second.
+            if (CollectionUtils.isIntersectingWith(h1.getWriteSet().getKeys(), h2.getReadSet().getKeys()))
                 return false;
         }
 
-        // Then, do the opposite: check h2's read set against h1's write set.
-        if (h1.getWriteSet() != null && h2.getReadSet() != null) {
-            if (CollectionUtils.isIntersectingWith(h2.getReadSet().getKeys(), h1.getWriteSet().getKeys()))
+        // Then, do the opposite: check h2's write set against h1's read set.
+        if (h1.getReadSet() != null && h2.getWriteSet() != null) {
+            if (CollectionUtils.isIntersectingWith(h2.getWriteSet().getKeys(), h1.getReadSet().getKeys()))
                 return false;
         }
 
         // No need to check ww conflicts because rs is a superset of ws.
-
         return true;
     }
 
@@ -100,17 +102,20 @@ public abstract class SPSI extends Consistency {
      */
     @Override
     public boolean certificationCommute(TransactionTouchedKeys k1, TransactionTouchedKeys k2) {
-        // Check k1's read set against k2's write set.
-        if (CollectionUtils.isIntersectingWith(k1.readKeys, k2.writeKeys))
-            return false;
-
-        // Then, do the opposite: check k2's read set against k1's write set.
-        if (CollectionUtils.isIntersectingWith(k1.writeKeys, k2.readKeys))
-            return false;
-
-        // No need to check ww conflicts because rs is a superset of ws.
-
-        return true;
+//        // Check k1's write set against k2's read set.
+//        // Usually the read set of a transaction is far bigger than its write set. Passing the write set as first
+//        // argument to the method isIntersectingWith() gives a huge boost in performances: the implementation
+//        // checks if every element of the first set is contained in the second.
+//        if (CollectionUtils.isIntersectingWith(k1.writeKeys, k2.readKeys))
+//            return false;
+//
+//        // Then, do the opposite: check k2's write set against k1's read set.
+//        if (CollectionUtils.isIntersectingWith(k2.writeKeys, k1.readKeys))
+//            return false;
+//
+//        // No need to check ww conflicts because rs is a superset of ws.
+//        return true;
+        return false;
     }
 
     /**
@@ -131,7 +136,7 @@ public abstract class SPSI extends Consistency {
      */
     @Override
     public Set<String> getConcerningKeys(ExecutionHistory h, ConcernedKeysTarget target) {
-        Set<String> concerningKeys = new HashSet<>();
+        Set<String> concerningKeys = new HashSet<>(getConcerningKeysSize(h, target));
 
         if (isMarkedSerializable(h)) {
             // If a transaction is marked as serializable, its concerning keys set is the union of keys of read set,
@@ -150,7 +155,7 @@ public abstract class SPSI extends Consistency {
 
             Set<String> destGroups = manager.getPartitioner().resolveNames(concerningKeys);
 
-            if (destGroups.size() == 1 && h.getTransactionType() == READONLY_TRANSACTION)
+            if (h.getTransactionType() == READONLY_TRANSACTION && destGroups.size() == 1)
                 concerningKeys.clear();
         } else {
             // If a transaction is not marked as serializable (and then it executes under PSI), its concerning keys
@@ -163,6 +168,32 @@ public abstract class SPSI extends Consistency {
         }
 
         return concerningKeys;
+    }
+
+    private int getConcerningKeysSize(ExecutionHistory h, ConcernedKeysTarget target) {
+        int size = 0;
+
+        if (isMarkedSerializable(h)) {
+            if (target != ConcernedKeysTarget.RECEIVE_VOTES) {
+                if (h.getReadSet() != null)
+                    size += h.getReadSet().getKeys().size();
+            }
+
+            if (h.getWriteSet() != null)
+                size += h.getWriteSet().getKeys().size();
+
+            if (h.getCreateSet() != null)
+                size += h.getCreateSet().getKeys().size();
+
+        } else {
+            if (h.getWriteSet() != null)
+                size += h.getWriteSet().getKeys().size();
+
+            if (h.getCreateSet() != null)
+               size += h.getCreateSet().getKeys().size();
+        }
+
+        return size;
     }
 
     /**
