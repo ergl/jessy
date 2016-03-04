@@ -214,5 +214,6 @@ public class InitDB {
         generateItems();
         generateBids();
         generateComments();
+        Runtime.getRuntime().exit(0);
     }
 }
