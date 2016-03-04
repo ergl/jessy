@@ -195,6 +195,12 @@ public abstract class Jessy {
 	public <E extends JessyEntity> E read(
 			TransactionHandler transactionHandler, Class<E> entityClass,
 			String keyValue) throws Exception {
+		return checkRead(transactionHandler, entityClass, keyValue, true);
+	}
+
+	public <E extends JessyEntity> E checkRead(
+			TransactionHandler transactionHandler, Class<E> entityClass,
+			String keyValue, boolean fail) throws Exception {
 
 		E entity=null;
 		try {
@@ -244,7 +250,10 @@ public abstract class Jessy {
 			if (entity != null) {
 				executionHistory.addReadEntity(entity);
 			} else {
-				failedReadCount.incr();
+				if (fail) {
+					System.out.println("Failed read: " + entityClass.getSimpleName() + " " + keyValue);
+					failedReadCount.incr();
+				}
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -279,6 +288,12 @@ public abstract class Jessy {
 	public <E extends JessyEntity, SK> Collection<E> read(
 			TransactionHandler transactionHandler, Class<E> entityClass,
 			List<ReadRequestKey<?>> keys) throws Exception {
+		return checkRead(transactionHandler, entityClass, keys, true);
+	}
+
+	public <E extends JessyEntity, SK> Collection<E> checkRead(
+			TransactionHandler transactionHandler, Class<E> entityClass,
+			List<ReadRequestKey<?>> keys, boolean fail) throws Exception {
 
 		ExecutionHistory executionHistory = handler2executionHistory
 				.get(transactionHandler);
@@ -294,7 +309,11 @@ public abstract class Jessy {
 			executionHistory.addReadEntity(entities);
 			return entities;
 		} else {
-			failedReadCount.incr();
+			if (fail) {
+				System.out.println("Failed read: " + entityClass.getSimpleName() + " " + keys);
+				failedReadCount.incr();
+			}
+
 			return null;
 		}
 	}

@@ -265,19 +265,29 @@ public abstract class Transaction implements Callable<ExecutionHistory> {
      * @return The read entity from jessy.
      * @throws Exception
      */
-    public <E extends JessyEntity> E read(Class<E> entityClass, String keyValue)
+    public <E extends JessyEntity> E checkRead(Class<E> entityClass, String keyValue, boolean fail)
             throws Exception {
         long start = System.currentTimeMillis();
 
-        E entity = jessy.read(transactionHandler, entityClass, keyValue);
+        E entity = jessy.checkRead(transactionHandler, entityClass, keyValue, fail);
 
         transactionReadOperatinTime.add(System.currentTimeMillis() - start);
         return entity;
     }
 
+    public <E extends JessyEntity> E read(Class<E> entityClass, String keyValue)
+            throws Exception {
+        return checkRead(entityClass, keyValue, true);
+    }
+
+    public <E extends JessyEntity> Collection<E> checkRead(Class<E> entityClass, List<ReadRequestKey<?>> keys,
+                                                           boolean fail) throws Exception {
+        return jessy.checkRead(transactionHandler, entityClass, keys, fail);
+    }
+
     public <E extends JessyEntity> Collection<E> read(Class<E> entityClass, List<ReadRequestKey<?>> keys)
             throws Exception {
-        return jessy.read(transactionHandler, entityClass, keys);
+        return checkRead(entityClass, keys, true);
     }
 
     public <E extends JessyEntity, V> Collection<E> readBySecondary(Class<E> clazz, String key, V value)
