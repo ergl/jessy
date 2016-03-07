@@ -20,6 +20,7 @@ import fr.inria.jessy.transaction.termination.vote.VotePiggyback;
 import fr.inria.jessy.transaction.termination.vote.VotingQuorum;
 import fr.inria.jessy.vector.PartitionDependenceVector;
 
+import fr.inria.jessy.vector.Vector;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -74,9 +75,11 @@ public class SPSI_PDV_GC extends SPSI {
             return true;
         }
 
-        // If a transaction is readonly it should always commit.
-        if (type == TransactionType.READONLY_TRANSACTION)
-            return true;
+        // A readonly transaction under PSI should always commit.
+        if (!isMarkedSerializable(history)) { // NOT(isMarkedSerializable(h)
+            if (type == TransactionType.READONLY_TRANSACTION)
+                return true;
+        }
 
         if (history.getCreateSet() != null && history.getCreateSet().size() > 0)
             history.getWriteSet().addEntity(history.getCreateSet());
@@ -96,7 +99,7 @@ public class SPSI_PDV_GC extends SPSI {
                 if (reply.getEntity() != null) {
                     JessyEntity last = reply.getEntity().iterator().next();
 
-                    if (last.getLocalVector().getSelfValue() > e.getLocalVector().getSelfValue())
+                    if (last.getLocalVector().isCompatible(e.getLocalVector()) != Vector.CompatibleResult.COMPATIBLE)
                         return false;
                 }
             }
