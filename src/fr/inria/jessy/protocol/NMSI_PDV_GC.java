@@ -1,6 +1,7 @@
 package fr.inria.jessy.protocol;
 
 
+import static fr.inria.jessy.ConstantPool.PROTOCOL_ATOMIC_COMMIT;
 import static fr.inria.jessy.transaction.ExecutionHistory.TransactionType.BLIND_WRITE;
 
 import java.util.UUID;
@@ -39,6 +40,7 @@ public class NMSI_PDV_GC extends NMSI {
 	static {
 		votePiggybackRequired = true;
 		receivedVectors = new ConcurrentHashMap<UUID, PartitionDependenceVector<String>>();
+		PROTOCOL_ATOMIC_COMMIT = ConstantPool.ATOMIC_COMMIT_TYPE.ATOMIC_MULTICAST;
 	}
 
 	public NMSI_PDV_GC(JessyGroupManager m, DataStore dataStore) {
