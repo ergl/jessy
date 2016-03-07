@@ -33,6 +33,7 @@ import fr.inria.jessy.transaction.Transaction;
 import java.util.Date;
 import java.util.Random;
 
+import java.util.concurrent.ThreadLocalRandom;
 import org.imdea.rubis.benchmark.transaction.*;
 import org.imdea.rubis.benchmark.util.TextUtils;
 
@@ -47,8 +48,8 @@ import org.imdea.rubis.benchmark.util.TextUtils;
 public class UserSession extends Thread {
     private Jessy mJessy;
     private String mPassword;
-    private Random mRand = new Random();
     private RUBiSProperties mProps;
+    private Random mRand = ThreadLocalRandom.current();
     private TransitionTable mTable;
     private int mUserId;
     private String mUsername;
@@ -256,7 +257,7 @@ public class UserSession extends Thread {
             mTable.resetToInitialState();
             nextTransition = mTable.getCurrentState();
 
-            while (!mTable.isEndOfSession() && (transitionsLeft > 0)) {
+            while (transitionsLeft > 0) {
                 Transaction trans = nextTransaction(nextTransition, page, nbOfItems);
                 ExecutionHistory h = null;
 
@@ -280,6 +281,10 @@ public class UserSession extends Thread {
                 }
 
                 nextTransition = mTable.nextState();
+
+                if (mTable.isEndOfSession())
+                    mTable.resetToInitialState();
+
                 page = lastTransition == nextTransition ? page + 1 : 0;
             }
         }
