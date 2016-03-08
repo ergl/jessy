@@ -25,13 +25,13 @@ import fr.inria.jessy.transaction.ExecutionHistory;
 import org.imdea.rubis.benchmark.entity.ItemEntity;
 import org.imdea.rubis.benchmark.entity.UserEntity;
 
-public class PutComment extends AbsRUBiSTransaction {
+public class PutCommentTransaction extends AbsRUBiSTransaction {
     private long mToUserKey;
     private long mItemKey;
     private String mNickname;
     private String mPassword;
 
-    public PutComment(Jessy jessy, long toUserId, long itemId, String nickname, String password) throws Exception {
+    public PutCommentTransaction(Jessy jessy, long toUserId, long itemId, String nickname, String password) throws Exception {
         super(jessy);
         mToUserKey = toUserId;
         mItemKey = itemId;
