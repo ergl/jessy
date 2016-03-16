@@ -19,8 +19,8 @@ import fr.inria.jessy.transaction.termination.vote.Vote;
 import fr.inria.jessy.transaction.termination.vote.VotePiggyback;
 import fr.inria.jessy.transaction.termination.vote.VotingQuorum;
 import fr.inria.jessy.vector.PartitionDependenceVector;
-
 import fr.inria.jessy.vector.Vector;
+
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -140,18 +140,13 @@ public class SPSI_PDV_GC extends SPSI {
     }
 
     @Override
-    public Set<String> getVotersToJessyProxy(
-            Set<String> termincationRequestReceivers,
-            ExecutionHistory executionHistory) {
-        /*
-		 * if there is a readonly transaction who touches only one replica, then we return right away without waiting
-		 * for votes from replica groups.
-		 */
-        if (termincationRequestReceivers.size() == 1 && executionHistory.getTransactionType() == TransactionType
-                .READONLY_TRANSACTION) {
-            termincationRequestReceivers.clear();
-        }
-        return termincationRequestReceivers;
+    public Set<String> getVotersToJessyProxy(Set<String> terminationReceivers, ExecutionHistory history) {
+        // If there is a readonly transaction who touches only one replica, then we return right away without waiting
+        // for votes from replica groups.
+        if (terminationReceivers.size() == 1 && history.getTransactionType() == READONLY_TRANSACTION)
+            terminationReceivers.clear();
+
+        return terminationReceivers;
     }
 
     /**
