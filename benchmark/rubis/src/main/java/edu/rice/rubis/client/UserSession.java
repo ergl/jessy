@@ -33,7 +33,6 @@ import fr.inria.jessy.transaction.Transaction;
 import java.util.Date;
 import java.util.Random;
 
-import java.util.concurrent.ThreadLocalRandom;
 import org.imdea.rubis.benchmark.transaction.*;
 import org.imdea.rubis.benchmark.util.TextUtils;
 
@@ -48,8 +47,8 @@ import org.imdea.rubis.benchmark.util.TextUtils;
 public class UserSession extends Thread {
     private Jessy mJessy;
     private String mPassword;
+    private Random mRand = new Random();
     private RUBiSProperties mProps;
-    private Random mRand = ThreadLocalRandom.current();
     private TransitionTable mTable;
     private int mUserId;
     private String mUsername;
@@ -154,10 +153,11 @@ public class UserSession extends Thread {
                 }
                 case 14: // Store Buy Now in the database
                 {
+                    int buyNowId = mRand.nextInt(1000000);
                     int itemId = mRand.nextInt(mProps.getTotalItems());
                     int maxQty = 100;
                     int qty = mRand.nextInt(maxQty) + 1;
-                    trans = new StoreBuyNowTransaction(mJessy, mRand.nextInt(), mUserId, itemId, qty, new Date());
+                    trans = new StoreBuyNowTransaction(mJessy, buyNowId, mUserId, itemId, qty, new Date());
                     break;
                 }
                 case 15: // Put Bid Auth
@@ -185,7 +185,7 @@ public class UserSession extends Thread {
                 case 19: // Comment confirmation page
                 {
                     int itemId = mRand.nextInt(mProps.getTotalItems());
-                    trans = new PutComment(mJessy, mUserId, itemId, mUsername, mPassword);
+                    trans = new PutCommentTransaction(mJessy, mUserId, itemId, mUsername, mPassword);
                     break;
                 }
                 case 20: // Store Comment in the database
@@ -258,6 +258,9 @@ public class UserSession extends Thread {
             nextTransition = mTable.getCurrentState();
 
             while (transitionsLeft > 0) {
+                if (mTable.isEndOfSession())
+                    mTable.resetToInitialState();
+
                 Transaction trans = nextTransaction(nextTransition, page, nbOfItems);
                 ExecutionHistory h = null;
 
@@ -281,10 +284,6 @@ public class UserSession extends Thread {
                 }
 
                 nextTransition = mTable.nextState();
-
-                if (mTable.isEndOfSession())
-                    mTable.resetToInitialState();
-
                 page = lastTransition == nextTransition ? page + 1 : 0;
             }
         }
