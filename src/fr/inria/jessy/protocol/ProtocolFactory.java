@@ -57,6 +57,8 @@ public class ProtocolFactory {
 			_instance = new SER_PDV_GC(m, dataStore);
 		} else if (protocolName.equals("spsi_pdv_gc")) {
 			_instance = new SPSI_PDV_GC(m, dataStore);
+		} else if (protocolName.equals("spsi_pdv_2pc")) {
+			_instance = new SPSI_PDV_2PC(m, dataStore);
 		}
 		
 		System.out.println("Protocol " + protocolName + " is initalized with persistence directory " + protocolName);

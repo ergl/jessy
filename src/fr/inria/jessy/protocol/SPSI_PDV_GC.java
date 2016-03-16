@@ -26,7 +26,7 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class SPSI_PDV_GC extends SPSI {
-    private static ConcurrentHashMap<UUID, PartitionDependenceVector<String>> receivedVectors;
+    protected static ConcurrentHashMap<UUID, PartitionDependenceVector<String>> receivedVectors;
 
     static {
         votePiggybackRequired = true;

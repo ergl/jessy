@@ -133,7 +133,7 @@ public abstract class SPSI extends Consistency {
      * certified one at a time. This way transaction Ti has to wait transactions T0, T1, ..., Ti-1 to be certified in
      * order to start its certification. To minimize this convoy effect we define the concept of commutation. Two
      * transactions commute if they can be certified in parallel. In general this is up to the specific consistency
-     * model. SPSI merge together the commutation algorithms of NMSI and SER.
+     * model.
      *
      * @param k1 The first set of keys to check.
      * @param k2 The second set of keys to check.
