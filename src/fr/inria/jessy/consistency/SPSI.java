@@ -175,7 +175,7 @@ public abstract class SPSI extends Consistency {
      */
     @Override
     public Set<String> getConcerningKeys(ExecutionHistory h, ConcernedKeysTarget target) {
-        Set<String> concerningKeys = new HashSet<>(getConcerningKeysSize(h, target));
+        Set<String> concerningKeys = new HashSet<>();
 
         if (isMarkedSerializable(h)) {
             // If a transaction is marked as serializable, its concerning keys set is the union of keys of read set,
@@ -207,32 +207,6 @@ public abstract class SPSI extends Consistency {
         }
 
         return concerningKeys;
-    }
-
-    private int getConcerningKeysSize(ExecutionHistory h, ConcernedKeysTarget target) {
-        int size = 0;
-
-        if (isMarkedSerializable(h)) {
-            if (target != ConcernedKeysTarget.RECEIVE_VOTES) {
-                if (h.getReadSet() != null)
-                    size += h.getReadSet().getKeys().size();
-            }
-
-            if (h.getWriteSet() != null)
-                size += h.getWriteSet().getKeys().size();
-
-            if (h.getCreateSet() != null)
-                size += h.getCreateSet().getKeys().size();
-
-        } else {
-            if (h.getWriteSet() != null)
-                size += h.getWriteSet().getKeys().size();
-
-            if (h.getCreateSet() != null)
-               size += h.getCreateSet().getKeys().size();
-        }
-
-        return size;
     }
 
     /**
