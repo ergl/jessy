@@ -4,6 +4,7 @@ import static fr.inria.jessy.transaction.ExecutionHistory.TransactionType.READON
 
 import fr.inria.jessy.communication.JessyGroupManager;
 import fr.inria.jessy.store.DataStore;
+import fr.inria.jessy.store.JessyEntity;
 import fr.inria.jessy.transaction.ExecutionHistory;
 import fr.inria.jessy.transaction.TransactionTouchedKeys;
 
@@ -62,7 +63,7 @@ public abstract class SPSI extends Consistency {
      * certified one at a time. This way transaction Ti has to wait transactions T0, T1, ..., Ti-1 to be certified in
      * order to start its certification. To minimize this convoy effect we define the concept of commutation. Two
      * transactions commute if they can be certified in parallel. In general this is up to the specific consistency
-     * model. SPSI merge together the commutation algorithms of NMSI and SER.
+     * model.
      *
      * @param h1 The first history to check.
      * @param h2 The second history to check.
@@ -70,22 +71,60 @@ public abstract class SPSI extends Consistency {
      */
     @Override
     public boolean certificationCommute(ExecutionHistory h1, ExecutionHistory h2) {
-        // Check h1's write set against h2's read set.
-        if (h1.getWriteSet() != null && h2.getReadSet() != null) {
-            // Usually the read set of a transaction is far bigger than its write set. Passing the write set as first
-            // argument to the method isIntersectingWith() gives a huge boost in performances: the implementation
-            // checks if every element of the first set is contained in the second.
-            if (CollectionUtils.isIntersectingWith(h1.getWriteSet().getKeys(), h2.getReadSet().getKeys()))
-                return false;
+        // We do a fine grained commutativity check.
+
+        // If one of the two transactions is marked as serializable we check for read-write and write-write conflicts.
+        // Since rs is a superset of ws (we always read an object before write), the check for read-write conflicts
+        // includes write-write conflicts.
+        if (h1.getExtra(LEVEL) == SER || h2.getExtra(LEVEL) == SER) {
+            if (h1.getReadSet() != null && h2.getWriteSet() != null) {
+                // The implementation of the method isIntersectingWith takes every element of the first set and
+                // checks if it is contained in the second set. The smaller is the first set, the faster we are.
+                // Write sets are tipically much smaller than read sets, so we supply the write set as first argument.
+                if (CollectionUtils.isIntersectingWith(h2.getWriteSet().getKeys(), h1.getReadSet().getKeys()))
+                    return false;
+            }
+
+            if (h1.getWriteSet() != null && h2.getWriteSet() != null) {
+                if (CollectionUtils.isIntersectingWith(h1.getWriteSet().getKeys(), h2.getReadSet().getKeys()))
+                    return false;
+            }
+        } else { // LEVEL = PSI
+            // If a transaction is marked as PSI we guarantee global PSI and serializability per replica.
+            // Serializability means checking for read-write conflicts but since we only want serializability per
+            // replica we check only for local entities.
+            if (h1.getReadSet() != null && h2.getWriteSet() != null) {
+                // Since write sets are tipically much smaller than read sets we iterate over the write set.
+                for (JessyEntity e : h2.getWriteSet().getEntities()) {
+                    String key = e.getKey();
+
+                    if (manager.getPartitioner().isLocal(key)) {
+                        if (h1.getReadSet().contains(key))
+                            return false;
+                    }
+                }
+            }
+
+            if (h1.getWriteSet() != null && h2.getReadSet() != null) {
+                for (JessyEntity e : h1.getWriteSet().getEntities()) {
+                    String key = e.getKey();
+
+                    if (manager.getPartitioner().isLocal(key)) {
+                        if (h2.getReadSet().contains(key))
+                            return false;
+                    }
+                }
+            }
+
+            // We know that rs is a super set of ws (and then a check for read-write conclicts also includes a check
+            // for write-write conflicts). But since we checked for read-write conflicts on a per replica basis we
+            // probably missed some write-write conflict.
+            if (h1.getWriteSet() != null && h2.getWriteSet() != null) {
+                if (CollectionUtils.isIntersectingWith(h1.getWriteSet().getKeys(), h2.getWriteSet().getKeys()))
+                    return false;
+            }
         }
 
-        // Then, do the opposite: check h2's write set against h1's read set.
-        if (h1.getReadSet() != null && h2.getWriteSet() != null) {
-            if (CollectionUtils.isIntersectingWith(h2.getWriteSet().getKeys(), h1.getReadSet().getKeys()))
-                return false;
-        }
-
-        // No need to check ww conflicts because rs is a superset of ws.
         return true;
     }
 
