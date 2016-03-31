@@ -1,7 +1,5 @@
 package fr.inria.jessy.protocol;
 
-import static fr.inria.jessy.ConstantPool.PROTOCOL_ATOMIC_COMMIT;
-
 import fr.inria.jessy.ConstantPool;
 import fr.inria.jessy.communication.JessyGroupManager;
 import fr.inria.jessy.communication.message.TerminateTransactionRequestMessage;
@@ -15,12 +13,14 @@ import fr.inria.jessy.vector.PartitionDependenceVector;
 
 import java.util.Set;
 
-public class SPSI_PDV_2PC extends SPSI_PDV_GC {
+import static fr.inria.jessy.ConstantPool.PROTOCOL_ATOMIC_COMMIT;
+
+public class SSIPSI_PDV_2PC extends SSIPSI_PDV_GC {
     static {
         PROTOCOL_ATOMIC_COMMIT = ConstantPool.ATOMIC_COMMIT_TYPE.TWO_PHASE_COMMIT;
     }
 
-    public SPSI_PDV_2PC(JessyGroupManager m, DataStore s) {
+    public SSIPSI_PDV_2PC(JessyGroupManager m, DataStore s) {
         super(m, s);
     }
 

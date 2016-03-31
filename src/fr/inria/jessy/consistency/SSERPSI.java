@@ -15,20 +15,20 @@ import net.sourceforge.fractal.utils.CollectionUtils;
 
 import org.apache.log4j.Logger;
 
-public abstract class SPSI extends Consistency {
+public abstract class SSERPSI extends Consistency {
     /**
      * This constant should be used as the key to mark a transaction as SER or PSI.
      * <p>
-     * Every SPSI transaction should be marked as SER or PSI. A transaction marked as SER behaves like a
+     * Every SSERPSI transaction should be marked as SER or PSI. A transaction marked as SER behaves like a
      * transaction executed under serializability. On the other hand a transaction marked as PSI behaves like a
      * transaction executed under parallel snapshot isolation.
      */
-    public static final String LEVEL = SPSI.class.getName() + "::LEVEL";
+    public static final String LEVEL = SSERPSI.class.getName() + "::LEVEL";
 
     /**
      * This constant should be used to mark a transaction as PSI.
      * <p>
-     * Every SPSI transaction should be marked as SER or PSI. A transaction marked as SER behaves like a
+     * Every SSERPSI transaction should be marked as SER or PSI. A transaction marked as SER behaves like a
      * transaction executed under serializability. On the other hand a transaction marked as PSI behaves like a
      * transaction executed under parallel snapshot isolation.
      */
@@ -37,7 +37,7 @@ public abstract class SPSI extends Consistency {
     /**
      * This constant should be used to mark a transaction as SER.
      * <p>
-     * Every SPSI transaction should be marked as SER or PSI. A transaction marked as SER behaves like a
+     * Every SSERPSI transaction should be marked as SER or PSI. A transaction marked as SER behaves like a
      * transaction executed under serializability. On the other hand a transaction marked as PSI behaves like a
      * transaction executed under parallel snapshot isolation.
      */
@@ -46,15 +46,15 @@ public abstract class SPSI extends Consistency {
     /**
      * Log information.
      */
-    protected static Logger logger = Logger.getLogger(SPSI.class);
+    protected static Logger logger = Logger.getLogger(SSERPSI.class);
 
     /**
-     * Create a new instance of SPSI consistency level.
+     * Create a new instance of SSERPSI consistency level.
      *
      * @param m The group manager.
      * @param s The data store instance.
      */
-    public SPSI(JessyGroupManager m, DataStore s) {
+    public SSERPSI(JessyGroupManager m, DataStore s) {
         super(m, s);
     }
 
@@ -167,7 +167,7 @@ public abstract class SPSI extends Consistency {
      * is interested in what are the replicas that should receive a certification vote. In every case we return a set
      * of keys and the caller will get the set of Jessy instances replicating the keys.
      * <p>
-     * In the case of SPSI concistency model we should only distinguish between PSI transaction and SER transactions.
+     * In the case of SSERPSI concistency model we should only distinguish between PSI transaction and SER transactions.
      *
      * @param h      The execution history.
      * @param target The target.

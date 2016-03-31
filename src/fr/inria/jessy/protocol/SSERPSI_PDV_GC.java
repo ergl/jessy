@@ -8,7 +8,7 @@ import com.googlecode.concurrentlinkedhashmap.ConcurrentLinkedHashMap;
 
 import fr.inria.jessy.communication.JessyGroupManager;
 import fr.inria.jessy.communication.message.TerminateTransactionRequestMessage;
-import fr.inria.jessy.consistency.SPSI;
+import fr.inria.jessy.consistency.SSERPSI;
 import fr.inria.jessy.store.DataStore;
 import fr.inria.jessy.store.JessyEntity;
 import fr.inria.jessy.store.ReadReply;
@@ -25,7 +25,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class SPSI_PDV_GC extends SPSI {
+public class SSERPSI_PDV_GC extends SSERPSI {
     protected static ConcurrentHashMap<UUID, PartitionDependenceVector<String>> receivedVectors;
 
     static {
@@ -34,7 +34,7 @@ public class SPSI_PDV_GC extends SPSI {
         PROTOCOL_ATOMIC_COMMIT = ATOMIC_COMMIT_TYPE.ATOMIC_MULTICAST;
     }
 
-    public SPSI_PDV_GC(JessyGroupManager m, DataStore s) {
+    public SSERPSI_PDV_GC(JessyGroupManager m, DataStore s) {
         super(m, s);
     }
 
