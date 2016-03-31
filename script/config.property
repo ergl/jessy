@@ -8,7 +8,7 @@ datastore_type = berkeleydb
 #"si2" snapshot isolation with Atomic-Multicast to every group
 #"nmsi2" non-monotonic snapshot isolation with GMUVector from [Peluso2012] 
 #"us2" Update serializability with GMUVector from [Peluso2012]
-consistency_type = spsi_pdv_gc
+consistency_type = ssipsi_pdv_gc
 
 #partitioner type: "keyspace" | "modulo" | "replicatedModulo"
 partitioner_type = spsi4rubis
@@ -31,6 +31,6 @@ warehouses_number = 1
 
 #measurements
 #swich on/off all operation wide measurements
-operation_wide_measurements = false
+operation_wide_measurements = true
 #swich on/off all transaction wide measurements
 transaction_wide_measurements = true
