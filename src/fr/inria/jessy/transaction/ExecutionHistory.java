@@ -1,5 +1,7 @@
 package fr.inria.jessy.transaction;
 
+import static fr.inria.jessy.transaction.TransactionState.*;
+
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
@@ -74,7 +76,9 @@ public class ExecutionHistory extends ExecutionHistoryMeasurements implements Me
 	private EntitySet writeSet;
 	private EntitySet readSet;
 
+	private long mEndTime;
 	private HashMap<String, Object> mExtras = new HashMap<>();
+	private long mStartTime;
 
 	// for fractal
 	@Deprecated
@@ -179,6 +183,11 @@ public class ExecutionHistory extends ExecutionHistoryMeasurements implements Me
 	}
 
 	public void changeState(TransactionState transactionNewState) {
+		if (transactionNewState == EXECUTING)
+			mStartTime = System.currentTimeMillis();
+		else if (transactionNewState != COMMITTING) // Then is either committed or aborted
+			mEndTime = System.currentTimeMillis();
+
 		transactionState = transactionNewState;
 	}
 
@@ -266,7 +275,9 @@ public class ExecutionHistory extends ExecutionHistoryMeasurements implements Me
 			writeSet = (EntitySet) in.readObject();
 		}
 
+		mEndTime = in.readLong();
 		mExtras = (HashMap<String, Object>) in.readObject();
+		mStartTime = in.readLong();
 	}
 
 	public void writeExternal(ObjectOutput out) throws IOException {
@@ -299,7 +310,9 @@ public class ExecutionHistory extends ExecutionHistoryMeasurements implements Me
 			out.writeObject(writeSet);
 		}
 
+		out.writeLong(mEndTime);
 		out.writeObject(mExtras);
+		out.writeLong(mStartTime);
 	}
 
 	/**
@@ -338,5 +351,14 @@ public class ExecutionHistory extends ExecutionHistoryMeasurements implements Me
 	 */
 	public Object getExtra(String key) {
 		return mExtras.get(key);
+	}
+
+	/**
+	 * Return the total execution time for the transaction.
+	 *
+	 * @return The total execution time (latency).
+     */
+	public long getExecutionTime() {
+		return mEndTime - mStartTime;
 	}
 }

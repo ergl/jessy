@@ -34,6 +34,7 @@ import java.util.Date;
 import java.util.Random;
 
 import org.imdea.rubis.benchmark.transaction.*;
+import org.imdea.rubis.benchmark.stats.StatsCollector;
 import org.imdea.rubis.benchmark.util.TextUtils;
 
 /**
@@ -49,6 +50,7 @@ public class UserSession extends Thread {
     private String mPassword;
     private Random mRand = new Random();
     private RUBiSProperties mProps;
+    private StatsCollector mStatsCollector;
     private TransitionTable mTable;
     private int mUserId;
     private String mUsername;
@@ -59,11 +61,12 @@ public class UserSession extends Thread {
      * @param threadId a thread identifier
      * @param rubis    rubis.properties
      */
-    public UserSession(Jessy jessy, String threadId, RUBiSProperties rubis) {
+    public UserSession(Jessy jessy, String threadId, RUBiSProperties rubis, StatsCollector collector) {
         super(threadId);
         mJessy = jessy;
         mProps = rubis;
         mTable = mProps.newTransitionTable();
+        mStatsCollector = collector;
     }
 
     /**
@@ -270,6 +273,7 @@ public class UserSession extends Thread {
                     } catch (Exception e) {
                         e.printStackTrace();
                     } finally {
+                        mStatsCollector.add(h);
                         lastTransition = nextTransition;
 
                         if (h != null && h.getTransactionState() == COMMITTED) {

@@ -27,6 +27,7 @@ package edu.rice.rubis.client;
 import fr.inria.jessy.Jessy;
 
 import java.util.ArrayList;
+import org.imdea.rubis.benchmark.stats.StatsCollector;
 
 /**
  * RUBiS client emulator.
@@ -34,10 +35,10 @@ import java.util.ArrayList;
  *
  * @author <a href="mailto:cecchet@rice.edu">Emmanuel Cecchet</a> and
  *         <a href="mailto:julie.marguerite@inrialpes.fr">Julie Marguerite</a>
- * @version 1.0
+ *         <a href="mailto:hello@mneri.me">Massimo Neri</a>
+ * @version 2.0
  */
 public class ClientEmulator {
-    private static boolean endOfSimulation = false;
     private Jessy mJessy;
     private RUBiSProperties mProps;
 
@@ -50,30 +51,14 @@ public class ClientEmulator {
         mJessy = jessy;
     }
 
-    /**
-     * True if end of simulation has been reached.
-     *
-     * @return true if end of simulation
-     */
-    public static synchronized boolean isEndOfSimulation() {
-        return endOfSimulation;
-    }
-
-    /**
-     * Set the end of the current simulation
-     */
-    private synchronized void setEndOfSimulation() {
-        endOfSimulation = true;
-    }
-
     public void start() {
-        System.out.println("Start emulation...");
-        long start = System.currentTimeMillis();
+        StatsCollector stats = new StatsCollector();
 
         ArrayList<UserSession> sessions = new ArrayList<>();
+        stats.startEmulation();
 
         for (int i = 0; i < mProps.getNbOfClients(); i++) {
-            UserSession session = new UserSession(mJessy, "UserSession" + i, mProps);
+            UserSession session = new UserSession(mJessy, "UserSession" + i, mProps, stats);
             session.start();
             sessions.add(session);
         }
@@ -86,9 +71,9 @@ public class ClientEmulator {
             }
         }
 
-        long end = System.currentTimeMillis();
-        System.out.println("End of emulation");
-        System.out.println("Total emulation time (millis): " + (end - start));
+        stats.endEmulation();
+        stats.print();
+
         Runtime.getRuntime().exit(0);
     }
 }
