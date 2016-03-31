@@ -20,7 +20,7 @@
 package org.imdea.rubis.benchmark.transaction;
 
 import fr.inria.jessy.Jessy;
-import fr.inria.jessy.consistency.SPSI;
+import fr.inria.jessy.consistency.SSERPSI;
 import fr.inria.jessy.transaction.ExecutionHistory;
 
 import java.util.Collection;
@@ -63,7 +63,7 @@ public class RegisterUserTransaction extends AbsRUBiSTransaction {
         mCreationDate = creationDate;
         mRegion = region;
 
-        putExtra(SPSI.LEVEL, SPSI.SER);
+        putExtra(SSERPSI.LEVEL, SSERPSI.SER);
     }
 
     @Override
