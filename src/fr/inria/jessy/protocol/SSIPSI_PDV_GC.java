@@ -53,9 +53,8 @@ public class SSIPSI_PDV_GC extends SSERPSI {
     /**
      * {@inheritDoc}
      * <p>
-     * Readonly transaction always commit (and also INIT_TRANSACTION). For other transaction we check for read-write
-     * and write-write conflicts with every transaction that committed before. If a conflict exists we reject
-     * certification.
+     * Readonly transaction always commit (and also INIT_TRANSACTION). For other transaction we check for write-write
+     * conflicts with every transaction that committed before. If a conflict exists we reject certification.
      *
      * @param history The {@link ExecutionHistory} of the transaction to certify.
      * @return {@code true} if the transaction passed the certification check, {@code false} otherwise.
