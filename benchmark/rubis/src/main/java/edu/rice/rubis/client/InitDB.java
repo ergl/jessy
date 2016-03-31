@@ -208,11 +208,17 @@ public class InitDB {
     }
 
     public void start() {
+        System.out.println("Generating categories");
         generateCategories();
+        System.out.println("Generating regions");
         generateRegions();
+        System.out.println("Generating users");
         generateUsers();
+        System.out.println("Generating items");
         generateItems();
+        System.out.println("Generating bids");
         generateBids();
+        System.out.println("Generating comments");
         generateComments();
         Runtime.getRuntime().exit(0);
     }
