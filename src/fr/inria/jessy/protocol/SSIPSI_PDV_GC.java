@@ -1,6 +1,10 @@
 package fr.inria.jessy.protocol;
 
+import static fr.inria.jessy.ConstantPool.*;
+import static fr.inria.jessy.transaction.ExecutionHistory.TransactionType.*;
+
 import com.googlecode.concurrentlinkedhashmap.ConcurrentLinkedHashMap;
+
 import fr.inria.jessy.communication.JessyGroupManager;
 import fr.inria.jessy.communication.message.TerminateTransactionRequestMessage;
 import fr.inria.jessy.consistency.SSERPSI;
@@ -9,6 +13,7 @@ import fr.inria.jessy.store.JessyEntity;
 import fr.inria.jessy.store.ReadReply;
 import fr.inria.jessy.store.ReadRequest;
 import fr.inria.jessy.transaction.ExecutionHistory;
+import fr.inria.jessy.transaction.ExecutionHistory.TransactionType;
 import fr.inria.jessy.transaction.TransactionHandler;
 import fr.inria.jessy.transaction.termination.vote.Vote;
 import fr.inria.jessy.transaction.termination.vote.VotePiggyback;
@@ -19,12 +24,6 @@ import fr.inria.jessy.vector.Vector;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
-
-import static fr.inria.jessy.ConstantPool.ATOMIC_COMMIT_TYPE;
-import static fr.inria.jessy.ConstantPool.PROTOCOL_ATOMIC_COMMIT;
-import static fr.inria.jessy.transaction.ExecutionHistory.TransactionType;
-import static fr.inria.jessy.transaction.ExecutionHistory.TransactionType.BLIND_WRITE;
-import static fr.inria.jessy.transaction.ExecutionHistory.TransactionType.READONLY_TRANSACTION;
 
 public class SSIPSI_PDV_GC extends SSERPSI {
     protected static ConcurrentHashMap<UUID, PartitionDependenceVector<String>> receivedVectors;
@@ -65,7 +64,7 @@ public class SSIPSI_PDV_GC extends SSERPSI {
         TransactionType type = history.getTransactionType();
 
         // If a transaction is an init transaction, we load the partitioned dependence vectors and always commit.
-        if (type == TransactionType.INIT_TRANSACTION) {
+        if (type == INIT_TRANSACTION) {
             String groupName = manager.getMyGroup().name();
 
             // For each entity we load an initial only-zeros dependence vector.
