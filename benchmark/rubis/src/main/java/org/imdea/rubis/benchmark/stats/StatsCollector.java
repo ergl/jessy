@@ -41,7 +41,7 @@ public class StatsCollector {
         for (long latency : latencies)
             sum += latency;
 
-        return sum / latencies.size();
+        return ((double) sum) / latencies.size();
     }
 
     public synchronized void endEmulation() {
@@ -63,7 +63,7 @@ public class StatsCollector {
         int ops = mReadOnlyLatencies.size() + mUpdateLatencies.size();
 
         printLine("OVERALL", "RunTime(ms)", time);
-        printLine("OVERALL", "Throughput(ops/sec)", ops / (time / 1000));
+        printLine("OVERALL", "Throughput(ops/sec)", ops / ((double) time / 1000));
         printLine("OVERALL", "Exceptions", mExceptions);
     }
 
@@ -83,7 +83,7 @@ public class StatsCollector {
         printLine("READ", "95thPercentileLatency(ms)", percentile95);
         printLine("READ", "99thPercentileLatency(ms)", percentile99);
         printLine("UPDATE", "Return=0", mReadOnlyLatencies.size());
-        printLine("UPDATE", ">1000", slowCountOf(mReadOnlyLatencies));
+        printLine("UPDATE", ">1000", countOfSlow(mReadOnlyLatencies));
     }
 
     private void printUpdateStats() {
@@ -102,10 +102,10 @@ public class StatsCollector {
         printLine("UPDATE", "95thPercentileLatency(ms)", percentile95);
         printLine("UPDATE", "99thPercentileLatency(ms)", percentile99);
         printLine("UPDATE", "Return=0", mUpdateLatencies.size());
-        printLine("UPDATE", ">1000", slowCountOf(mUpdateLatencies));
+        printLine("UPDATE", ">1000", countOfSlow(mUpdateLatencies));
     }
 
-    private int slowCountOf(ArrayList<Long> latencies) {
+    private int countOfSlow(ArrayList<Long> latencies) {
         int count = 0;
 
         for (long latency : latencies) {
