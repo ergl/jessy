@@ -44,7 +44,7 @@ client_thread_glb="2"
 client_thread_lub="2"
 
 # Consistency
-cons=("nmsi_pdv_gc" "sserpsi_pdv_gc" "ssipsi_pdv_gc" "ser_pdv_gc")
+cons=("nmsi_pdv_gc" "spsi_pdv_gc" "ser_pdv_gc")
 
 # Client specific settings 
 workloadType="-load"

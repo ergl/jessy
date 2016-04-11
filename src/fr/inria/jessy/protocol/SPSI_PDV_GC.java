@@ -87,9 +87,9 @@ public class SPSI_PDV_GC extends SPSI {
         Collection<JessyEntity> checkSet;
 
         if (isMarkedSerializable(history))
-            checkSet = history.getWriteSet().getEntities();
-        else
             checkSet = history.getReadSet().getEntities();
+        else
+            checkSet = history.getWriteSet().getEntities();
 
         for (JessyEntity e : checkSet) {
             if (manager.getPartitioner().isLocal(e.getKey())) {
