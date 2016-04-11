@@ -50,8 +50,8 @@ public class StatsCollector {
 
     public synchronized void print() {
         printOverallStats();
-        printUpdateStats();
         printReadOnlyStats();
+        printUpdateStats();
     }
 
     private void printLine(String scope, String name, double value) {
@@ -82,8 +82,8 @@ public class StatsCollector {
         printLine("READ", "MaxLatency(ms)", max);
         printLine("READ", "95thPercentileLatency(ms)", percentile95);
         printLine("READ", "99thPercentileLatency(ms)", percentile99);
-        printLine("UPDATE", "Return=0", mReadOnlyLatencies.size());
-        printLine("UPDATE", ">1000", countOfSlow(mReadOnlyLatencies));
+        printLine("READ", "Return=0", mReadOnlyLatencies.size());
+        printLine("READ", ">1000", countOfSlow(mReadOnlyLatencies));
     }
 
     private void printUpdateStats() {
