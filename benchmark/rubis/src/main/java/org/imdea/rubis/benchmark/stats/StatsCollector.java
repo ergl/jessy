@@ -63,7 +63,7 @@ public class StatsCollector {
         int ops = mReadOnlyLatencies.size() + mUpdateLatencies.size();
 
         printLine("OVERALL", "RunTime(ms)", time);
-        printLine("OVERALL", "Throughput(ops/sec)", ops / ((double) time / 1000));
+        printLine("OVERALL", "Throughput(ops/sec)", ops / (time / 1000.0));
         printLine("OVERALL", "Exceptions", mExceptions);
     }
 

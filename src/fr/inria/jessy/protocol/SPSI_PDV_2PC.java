@@ -15,12 +15,12 @@ import java.util.Set;
 
 import static fr.inria.jessy.ConstantPool.PROTOCOL_ATOMIC_COMMIT;
 
-public class SSIPSI_PDV_2PC extends SSIPSI_PDV_GC {
+public class SPSI_PDV_2PC extends SPSI_PDV_GC {
     static {
         PROTOCOL_ATOMIC_COMMIT = ConstantPool.ATOMIC_COMMIT_TYPE.TWO_PHASE_COMMIT;
     }
 
-    public SSIPSI_PDV_2PC(JessyGroupManager m, DataStore s) {
+    public SPSI_PDV_2PC(JessyGroupManager m, DataStore s) {
         super(m, s);
     }
 

@@ -35,7 +35,7 @@ while [  $reservationFail == "true" ]; do
         
 	echo "trying to reserve nodes at... ""$next"
 
-	oargridsub -w '0:05:00' $reservation -s "$next" > tmp
+	oargridsub -w '0:20:00' $reservation -s "$next" > tmp
 
 	#retreving batch and grid reservation IDs
 	RES_ID=$(grep "Grid reservation id" tmp | cut -f2 -d=)

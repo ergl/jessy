@@ -1,31 +1,32 @@
 package fr.inria.jessy.protocol;
 
 import static fr.inria.jessy.ConstantPool.*;
-import static fr.inria.jessy.transaction.ExecutionHistory.TransactionType;
 import static fr.inria.jessy.transaction.ExecutionHistory.TransactionType.*;
+import static fr.inria.jessy.vector.Vector.CompatibleResult.*;
 
 import com.googlecode.concurrentlinkedhashmap.ConcurrentLinkedHashMap;
 
 import fr.inria.jessy.communication.JessyGroupManager;
 import fr.inria.jessy.communication.message.TerminateTransactionRequestMessage;
-import fr.inria.jessy.consistency.SSERPSI;
+import fr.inria.jessy.consistency.SPSI;
 import fr.inria.jessy.store.DataStore;
 import fr.inria.jessy.store.JessyEntity;
 import fr.inria.jessy.store.ReadReply;
 import fr.inria.jessy.store.ReadRequest;
 import fr.inria.jessy.transaction.ExecutionHistory;
+import fr.inria.jessy.transaction.ExecutionHistory.TransactionType;
 import fr.inria.jessy.transaction.TransactionHandler;
 import fr.inria.jessy.transaction.termination.vote.Vote;
 import fr.inria.jessy.transaction.termination.vote.VotePiggyback;
 import fr.inria.jessy.transaction.termination.vote.VotingQuorum;
 import fr.inria.jessy.vector.PartitionDependenceVector;
-import fr.inria.jessy.vector.Vector;
 
+import java.util.Collection;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class SSERPSI_PDV_GC extends SSERPSI {
+public class SPSI_PDV_GC extends SPSI {
     protected static ConcurrentHashMap<UUID, PartitionDependenceVector<String>> receivedVectors;
 
     static {
@@ -34,7 +35,7 @@ public class SSERPSI_PDV_GC extends SSERPSI {
         PROTOCOL_ATOMIC_COMMIT = ATOMIC_COMMIT_TYPE.ATOMIC_MULTICAST;
     }
 
-    public SSERPSI_PDV_GC(JessyGroupManager m, DataStore s) {
+    public SPSI_PDV_GC(JessyGroupManager m, DataStore s) {
         super(m, s);
     }
 
@@ -52,9 +53,8 @@ public class SSERPSI_PDV_GC extends SSERPSI {
     /**
      * {@inheritDoc}
      * <p>
-     * Readonly transaction always commit (and also INIT_TRANSACTION). For other transaction we check for read-write
-     * and write-write conflicts with every transaction that committed before. If a conflict exists we reject
-     * certification.
+     * Readonly transaction always commit (and also INIT_TRANSACTION). For other transaction we check for write-write
+     * conflicts with every transaction that committed before. If a conflict exists we reject certification.
      *
      * @param history The {@link ExecutionHistory} of the transaction to certify.
      * @return {@code true} if the transaction passed the certification check, {@code false} otherwise.
@@ -65,7 +65,7 @@ public class SSERPSI_PDV_GC extends SSERPSI {
         TransactionType type = history.getTransactionType();
 
         // If a transaction is an init transaction, we load the partitioned dependence vectors and always commit.
-        if (type == TransactionType.INIT_TRANSACTION) {
+        if (type == INIT_TRANSACTION) {
             String groupName = manager.getMyGroup().name();
 
             // For each entity we load an initial only-zeros dependence vector.
@@ -84,7 +84,14 @@ public class SSERPSI_PDV_GC extends SSERPSI {
         if (history.getCreateSet() != null && history.getCreateSet().size() > 0)
             history.getWriteSet().addEntity(history.getCreateSet());
 
-        for (JessyEntity e : history.getReadSet().getEntities()) {
+        Collection<JessyEntity> checkSet;
+
+        if (isMarkedSerializable(history))
+            checkSet = history.getWriteSet().getEntities();
+        else
+            checkSet = history.getReadSet().getEntities();
+
+        for (JessyEntity e : checkSet) {
             if (manager.getPartitioner().isLocal(e.getKey())) {
                 // The write set of all transaction Tj that committed before Ti (that is, this transaction) is the
                 // set of entities in the data store.
@@ -99,7 +106,7 @@ public class SSERPSI_PDV_GC extends SSERPSI {
                 if (reply.getEntity() != null) {
                     JessyEntity last = reply.getEntity().iterator().next();
 
-                    if (last.getLocalVector().isCompatible(e.getLocalVector()) != Vector.CompatibleResult.COMPATIBLE)
+                    if (last != null && last.getLocalVector().isCompatible(e.getLocalVector()) != COMPATIBLE)
                         return false;
                 }
             }

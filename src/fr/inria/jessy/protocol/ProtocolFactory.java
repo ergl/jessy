@@ -55,14 +55,10 @@ public class ProtocolFactory {
 			_instance = new Walter_VV_2PC(m, dataStore);
 		} else if (protocolName.equals("ser_pdv_gc")) {
 			_instance = new SER_PDV_GC(m, dataStore);
-		} else if (protocolName.equals("sserpsi_pdv_gc")) {
-			_instance = new SSERPSI_PDV_GC(m, dataStore);
-		} else if (protocolName.equals("sserpsi_pdv_2pc")) {
-			_instance = new SSERPSI_PDV_2PC(m, dataStore);
-		} else if (protocolName.equals("ssipsi_pdv_gc")) {
-			_instance = new SSIPSI_PDV_GC(m, dataStore);
-		} else if (protocolName.equals("ssipsi_pdv_2pc")) {
-			_instance = new SSIPSI_PDV_2PC(m, dataStore);
+		} else if (protocolName.equals("spsi_pdv_gc")) {
+			_instance = new SPSI_PDV_GC(m, dataStore);
+		} else if (protocolName.equals("spsi_pdv_2pc")) {
+			_instance = new SPSI_PDV_2PC(m, dataStore);
 		}
 		
 		System.out.println("Protocol " + protocolName + " is initalized with persistence directory " + protocolName);

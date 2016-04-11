@@ -1,10 +1,7 @@
 package fr.inria.jessy.consistency;
 
-import static fr.inria.jessy.transaction.ExecutionHistory.TransactionType.READONLY_TRANSACTION;
-
 import fr.inria.jessy.communication.JessyGroupManager;
 import fr.inria.jessy.store.DataStore;
-import fr.inria.jessy.store.JessyEntity;
 import fr.inria.jessy.transaction.ExecutionHistory;
 import fr.inria.jessy.transaction.TransactionTouchedKeys;
 
@@ -15,7 +12,9 @@ import net.sourceforge.fractal.utils.CollectionUtils;
 
 import org.apache.log4j.Logger;
 
-public abstract class SSERPSI extends Consistency {
+import static fr.inria.jessy.transaction.ExecutionHistory.TransactionType.READONLY_TRANSACTION;
+
+public abstract class SPSI extends Consistency {
     /**
      * This constant should be used as the key to mark a transaction as SER or PSI.
      * <p>
@@ -23,7 +22,7 @@ public abstract class SSERPSI extends Consistency {
      * transaction executed under serializability. On the other hand a transaction marked as PSI behaves like a
      * transaction executed under parallel snapshot isolation.
      */
-    public static final String LEVEL = SSERPSI.class.getName() + "::LEVEL";
+    public static final String LEVEL = SPSI.class.getName() + "::LEVEL";
 
     /**
      * This constant should be used to mark a transaction as PSI.
@@ -46,7 +45,7 @@ public abstract class SSERPSI extends Consistency {
     /**
      * Log information.
      */
-    protected static Logger logger = Logger.getLogger(SSERPSI.class);
+    protected static Logger logger = Logger.getLogger(SPSI.class);
 
     /**
      * Create a new instance of SSERPSI consistency level.
@@ -54,7 +53,7 @@ public abstract class SSERPSI extends Consistency {
      * @param m The group manager.
      * @param s The data store instance.
      */
-    public SSERPSI(JessyGroupManager m, DataStore s) {
+    public SPSI(JessyGroupManager m, DataStore s) {
         super(m, s);
     }
 
@@ -90,35 +89,7 @@ public abstract class SSERPSI extends Consistency {
                     return false;
             }
         } else { // LEVEL = PSI
-            // If a transaction is marked as PSI we guarantee global PSI and serializability per replica.
-            // Serializability means checking for read-write conflicts but since we only want serializability per
-            // replica we check only for local entities.
-            if (h1.getReadSet() != null && h2.getWriteSet() != null) {
-                // Since write sets are tipically much smaller than read sets we iterate over the write set.
-                for (JessyEntity e : h2.getWriteSet().getEntities()) {
-                    String key = e.getKey();
-
-                    if (manager.getPartitioner().isLocal(key)) {
-                        if (h1.getReadSet().contains(key))
-                            return false;
-                    }
-                }
-            }
-
-            if (h1.getWriteSet() != null && h2.getReadSet() != null) {
-                for (JessyEntity e : h1.getWriteSet().getEntities()) {
-                    String key = e.getKey();
-
-                    if (manager.getPartitioner().isLocal(key)) {
-                        if (h2.getReadSet().contains(key))
-                            return false;
-                    }
-                }
-            }
-
-            // We know that rs is a super set of ws (and then a check for read-write conclicts also includes a check
-            // for write-write conflicts). But since we checked for read-write conflicts on a per replica basis we
-            // probably missed some write-write conflict.
+            // If a transaction is marked as PSI we guarantee global PSI and SI per replica.
             if (h1.getWriteSet() != null && h2.getWriteSet() != null) {
                 if (CollectionUtils.isIntersectingWith(h1.getWriteSet().getKeys(), h2.getWriteSet().getKeys()))
                     return false;
@@ -141,20 +112,10 @@ public abstract class SSERPSI extends Consistency {
      */
     @Override
     public boolean certificationCommute(TransactionTouchedKeys k1, TransactionTouchedKeys k2) {
-//        // Check k1's write set against k2's read set.
-//        // Usually the read set of a transaction is far bigger than its write set. Passing the write set as first
-//        // argument to the method isIntersectingWith() gives a huge boost in performances: the implementation
-//        // checks if every element of the first set is contained in the second.
-//        if (CollectionUtils.isIntersectingWith(k1.writeKeys, k2.readKeys))
-//            return false;
-//
-//        // Then, do the opposite: check k2's write set against k1's read set.
-//        if (CollectionUtils.isIntersectingWith(k2.writeKeys, k1.readKeys))
-//            return false;
-//
-//        // No need to check ww conflicts because rs is a superset of ws.
-//        return true;
-        return false;
+        // Messages can be delivered out of order if the two write sets do not intersect. This is ok because if two
+        // transactions do commute (ww-conflict free) then it doesn't matter if their messages are delivered out of
+        // order.
+        return !CollectionUtils.isIntersectingWith(k1.writeKeys, k2.writeKeys);
     }
 
     /**

@@ -20,7 +20,7 @@
 package org.imdea.rubis.benchmark.transaction;
 
 import fr.inria.jessy.Jessy;
-import fr.inria.jessy.consistency.SSERPSI;
+import fr.inria.jessy.consistency.SPSI;
 import fr.inria.jessy.transaction.ExecutionHistory;
 
 import java.util.Collection;
@@ -34,7 +34,7 @@ public class AboutMeTransaction extends AbsRUBiSTransaction {
 
     public AboutMeTransaction(Jessy jessy, long userId, String nickname, String password) throws Exception {
         super(jessy);
-        putExtra(SSERPSI.LEVEL, SSERPSI.SER);
+        putExtra(SPSI.LEVEL, SPSI.SER);
         mTargetUserId = userId;
         mNickname = nickname;
         mPassword = password;

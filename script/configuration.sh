@@ -10,10 +10,10 @@ running_on_grid=false
 SSHCMD="oarsh" # ssh or oarsh for oar equiped cluster
 
 #basic calculator path. Note: lip6 cluster does not have bc.
-bc="/home/psutra/utils/bin/bc"
+bc="bc"
 
 #The location of all the scripts.
-scriptdir="/home/mneri/Progetti/jessy/script"
+scriptdir="/home/mneri/jessy/script/"
 
 #The location where all the databases will be created.
 workingdir="/tmp/jessy_exec"
@@ -44,7 +44,7 @@ client_thread_glb="2"
 client_thread_lub="2"
 
 # Consistency
-cons=("rc") # "si2" "psi" "nmsi2" "us" "ser")
+cons=("nmsi_pdv_gc")
 
 # Client specific settings 
 workloadType="-load"
@@ -53,17 +53,7 @@ nthreads=1
 
 system=jessy
 
-if [[ ${system} == "cassandra"  ]];
-then
-    clientclass=com.yahoo.ycsb.CassandraClient10;
-    classpath=${scriptdir}/jessy.jar
-    for jar in ${scriptdir}/cassandra/lib/*.jar; do
-	classpath=$classpath:$jar
-    done
-fi;
-
-if [[ ${system} == "jessy"  ]];
-then
+if [[ ${system} == "jessy"  ]]; then
     clientclass=com.yahoo.ycsb.JessyDBClient;
     classpath=${scriptdir}/commons-lang.jar:${scriptdir}/log4j.jar:${scriptdir}/jessy.jar:${scriptdir}/fractal.jar:${scriptdir}/je.jar:${scriptdir}/concurrentlinkedhashmap.jar:${scriptdir}/netty.jar:${scriptdir}/high-scale-lib.jar:${scriptdir}/db.jar:${scriptdir}/commons-cli-1.3.1.jar;
 fi;
