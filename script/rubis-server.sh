@@ -1,6 +1,6 @@
 #!/bin/bash
 
-source /home/mneri/Progetti/jessy/script/configuration.sh
+source /home/mneri/jessy/script/rubis-configuration.sh
 
 hostname=`hostname`;
 stout=${hostname}".stout"
@@ -17,4 +17,4 @@ cp ${scriptdir}/config/YCSB/workloads/${workloadName} ${workingdir}/workload
 cd ${workingdir};
 
 export CLASSPATH=${classpath}
-java -Xms1000m -Xmx2000m -XX:+UseConcMarkSweepGC org.imdea.rubis.benchmark.cli.CommandLineInterface --server
+java -Xms500m -Xmx500m -XX:+UseConcMarkSweepGC org.imdea.rubis.benchmark.cli.CommandLineInterface --server
