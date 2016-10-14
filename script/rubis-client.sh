@@ -1,6 +1,6 @@
 #!/bin/bash
 
-source /home/mneri/jessy/script/rubis-configuration.sh
+source ./rubis-configuration.sh
 
 hostname=`hostname`;
 stout=${hostname}".stout"

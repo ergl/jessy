@@ -1,6 +1,6 @@
 #!/bin/bash
 
-source /home/msaeida/jessy_script/configuration.sh
+source ./configuration.sh
 
 let e=${#nodes[@]}-1
 nodeQuery="hostname='${nodes[0]}'"

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-source  /home/msaeida/jessy_script/configuration.sh
+source  ./configuration.sh
 
 rm -f nohup.*
 

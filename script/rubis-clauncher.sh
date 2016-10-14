@@ -1,6 +1,6 @@
 #!/bin/bash
 
-source  /home/mneri/jessy/script/rubis-configuration.sh
+source  ./rubis-configuration.sh
 
 rm -f nohup.*
 

@@ -1,7 +1,6 @@
 #!/bin/bash
 
-#source /home/msaeidaardekani/jessy/scripts/configuration.sh
-source /home/msaeida/jessy_script/configuration.sh
+source ./configuration.sh
 
 param=("$@")
 

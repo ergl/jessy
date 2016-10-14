@@ -1,5 +1,6 @@
+#!/usr/bin/env bash
 
-source /local/msaeida/workspace/Implementations/jessy/script/configuration.sh
+source ./configuration.sh
 
 nodes=("msaeida@cluster.lip6.fr")
 

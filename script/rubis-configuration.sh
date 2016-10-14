@@ -13,7 +13,7 @@ SSHCMD="oarsh" # ssh or oarsh for oar equiped cluster
 bc="bc"
 
 #The location of all the scripts.
-scriptdir="/home/mneri/jessy/script"
+scriptdir=`pwd`
 
 #The location where all the databases will be created.
 workingdir="/tmp/jessy_exec"
@@ -58,7 +58,7 @@ then
     clientclass=com.yahoo.ycsb.CassandraClient10;
     classpath=${scriptdir}/jessy.jar
     for jar in ${scriptdir}/cassandra/lib/*.jar; do
-	classpath=$classpath:$jar
+	classpath=${classpath}:${jar}
     done
 fi;
 
