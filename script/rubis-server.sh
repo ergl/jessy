@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 source ./rubis-configuration.sh
 
@@ -17,4 +17,16 @@ cp ${scriptdir}/config/YCSB/workloads/${workloadName} ${workingdir}/workload
 cd ${workingdir};
 
 export CLASSPATH=${classpath}
-java -Xms500m -Xmx500m -XX:+UseConcMarkSweepGC org.imdea.rubis.benchmark.cli.CommandLineInterface --server
+
+if [[ "$#" -eq 1 && $1 = "true" ]]; then
+  java -Xms500m \
+       -Xmx500m \
+       -XX:+UseConcMarkSweepGC \
+       -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005 \
+       org.imdea.rubis.benchmark.cli.CommandLineInterface --server
+else
+  java -Xms500m \
+       -Xmx500m \
+       -XX:+UseConcMarkSweepGC \
+       org.imdea.rubis.benchmark.cli.CommandLineInterface --server
+fi
