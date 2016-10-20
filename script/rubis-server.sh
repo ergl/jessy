@@ -18,7 +18,10 @@ cd ${workingdir};
 
 export CLASSPATH=${classpath}
 
-if [[ "$#" -eq 1 && $1 = "true" ]]; then
+# If we're on debug mode, launch the jvm with jdwp enabled
+# The server won't wait for an attached debugger,
+# change 'suspend=n' to 'suspend=y' to wait for debugger.
+if [[ "$#" -eq 1 && $1 = "debug" ]]; then
   java -Xms500m \
        -Xmx500m \
        -XX:+UseConcMarkSweepGC \
