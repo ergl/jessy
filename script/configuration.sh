@@ -13,7 +13,7 @@ SSHCMD="oarsh" # ssh or oarsh for oar equiped cluster
 bc="bc"
 
 #The location of all the scripts.
-scriptdir="/home/mneri/jessy/script/"
+scriptdir=`pwd`
 
 #The location where all the databases will be created.
 workingdir="/tmp/jessy_exec"

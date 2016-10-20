@@ -1,6 +1,6 @@
 #!/bin/bash
 
-source /home/mneri/Progetti/jessy/script/configuration.sh
+source ./configuration.sh
 
 hostname=`hostname`;
 stout=${hostname}".stout"

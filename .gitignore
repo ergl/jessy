@@ -4,3 +4,8 @@ bin/
 out/
 .project
 .classpath
+
+vagrant/**/*.log
+vagrant/**/*.xml
+vagrant/**/.vagrant
+

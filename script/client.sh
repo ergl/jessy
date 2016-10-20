@@ -1,6 +1,6 @@
 #!/bin/bash
 
-source /home/pcincilla/workspaces/jessyGit/jessy/script/configuration.sh
+source ./configuration.sh
 hostname=`hostname`;
 stout=${hostname}".stout"
 sterr=${hostname}".sterr"

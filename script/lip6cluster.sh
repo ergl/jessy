@@ -1,6 +1,6 @@
 #!/bin/sh
 
-source /home/msaeida/jessy_script/configuration.sh
+source ./configuration.sh
 
 trap "kill 0; wait; exit 255" SIGINT SIGTERM
 
