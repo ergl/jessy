@@ -17,14 +17,11 @@ Vagrant.configure("2") do |config|
     # Download jessy
     config.vm.provision "shell", run: "always", privileged: false, keep_color: true, path: "build.sh"
 
-    # Open port 5006 for debugging, does not wait for attached debugger
+    # Open port 5006 for debugging, waits for attached debugger before running jessy
     config.vm.define "server" do |server|
         hostname = "jessy-server"
+        server.vm.network "forwarded_port", guest: 5005, host: 5006
         server.vm.provision :shell, :inline => "hostnamectl set-hostname #{hostname}"
-
-        if ENV['DEBUG_MACHINE'] == "-s"
-            server.vm.network "forwarded_port", guest: 5005, host: 5006
-        end
 
         # Create a fractal configuration based on the current ip
         server.vm.provision "shell", run: "always", privileged: false, keep_color: true do |s|
@@ -36,11 +33,9 @@ Vagrant.configure("2") do |config|
     # Open port 5005 for debugging, waits for attached debugger before running jessy
     config.vm.define "client" do |client|
         hostname = "jessy-client"
-        client.vm.provision :shell, :inline => "hostnamectl set-hostname #{hostname}"
+        client.vm.network "forwarded_port", guest: 5005, host: 5005
 
-        if ENV['DEBUG_MACHINE'] == "-c"
-            client.vm.network "forwarded_port", guest: 5005, host: 5005
-        end
+        client.vm.provision :shell, :inline => "hostnamectl set-hostname #{hostname}"
 
         # Copy network settings from server
         client.vm.provision "shell", run: "always", privileged: false, keep_color: true, path: "configure-network.sh"
