@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 node=("$1@access-north.grid5000.fr")
 sites=("sophia") # "toulouse" "bordeaux" "rennes" "nancy" "lille" "grenoble") # "luxembourg" "lyon" "reims")
