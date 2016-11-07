@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# Usage
+# ./rubis-grid5k <site1> <nclients> <nservers> <site2> <nclients> <nservers>...
 
 rm -f *.fr
 running_on_grid=true
