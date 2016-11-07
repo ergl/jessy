@@ -106,7 +106,7 @@ function reserveNodes {
       next=${next//\"/}
       # Replace all the occurences of \'\ with empty string
       next=${next//\'/}
-      echo "Clusters unavailable now, trying to reserve in ${increment} minutes."
+      echo "Clusters unavailable now, trying to reserve in ${increment} minutes"
       echo ""
     else
       # If ID is found, sleep until reservation is ready
@@ -130,7 +130,7 @@ function reserveNodes {
   export OAR_JOB_KEY_FILE=${OAR_JOB_KEY_PATH}
   echo 'Exported oarJobKeyFile ' ${OAR_JOB_KEY_PATH}
 
-  echo "Done"
+  echo "Reservations completed successfully"
 }
 
 function buildFractal {
@@ -160,8 +160,8 @@ function buildFractal {
     echo "**********************"
     echo "* deploy on "${nodeName}" *"
     echo "**********************"
-    echo "server: "${serverNumber}
-    echo "client: "${clientNumber}
+    echo "server(s): "${serverNumber}
+    echo "client(s): "${clientNumber}
     echo ""
 
     oargridstat -w -l ${RES_ID} -c ${nodeName} | sed '/^$/d' | sort | uniq > ./machines
@@ -220,7 +220,7 @@ function syncCode {
   # Sync with all the provided sites
   for i in `seq 0 $((${clustersNumber}-1))`; do
     nodeName=${param[$next]}
-    echo "Synchronizing${nodeName}..."
+    echo "Synchronizing ${nodeName}..."
 
     rsync -a -f"+ */" -f"- *" ../../jessy/script ${nodeName}.grid5000.fr:~/jessy
     rsync --delete -az ./* ${nodeName}.grid5000.fr:~/jessy/script/
@@ -232,7 +232,7 @@ function syncCode {
 function launchExperience {
   echo ""
   echo "grid5kLaucher: myfractal and configuration.sh are done"
-  echo -e "\tLaunching experience..."
+  echo "Launching experience..."
   ./rubis-experience.sh ${param[*]}
 }
 
