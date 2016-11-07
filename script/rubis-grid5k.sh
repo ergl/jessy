@@ -116,8 +116,13 @@ function reserveNodes {
       next=${next//\'/}
       time_to_wait=$(($next - $now))
       minutes=$(($time_to_wait / 60))
-      echo "I will sleep for:" ${minutes} "minutes"
-      sleep ${time_to_wait}
+
+      # Sleep only if time is positive
+      if [[ ${time_to_wait} -ge 0 ]]; then
+          echo "I will sleep for:" ${minutes} "minutes"
+          sleep ${time_to_wait}
+      fi
+
       reservation_failure=false
     fi
   done
