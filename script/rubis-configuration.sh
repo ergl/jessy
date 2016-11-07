@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 #clauncher.sh timeout. Within this timeout, if the clauncher is not finished, it will be terminated and re-executed.
 #this is needed because jessy clients sometimes never finish.
@@ -53,17 +53,15 @@ nthreads=1
 
 system=jessy
 
-if [[ ${system} == "cassandra"  ]];
-then
-    clientclass=com.yahoo.ycsb.CassandraClient10;
-    classpath=${scriptdir}/jessy.jar
-    for jar in ${scriptdir}/cassandra/lib/*.jar; do
-	classpath=${classpath}:${jar}
-    done
-fi;
+if [[ ${system} == "cassandra"  ]]; then
+  clientclass=com.yahoo.ycsb.CassandraClient10;
+  classpath=${scriptdir}/jessy.jar
+  for jar in ${scriptdir}/cassandra/lib/*.jar; do
+    classpath=${classpath}:${jar}
+  done
+fi
 
-if [[ ${system} == "jessy"  ]];
-then
-    clientclass=com.yahoo.ycsb.JessyDBClient;
-    classpath=${scriptdir}/commons-lang.jar:${scriptdir}/log4j.jar:${scriptdir}/jessy.jar:${scriptdir}/fractal.jar:${scriptdir}/je.jar:${scriptdir}/concurrentlinkedhashmap.jar:${scriptdir}/netty.jar:${scriptdir}/high-scale-lib.jar:${scriptdir}/db.jar:${scriptdir}/commons-cli-1.3.1.jar;
-fi;
+if [[ ${system} == "jessy"  ]]; then
+  clientclass=com.yahoo.ycsb.JessyDBClient;
+  classpath=${scriptdir}/commons-lang.jar:${scriptdir}/log4j.jar:${scriptdir}/jessy.jar:${scriptdir}/fractal.jar:${scriptdir}/je.jar:${scriptdir}/concurrentlinkedhashmap.jar:${scriptdir}/netty.jar:${scriptdir}/high-scale-lib.jar:${scriptdir}/db.jar:${scriptdir}/commons-cli-1.3.1.jar;
+fi
