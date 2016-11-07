@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 
+set -e
 source ./rubis-configuration.sh
 
 hostname=`hostname`;
