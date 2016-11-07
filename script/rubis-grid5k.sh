@@ -40,6 +40,12 @@ function changeScriptPaths {
   sed -ie "s|^source.*|source $path/rubis-configuration.sh|g" experience.sh
   sed -ie "s|^source.*|source $path/rubis-configuration.sh|g" jessy.sh
   sed -ie "s|^source.*|source $path/rubis-configuration.sh|g" launcher.sh
+
+  sed -ie "s|^source.*|source $path/rubis-configuration.sh|g" rubis-init.sh
+  sed -ie "s|^source.*|source $path/rubis-configuration.sh|g" rubis-client.sh
+  sed -ie "s|^source.*|source $path/rubis-configuration.sh|g" rubis-server.sh
+
+  sed -ie "s|vagrant|$(whoami)|g" rubis.properties
 }
 
 # Build the reservation arguments using the named sites
