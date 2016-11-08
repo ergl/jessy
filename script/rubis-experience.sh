@@ -8,11 +8,11 @@ function fetchExecutionResult(){
     input=$@
     next=0
 
-    for i in `seq 1 $clustersNumber`; do
+    for i in `seq 1 ${clustersNumber}`; do
         nodeName=${param[$next]}
 
         if [[ "$input" == *"$nodeName"* ]]; then
-            echo 'Fetching execution result of ' $input ' from ' $nodeName
+            echo 'Fetching execution result of ' ${input} ' from ' ${nodeName}
             scp ${nodeName}:~/jessy/scripts/${input} .
             break
         fi
@@ -23,15 +23,15 @@ function fetchExecutionResult(){
 
 
 function syncConfig(){
-    if $running_on_grid ; then
+    if ${running_on_grid} ; then
         next=0
         echo 'synchronizing keys and data...'
 
-        for i in `seq 1 $clustersNumber`; do
+        for i in `seq 1 ${clustersNumber}`; do
             nodeName=${param[$next]}
-            echo "synchronizing configuration in "$nodeName"..."
-            rsync --delete -az ./configuration.sh $nodeName:~/jessy/script/rubis-configuration.sh
-            rsync --delete -az ./config.property $nodeName:~/jessy/script/config.property
+            echo "synchronizing configuration in "${nodeName}"..."
+            rsync --delete -az ./configuration.sh ${nodeName}:~/jessy/script/rubis-configuration.sh
+            rsync --delete -az ./config.property ${nodeName}:~/jessy/script/config.property
             next=$(($next+3))
         done
     fi
@@ -40,14 +40,14 @@ function syncConfig(){
 function stopExp(){
     let sc=${#servers[@]}-1
 
-    for j in `seq 0 $sc`; do
+    for j in `seq 0 ${sc}`; do
 	    nohup ${SSHCMD} ${servers[$j]} "killall -SIGTERM java" 2&>1 > /dev/null &
     done
 
     sleep 5
     let e=${#nodes[@]}-1
 
-    for i in `seq 0 $e`; do
+    for i in `seq 0 ${e}`; do
 	    echo "stopping on ${nodes[$i]}"
 	    nohup ${SSHCMD} ${nodes[$i]} "killall -9 java" 2&>1 > /dev/null &
     done
@@ -55,7 +55,7 @@ function stopExp(){
 
 function dump(){
     let c=${#clients[@]}-1
-    for j in `seq 0 $c`; do
+    for j in `seq 0 ${c}`; do
 	    echo "stopping on ${clients[$j]}"
 	    nohup ${SSHCMD} ${clients[$j]} "killall -SIGQUIT java \
 			 		&& wait 5 \
@@ -294,7 +294,7 @@ do
 	    stopExp
 
 
-        if $running_on_grid ; then
+        if ${running_on_grid} ; then
                 sleep 30
 
                 echo "trnasfering experiment files to the main launcher frontend..."
