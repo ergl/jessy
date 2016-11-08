@@ -9,3 +9,4 @@ vagrant/**/*.log
 vagrant/**/*.xml
 vagrant/**/.vagrant
 
+*.bak

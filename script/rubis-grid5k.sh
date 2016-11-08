@@ -32,20 +32,20 @@ function stopExecution {
 function changeScriptPaths {
   local path=$(pwd)
 
-  sed -ie "s|^scriptdir=.*|scriptdir=$path|g" rubis-configuration.sh
+  sed -i.bak -e "s|^scriptdir=.*|scriptdir=$path|g" rubis-configuration.sh
 
-  sed -ie "s|^source.*|source $path/rubis-configuration.sh|g" clauncher.sh
-  sed -ie "s|^source.*|source $path/rubis-configuration.sh|g" console.sh
-  sed -ie "s|^source.*|source $path/rubis-configuration.sh|g" client.sh
-  sed -ie "s|^source.*|source $path/rubis-configuration.sh|g" experience.sh
-  sed -ie "s|^source.*|source $path/rubis-configuration.sh|g" jessy.sh
-  sed -ie "s|^source.*|source $path/rubis-configuration.sh|g" launcher.sh
+  sed -i.bak -e "s|^source.*|source $path/rubis-configuration.sh|g" clauncher.sh
+  sed -i.bak -e "s|^source.*|source $path/rubis-configuration.sh|g" console.sh
+  sed -i.bak -e "s|^source.*|source $path/rubis-configuration.sh|g" client.sh
+  sed -i.bak -e "s|^source.*|source $path/rubis-configuration.sh|g" experience.sh
+  sed -i.bak -e "s|^source.*|source $path/rubis-configuration.sh|g" jessy.sh
+  sed -i.bak -e "s|^source.*|source $path/rubis-configuration.sh|g" launcher.sh
 
-  sed -ie "s|^source.*|source $path/rubis-configuration.sh|g" rubis-init.sh
-  sed -ie "s|^source.*|source $path/rubis-configuration.sh|g" rubis-client.sh
-  sed -ie "s|^source.*|source $path/rubis-configuration.sh|g" rubis-server.sh
+  sed -i.bak -e "s|^source.*|source $path/rubis-configuration.sh|g" rubis-init.sh
+  sed -i.bak -e "s|^source.*|source $path/rubis-configuration.sh|g" rubis-client.sh
+  sed -i.bak -e "s|^source.*|source $path/rubis-configuration.sh|g" rubis-server.sh
 
-  sed -ie "s|vagrant|$(whoami)|g" rubis.properties
+  sed -i.bak -e "s|vagrant|$(whoami)|g" rubis.properties
 }
 
 # Build the reservation arguments using the named sites
@@ -210,9 +210,9 @@ function buildFractal {
 
   echo "Fractal configuration file is done"
 
-  sed -ie "s|nodes=.*|${nodeStr}|g" rubis-configuration.sh
-  sed -ie "s|servers=.*|${servers}|g" rubis-configuration.sh
-  sed -ie "s|clients=.*|${clients}|g" rubis-configuration.sh
+  sed -i.bak -e "s|nodes=.*|${nodeStr}|g" rubis-configuration.sh
+  sed -i.bak -e "s|servers=.*|${servers}|g" rubis-configuration.sh
+  sed -i.bak -e "s|clients=.*|${clients}|g" rubis-configuration.sh
 
   rm machines tmp
 
