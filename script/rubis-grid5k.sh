@@ -31,6 +31,9 @@ function stopExecution {
 # s|foo|bar|g is the same as s/foo/bar/g. Use | to avoid escaping '/'
 function changeScriptPaths {
   local path=$(pwd)
+  local categories=${path}"/rubis/db/categories.txt"
+  local regions=${path}"/rubis/db/regions.txt"
+  local transitions=${path}"/rubis/transitions/default_transitions_15.txt"
 
   sed -i.bak -e "s|^scriptdir=.*|scriptdir=$path|g" rubis-configuration.sh
 
@@ -45,7 +48,9 @@ function changeScriptPaths {
   sed -i.bak -e "s|^source.*|source $path/rubis-configuration.sh|g" rubis-client.sh
   sed -i.bak -e "s|^source.*|source $path/rubis-configuration.sh|g" rubis-server.sh
 
-  sed -i.bak -e "s|vagrant|$(whoami)|g" rubis.properties
+  sed -i.bak -e "s|^categories_file =.*|categories_file = ${categories}|g" rubis.properties
+  sed -i.bak -e "s|^regions_file =.*|regions_file = ${categories}|g" rubis.properties
+  sed -i.bak -e "s|^transitions_file =.*|transitions_file = ${categories}|g" rubis.properties
 }
 
 # Build the reservation arguments using the named sites
