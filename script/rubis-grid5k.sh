@@ -1,5 +1,14 @@
 #!/usr/bin/env bash
 
+# This script reserves nodes on [g5k](grid5000.fr) and launches the
+# rubis benchmark on those nodes.
+#
+# First, reserves the appropiate nodes
+# Then synchronizes the code with the machines (rsync)
+# Finally, launches the server, and clients, on the respective nodes
+#
+# Usage: rubis-grid5k <site-name1> <n-clients1> <n-servers1> <site-name2> ...
+
 set -e
 trap "stopExecution" SIGINT SIGTERM
 
