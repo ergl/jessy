@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 source ./rubis-configuration.sh
 
@@ -22,47 +22,47 @@ function fetchExecutionResult(){
 }
 
 
-function syncConfig(){
-    if ${running_on_grid} ; then
-        next=0
-        echo 'synchronizing keys and data...'
-
-        for i in `seq 1 ${clustersNumber}`; do
-            nodeName=${param[$next]}
-            echo "synchronizing configuration in "${nodeName}"..."
-            rsync --delete -az ./configuration.sh ${nodeName}:~/jessy/script/rubis-configuration.sh
-            rsync --delete -az ./config.property ${nodeName}:~/jessy/script/config.property
-            next=$(($next+3))
-        done
-    fi
+function syncConfig() {
+  if ${running_on_grid}; then
+    echo 'Synchronizing keys and data...'
+    local next=0
+    # TODO: Is this not missing the first node?
+    for i in `seq 1 ${clustersNumber}`; do
+      nodeName=${param[$next]}
+      echo "synchronizing configuration in "${nodeName}"..."
+      rsync --delete -az ./configuration.sh ${nodeName}:~/jessy/script/rubis-configuration.sh
+      rsync --delete -az ./config.property ${nodeName}:~/jessy/script/config.property
+      next=$(($next+3))
+    done
+  fi
 }
 
-function stopExp(){
-    let sc=${#servers[@]}-1
+# TODO: Isn't this redundant?
+# Why stop servers first if we then go and stop in all nodes?
+function stopExp() {
+  local server_count=$((${#servers[@]}-1))
+  for j in `seq 0 ${server_count}`; do
+    echo "stopping server: ${servers[$j]}"
+    nohup ${SSHCMD} ${servers[$j]} "killall -SIGTERM java" 2&>1 > /dev/null &
+  done
 
-    for j in `seq 0 ${sc}`; do
-	    nohup ${SSHCMD} ${servers[$j]} "killall -SIGTERM java" 2&>1 > /dev/null &
-    done
+  sleep 5
 
-    sleep 5
-    let e=${#nodes[@]}-1
-
-    for i in `seq 0 ${e}`; do
-	    echo "stopping on ${nodes[$i]}"
-	    nohup ${SSHCMD} ${nodes[$i]} "killall -9 java" 2&>1 > /dev/null &
-    done
+  local node_count=$((${#nodes[@]}-1))
+  for k in `seq 0 ${node_count}`; do
+    echo "stopping node: ${nodes[$k]}"
+    nohup ${SSHCMD} ${nodes[$k]} "killall -9 java" 2&>1 > /dev/null &
+  done
 }
 
-function dump(){
-    let c=${#clients[@]}-1
-    for j in `seq 0 ${c}`; do
-	    echo "stopping on ${clients[$j]}"
-	    nohup ${SSHCMD} ${clients[$j]} "killall -SIGQUIT java \
-			 		&& wait 5 \
-					&& kilall -9 java" 2&>1 > /dev/null &
-    done
-
-
+function dump() {
+  local client_count=$((${#clients[@]}-1))
+  for j in `seq 0 ${client_count}`; do
+    echo "stopping client: ${clients[$j]}"
+    nohup ${SSHCMD} ${clients[$j]} "killall -SIGQUIT java \
+      && wait 5 \
+      && killall -9 java" 2&>1 > /dev/null &
+  done
 }
 
 function collectStats(){
@@ -227,97 +227,80 @@ function collectStats(){
 
 }
 
+function startServersPhase {
+  echo "Starting servers..."
+  sed -i.bak 's|workloadType=.*|workloadType="-load"|g' rubis-configuration.sh
+  sed -i.bak 's|nthreads.*|nthreads=1|g' rubis-configuration.sh
+
+  syncConfig
+
+  sleep 30
+  ${scriptdir}/rubis-launcher.sh &
+  sleep 20
+}
+
+# Launches rubis-init
+# It is enough for one machine to perform this phase
+function loadingPhase {
+  echo "Loading phase..."
+  ${SSHCMD} ${clients[0]} "${scriptdir/rubis-init.sh}" > ${scriptdir}/rubis/log/init-output.log
+  sleep 10
+}
+
+function gatherResults {
+  stopExp
+
+  if ${running_on_grid}; then
+    sleep 30
+    echo "Transfering experiment results to frontend"
+    local server_count=$((${#servers[@]}-1))
+    for i in `seq 0 ${server_count}`; do
+      fetchExecutionResult ${servers[${i}]}
+    done
+
+    local client_count=$((${#clients[@]}-1))
+    for j in `seq 0 ${client_count}`; do
+      fetchExecutionResult ${clients[${j}]}
+    done
+  fi
+}
+
+function publishResults {
+  local server_count=${#servers[@]}
+  collectStats >> ${scriptdir}/rubis/results/server-${server_count}.txt
+}
+
+function runExperience {
+  local clauncher_success=3
+  while [[ ${clauncher_success} -eq 3 ]]; do
+    startServersPhase
+    loadingPhase
+    syncConfig
+    sleep 30
+    echo "Benchmark started, launching clients..."
+    ${scriptdir}/client-launcher.sh -rubis
+    clauncher_success=$?
+
+    gatherResults
+    publishResults
+
+    sleep 30
+  done
+}
+
+function run {
+  local consistency_count=$((${#cons[@]}-1))
+
+  for i_cons in `seq 0 ${consistency_count}`; do
+    sed -i.bak "s|consistency_type.*|consistency_type = ${cons[$i_cons]}|g" config.property
+    local thread=`seq ${client_thread_glb} ${client_thread_increment} ${client_thread_lub}`
+    for t in ${thread}; do
+      runExperience
+    done
+  done
+}
 
 trap "stopExp; wait; exit 255" SIGINT SIGTERM
 trap "dump; wait;" SIGQUIT
 
- ##############
- # Experience #
- ##############
-let servercount=${#servers[@]}
-
-let consCount=${#cons[@]}-1
-for selectedCons in `seq 0 $consCount`
-do  
-
-	sed -i "s/consistency_type.*/consistency_type\ =\ ${cons[$selectedCons]}/g" config.property
-
-	#thread setup
-	thread=`seq ${client_thread_glb} ${client_thread_increment} ${client_thread_lub}`
-
-
-	for t in ${thread};
-	do
-
-
-	#############WE LOOP HERE UNTIL CLAUNCHER_SUCCEED=1
-	CLAUNCHER_SUCCEED=3
-	while [ $CLAUNCHER_SUCCEED -eq 3 ]; do
-	# 0 - Starting the server
-
-	    echo "Starting servers ..."
-	    sed -i 's/-t/-load/g' rubis-configuration.sh
-	    sed -i "s/nthreads.*/nthreads=1/g" rubis-configuration.sh
-
-		syncConfig
-	    sleep 30
-
-	    #${scriptdir}/launcher.sh &
-	    ${scriptdir}/rubis-launcher.sh &
-	    sleep 20
-
-
-	# 1 - Loading phase
-	    echo "Loading phase ..."
-	    ${SSHCMD} ${clients[0]} "${scriptdir}/rubis-init.sh" > ${scriptdir}/loading
-
-	    sleep 10
-
-	# 2 - Benchmarking phase
-
-	    echo "Benchmarking phase ..."
-	    #sed -i 's/-load/-t/g' configuration.sh
-
-	    #sed -i "s/nthreads.*/nthreads=${t}/g" configuration.sh
-	    #echo "using ${t} thread(s) per machine"
-
-		syncConfig
-
-	    echo "Waiting Before Launching Clients"
-	    sleep 30
-	    echo "Launching Clients"
-
-	    #/${scriptdir}/clauncher.sh
-	    ${scriptdir}/rubis-clauncher.sh
-	    CLAUNCHER_SUCCEED=$?
-
-	    stopExp
-
-
-        if ${running_on_grid} ; then
-                sleep 30
-
-                echo "trnasfering experiment files to the main launcher frontend..."
-                let sc=${#servers[@]}-1
-                for ii in `seq 0 $sc`; do
-                        scpServer=${servers[${ii}]}
-                        fetchExecutionResult ${scpServer}
-                done
-
-                let cc=${#clients[@]}-1
-                for ii in `seq 0 $cc`; do
-                        scpClient=${clients[${ii}]}
-                        fetchExecutionResult ${scpClient}
-                done
-        fi
-
-
-	    echo "using ${t} thread(s) per machine is finished. Collecting stats"   
-	    collectStats >>  ${scriptdir}/results/${servercount}.txt
-#               source collectMeasurements.sh
-
-	    sleep 30
-	    
-	done
-   done
-done
+run
