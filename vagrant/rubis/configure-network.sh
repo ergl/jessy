@@ -11,7 +11,6 @@ target_path=(~/jessy/)
 cd ${target_path}
 
 # Remove old network configuration
-[[ -f myfractal.xml ]] && rm myfractal.xml
 [[ -f script/myfractal.xml ]] && rm script/myfractal.xml
 
 if [[ $# -eq 1 && "$1" == "server" ]]; then
@@ -26,22 +25,20 @@ if [[ $# -eq 1 && "$1" == "server" ]]; then
     [[ -f /srv/myfractal.xml ]] && rm /srv/myfractal.xml
 
     # Generate a new fractal configuration, using our ip address
-    echo '<?xml version="1.0" encoding="ISO-8859-1" ?>' >> myfractal.xml
-    echo '<FRACTAL>'  >> myfractal.xml
-    echo '<BootstrapIdentity>' >> myfractal.xml
-    echo '<nodelist>' >> myfractal.xml
-    echo '<node id="0" ip="'${locip}'"/>' >> myfractal.xml
-    echo '</nodelist>' >> myfractal.xml
-    echo '</BootstrapIdentity>' >> myfractal.xml
-    echo '</FRACTAL>' >> myfractal.xml
+    echo '<?xml version="1.0" encoding="ISO-8859-1" ?>' >> script/myfractal.xml
+    echo '<FRACTAL>'  >> script/myfractal.xml
+    echo '<BootstrapIdentity>' >> script/myfractal.xml
+    echo '<nodelist>' >> script/myfractal.xml
+    echo '<node id="0" ip="'${locip}'"/>' >> script/myfractal.xml
+    echo '</nodelist>' >> script/myfractal.xml
+    echo '</BootstrapIdentity>' >> script/myfractal.xml
+    echo '</FRACTAL>' >> script/myfractal.xml
 
     # Copy fractal configuration to current machine
-    cp myfractal.xml script/
-    cp myfractal.xml /srv
+    cp script/myfractal.xml /srv
 else
     # If in client mode, get the shared configuration and copy it
     # to the current machine. If no server was started, abort.
     [[ ! -f /srv/myfractal.xml ]] && echo -e "No fractal file present" && exit 1
-    cp /srv/myfractal.xml .
     cp /srv/myfractal.xml script/
 fi

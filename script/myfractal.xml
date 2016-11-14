@@ -2,9 +2,7 @@
 <FRACTAL>
     <BootstrapIdentity>
         <nodelist>
-            <node id="0" ip="10.10.4.52"/>
-            <node id="1" ip="10.10.4.53"/>
-            <node id="2" ip="10.10.4.54"/>
+            <node id="0" ip="10.10.1.1"/>
         </nodelist>
     </BootstrapIdentity>
 </FRACTAL>
