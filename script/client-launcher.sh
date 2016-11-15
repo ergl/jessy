@@ -53,7 +53,7 @@ trap "echo 'client-launcher catched: timeout'; stopExp; wait; exit 3" SIGUSR1
 _n_clients=$((${#clients[@]}-1))
 for i in `seq 0 ${_n_clients}`; do
   echo "Launching client on ${clients[$i]}"
-  nohup ${SSHCMD} ${clients[$i]} ${_client_program} > ${_log_path}/client-${clients[$i]}.log
+  nohup ${SSHCMD} ${clients[$i]} ${_client_program} | tee ${_log_path}/client-${clients[$i]}.log
   CLIENTPID[$i]=$!
 done
 
