@@ -46,19 +46,23 @@ function changeScriptPaths {
 
   sed -i.bak -e "s|^scriptdir=.*|scriptdir=$path|g" rubis-configuration.sh
 
-  sed -i.bak -e "s|^source.*|source $path/rubis-configuration.sh|g" clauncher.sh
-  sed -i.bak -e "s|^source.*|source $path/rubis-configuration.sh|g" console.sh
-  sed -i.bak -e "s|^source.*|source $path/rubis-configuration.sh|g" client.sh
-  sed -i.bak -e "s|^source.*|source $path/rubis-configuration.sh|g" experience.sh
+  sed -i.bak -e "s|source ./configuration.sh|source $path/configuration.sh|" client-launcher.sh
+  sed -i.bak -e "s|source ./rubis-configuration.sh|source $path/rubis-configuration.sh|" client-launcher.sh
+
+  sed -i.bak -e "s|source ./configuration.sh|source $path/configuration.sh|" server-launcher.sh
+  sed -i.bak -e "s|source ./rubis-configuration.sh|source $path/rubis-configuration.sh|" server-launcher.sh
+
   sed -i.bak -e "s|^source.*|source $path/rubis-configuration.sh|g" jessy.sh
-  sed -i.bak -e "s|^source.*|source $path/rubis-configuration.sh|g" launcher.sh
+  sed -i.bak -e "s|^source.*|source $path/rubis-configuration.sh|g" console.sh
+  sed -i.bak -e "s|^source.*|source $path/rubis-configuration.sh|g" rubis-client.sh
+  sed -i.bak -e "s|^source.*|source $path/rubis-configuration.sh|g" rubis-experience.sh
 
   sed -i.bak -e "s|^source.*|source $path/rubis-configuration.sh|g" rubis-init.sh
   sed -i.bak -e "s|^source.*|source $path/rubis-configuration.sh|g" rubis-client.sh
   sed -i.bak -e "s|^source.*|source $path/rubis-configuration.sh|g" rubis-server.sh
 
-  sed -i.bak -e "s|^categories_file =.*|categories_file = ${categories}|g" rubis.properties
   sed -i.bak -e "s|^regions_file =.*|regions_file = ${regions}|g" rubis.properties
+  sed -i.bak -e "s|^categories_file =.*|categories_file = ${categories}|g" rubis.properties
   sed -i.bak -e "s|^transitions_file =.*|transitions_file = ${transitions}|g" rubis.properties
 }
 
