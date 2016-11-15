@@ -235,7 +235,7 @@ function startServersPhase {
   syncConfig
 
   sleep 30
-  ${scriptdir}/rubis-launcher.sh &
+  ${scriptdir}/server-launcher -rubis
   sleep 20
 }
 
