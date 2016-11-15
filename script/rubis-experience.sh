@@ -244,9 +244,9 @@ function startServersPhase {
 function loadingPhase {
   echo "Loading phase..."
   local log_path=${scriptdir}"/rubis/log"
+  local init_program=${scriptdir}"/rubis-init.sh"
   [[ ! -d ${log_path} ]] && mkdir -p ${log_path}
-  ${SSHCMD} ${clients[0]} "${scriptdir/rubis-init.sh}" > ${log_path}/init-output.log
-  echo "Loading phase completed"
+  ${SSHCMD} ${clients[0]} ${init_program} > ${log_path}/init-output.log
   sleep 10
 }
 
