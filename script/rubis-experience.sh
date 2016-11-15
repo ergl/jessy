@@ -235,7 +235,7 @@ function startServersPhase {
   syncConfig
 
   sleep 30
-  ${scriptdir}/server-launcher -rubis
+  ${scriptdir}/server-launcher.sh -rubis
   sleep 20
 }
 
@@ -243,7 +243,9 @@ function startServersPhase {
 # It is enough for one machine to perform this phase
 function loadingPhase {
   echo "Loading phase..."
-  ${SSHCMD} ${clients[0]} "${scriptdir/rubis-init.sh}" > ${scriptdir}/rubis/log/init-output.log
+  local log_path="${scriptdir}/rubis/log"
+  [[ ! -d ${log_path} ]] && mkdir -p ${log_path}
+  ${SSHCMD} ${clients[0]} "${scriptdir/rubis-init.sh}" > ${log_path}/init-output.log
   sleep 10
 }
 
@@ -267,7 +269,9 @@ function gatherResults {
 
 function publishResults {
   local server_count=${#servers[@]}
-  collectStats >> ${scriptdir}/rubis/results/server-${server_count}.txt
+  local result_path="${scriptdir}/rubis/results"
+  [[ ! -d ${result_path} ]] && mkdir -p ${result_path}
+  collectStats >> ${result_path}/server-${server_count}.txt
 }
 
 function runExperience {

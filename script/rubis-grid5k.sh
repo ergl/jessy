@@ -12,7 +12,6 @@
 set -e
 trap "stopExecution" SIGINT SIGTERM
 
-rm -f *.fr
 running_on_grid=true
 
 self=${0##*/}
