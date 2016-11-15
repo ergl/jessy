@@ -51,4 +51,3 @@ for i in `seq 0 ${_n_servers}`; do
 done
 
 wait
-exit 0
