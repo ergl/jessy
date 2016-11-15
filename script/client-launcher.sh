@@ -32,7 +32,7 @@ function stopExp {
   local n_clients=$((${#clients[@]}-1))
   for i in `seq 0 ${n_clients}`; do
     echo "Stopping on ${clients[$i]}"
-    nohup ${SSHCMD} ${clients[$i]} "killall -SIGTERM java" 2>&1 >/dev/null &
+    nohup ${SSHCMD} ${clients[$i]} "killall -SIGTERM java" 2>&1 > /dev/null &
   done
 }
 
