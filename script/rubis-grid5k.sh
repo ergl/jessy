@@ -105,8 +105,8 @@ function reserveNodes {
   while [[ ${reservation_failure} == "true" ]]; do
     echo "Trying to reserve nodes at...${next}"
     echo "With args${reservation}"
-    # Try to reserve for 30 minutes, starting now
-    oargridsub -w '0:30:00' ${reservation} -s "$next" > tmp
+    # Try to reserve for 2 hours, starting now
+    oargridsub -w '2:00:00' ${reservation} -s "$next" > tmp
 
     # Outputs something similar to:
     # [OAR_GRIDSUB] [nancy] Date/TZ adjustment: 0 seconds

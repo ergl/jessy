@@ -1,8 +1,8 @@
-#!/bin/sh
+#!/usr/bin/env bash
 
 #clauncher.sh timeout. Within this timeout, if the clauncher is not finished, it will be terminated and re-executed.
 #this is needed because jessy clients sometimes never finish.
-clauncherTimeout=2000
+clauncherTimeout=3000
 
 #if it will be run on grid5k, set to true, otherwise, set to false.
 running_on_grid=false
