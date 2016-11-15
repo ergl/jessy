@@ -46,7 +46,7 @@ trap "echo 'server-launcher catched: quit signal'; stopExp; wait; exit 255" SIGI
 # For each client machine, ssh into it and launch the clients
 _n_servers=$((${#servers[@]}-1))
 for i in `seq 0 ${_n_servers}`; do
-  echo "Launching on ${servers[$i]}"
+  echo "Launching server on ${servers[$i]}"
   nohup ${SSHCMD} ${servers[$i]} ${_server_program} > ${_log_path}/server-${servers[$i]}.log
 done
 

@@ -243,9 +243,10 @@ function startServersPhase {
 # It is enough for one machine to perform this phase
 function loadingPhase {
   echo "Loading phase..."
-  local log_path="${scriptdir}/rubis/log"
+  local log_path=${scriptdir}"/rubis/log"
   [[ ! -d ${log_path} ]] && mkdir -p ${log_path}
   ${SSHCMD} ${clients[0]} "${scriptdir/rubis-init.sh}" > ${log_path}/init-output.log
+  echo "Loading phase completed"
   sleep 10
 }
 
@@ -269,7 +270,7 @@ function gatherResults {
 
 function publishResults {
   local server_count=${#servers[@]}
-  local result_path="${scriptdir}/rubis/results"
+  local result_path=${scriptdir}"/rubis/results"
   [[ ! -d ${result_path} ]] && mkdir -p ${result_path}
   collectStats >> ${result_path}/server-${server_count}.txt
 }
